@@ -99,6 +99,22 @@ class SourcesCatalogTest(unittest.TestCase):
         self.assertEqual(line.count("]("), 2)
         self.assertIn("section-164.502", line)
 
+    def test_updated_derived_from_inputs_without_wall_clock(self):
+        derived = gs.derive_updated()
+        self.assertRegex(derived, r"^\d{4}-\d{2}-\d{2}$")
+        self.assertEqual(self.catalog.get("updated"), derived)
+        wall_clock_re = re.compile(r"\b(?:datetime\.now|date\.today|utcnow)\s*\(")
+        for rel in (
+            os.path.join("build", "generate_sources.py"),
+            os.path.join("build", "generate_oscal_verticals.py"),
+            os.path.join("thresholds", "generate-gap-register.py"),
+        ):
+            src = open(os.path.join(ROOT, rel), encoding="utf-8").read()
+            self.assertIsNone(
+                wall_clock_re.search(src),
+                msg=f"{rel} must not use wall-clock date/time functions",
+            )
+
 
 if __name__ == "__main__":
     raise SystemExit(unittest.main())

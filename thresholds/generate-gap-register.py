@@ -40,7 +40,6 @@ the source URI recorded in the threshold catalog and caches it in /tmp.
 """
 
 import argparse
-import datetime
 import json
 import pathlib
 import re
@@ -224,6 +223,40 @@ def classify_vertical_control(c, src_file, idx):
     return entry
 
 
+ISO_DATE_RE = re.compile(r"\b\d{4}-\d{2}-\d{2}\b")
+
+
+def derive_generated_date(meta):
+    """Derive the register date from repo input files and catalog metadata."""
+    dates = []
+
+    def add_iso(raw):
+        text = str(raw or "").strip()
+        m = re.match(r"^(\d{4}-\d{2}-\d{2})", text)
+        if m:
+            dates.append(m.group(1))
+
+    add_iso(meta.get("last-modified"))
+    data_dir = HERE.parent / "data"
+    for name in ("threats.json", "common-controls.json"):
+        path = data_dir / name
+        if path.exists():
+            doc = json.loads(path.read_text(encoding="utf-8"))
+            add_iso(doc.get("updated"))
+    for path in sorted(data_dir.glob("*-controls.json")):
+        if path.name == "common-controls.json":
+            continue
+        doc = json.loads(path.read_text(encoding="utf-8"))
+        add_iso(doc.get("updated"))
+        note = doc.get("mapping_status_note")
+        if isinstance(note, str):
+            dates.extend(ISO_DATE_RE.findall(note))
+
+    if not dates:
+        raise ValueError("No valid ISO date found in gap-register generator inputs")
+    return max(dates)
+
+
 def main():
     ap = argparse.ArgumentParser()
     ap.add_argument("--catalog", help="path to a local copy of the 800-53 rev5 OSCAL catalog JSON")
@@ -246,7 +279,7 @@ def main():
     meta = catalog["catalog"]["metadata"]
 
     register = {
-        "generated": datetime.date.today().isoformat(),
+        "generated": derive_generated_date(meta),
         "oscal_catalog": {
             "source": source_uri,
             "title": meta.get("title"),

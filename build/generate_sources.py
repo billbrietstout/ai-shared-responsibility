@@ -18,7 +18,7 @@ import json
 import os
 import re
 import sys
-from datetime import UTC, datetime
+from datetime import date
 
 ROOT = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 SITE = "https://aisharedresponsibility.com"
@@ -40,11 +40,30 @@ KIND_LABELS = {
 
 ISO_NUM_RE = re.compile(r"^(ISO/IEC\s+\d+(?::\d+)?)")
 YEAR_RE = re.compile(r"\b(19|20)\d{2}\b")
+ISO_DATE_RE = re.compile(r"^\d{4}-\d{2}-\d{2}$")
 PRIOR_LI_RE = re.compile(
     r'<li id="(src-\d+)"><span class="pa-src__id">\[\d+\]</span>(.*?)</li>',
     re.DOTALL,
 )
+PRIOR_CHECKED_RE = re.compile(
+    r"\b(?:read|rechecked)\s+([A-Za-z]+)\s+(\d{1,2}),\s+(\d{4})\b",
+    re.I,
+)
 HREF_RE = re.compile(r'href="([^"]+)"')
+MONTH_LOOKUP = {
+    "jan": 1, "january": 1,
+    "feb": 2, "february": 2,
+    "mar": 3, "march": 3,
+    "apr": 4, "april": 4,
+    "may": 5,
+    "jun": 6, "june": 6,
+    "jul": 7, "july": 7,
+    "aug": 8, "august": 8,
+    "sep": 9, "sept": 9, "september": 9,
+    "oct": 10, "october": 10,
+    "nov": 11, "november": 11,
+    "dec": 12, "december": 12,
+}
 
 
 def iso_reader_title(name: str) -> str:
@@ -230,6 +249,45 @@ def load_prior_art() -> list[dict]:
             "origin": "prior-art",
         })
     return out
+
+
+def derive_updated(root: str = ROOT) -> str:
+    """Derive the catalog updated date from the input files, never the wall clock."""
+    dates: list[str] = []
+
+    def add_iso(raw: object) -> None:
+        text = str(raw or "").strip()
+        if ISO_DATE_RE.fullmatch(text):
+            dates.append(text)
+
+    for rel in (
+        os.path.join("data", "regulations.json"),
+        os.path.join("data", "security-principles.json"),
+        os.path.join("data", "ai-agentic-principles.json"),
+    ):
+        with open(os.path.join(root, rel), encoding="utf-8") as fh:
+            data = json.load(fh)
+        add_iso(data.get("updated"))
+        for item in data.get("items") or []:
+            add_iso(item.get("last_verified"))
+
+    prior_path = os.path.join(root, "framework", "prior-art", "index.html")
+    with open(prior_path, encoding="utf-8") as fh:
+        prior_text = fh.read()
+    for li_match in PRIOR_LI_RE.finditer(prior_text):
+        body = strip_tags(li_match.group(2))
+        for dm in PRIOR_CHECKED_RE.finditer(body):
+            month = MONTH_LOOKUP.get(dm.group(1).lower())
+            if month is None:
+                continue
+            try:
+                dates.append(date(int(dm.group(3)), month, int(dm.group(2))).isoformat())
+            except ValueError:
+                continue
+
+    if not dates:
+        raise ValueError("No valid ISO date found in sources generator inputs")
+    return max(dates)
 
 
 def collect_entries() -> tuple[list[dict], list[str]]:
@@ -493,7 +551,7 @@ def render_html(entries: list[dict]) -> str:
     <!-- llm:meta -->
     <meta name="llm:type" content="reference" />
     <meta name="llm:canonical-id" content="srf.page.sources" />
-    <meta name="llm:concepts" content="srf.framework.cosai-srf,ext.framework.nist-ai-rmf,ext.framework.eu-ai-act" />
+    <meta name="llm:concepts" content="srf.framework.cosai-srf, ext.framework.nist-ai-rmf, ext.framework.eu-ai-act" />
     <!-- /llm:meta -->
   </head>
   <body>
@@ -549,7 +607,7 @@ def main() -> int:
         counts[e["kind"]] = counts.get(e["kind"], 0) + 1
 
     payload = {
-        "updated": datetime.now(UTC).strftime("%Y-%m-%d"),
+        "updated": derive_updated(),
         "count": len(entries),
         "counts_by_kind": counts,
         "kind_labels": KIND_LABELS,

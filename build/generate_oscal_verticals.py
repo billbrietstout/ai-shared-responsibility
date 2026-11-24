@@ -29,7 +29,6 @@ export/srf-{vertical}.profile.json.
 
 import argparse
 import copy
-import datetime
 import json
 import pathlib
 import re
@@ -562,6 +561,44 @@ def write_stable(path, doc):
     path.write_text(json.dumps(doc, indent=1, ensure_ascii=False) + "\n")
 
 
+ISO_DATE_RE = re.compile(r"\b\d{4}-\d{2}-\d{2}\b")
+
+
+def derive_last_modified(root):
+    """Derive a deterministic OSCAL last-modified timestamp from input files."""
+    dates = []
+
+    def add_iso(raw):
+        text = str(raw or "").strip()
+        if re.fullmatch(r"\d{4}-\d{2}-\d{2}", text):
+            dates.append(text)
+
+    for rel in ("data/regulations.json", "data/regulation-pinpoints.json", "data/layers.json"):
+        path = root / rel
+        if not path.exists():
+            continue
+        doc = json.loads(path.read_text(encoding="utf-8"))
+        if isinstance(doc, dict):
+            add_iso(doc.get("updated"))
+            for item in doc.get("items") or []:
+                if isinstance(item, dict):
+                    add_iso(item.get("last_verified"))
+
+    for vslug, _, _, _ in VERTICALS:
+        path = root / "data" / f"{vslug}-controls.json"
+        if not path.exists():
+            continue
+        doc = json.loads(path.read_text(encoding="utf-8"))
+        add_iso(doc.get("updated"))
+        note = doc.get("mapping_status_note")
+        if isinstance(note, str):
+            dates.extend(ISO_DATE_RE.findall(note))
+
+    if not dates:
+        raise ValueError("No valid ISO date found in OSCAL generator inputs")
+    return f"{max(dates)}T00:00:00+00:00"
+
+
 def main():
     ap = argparse.ArgumentParser()
     ap.add_argument("--root", default=None,
@@ -570,7 +607,7 @@ def main():
     root = pathlib.Path(args.root) if args.root else \
         pathlib.Path(__file__).resolve().parent.parent
     merge_frameworks_from_regulations(root)
-    now = datetime.datetime.now(datetime.timezone.utc).isoformat(timespec="seconds")
+    now = derive_last_modified(root)
 
     catalog, docs, index, _ = build_catalog(root, now)
     reg_by_key = load_regulations(str(root / "data" / "regulations.json"))
