@@ -1891,47 +1891,6 @@
         "breach_action": "block-use-until-validated; notify-ai-system-governance"
       },
       "accountable_persona_note": "AI System Governance is accountable on AI-PaaS, Agent-PaaS, and IaaS. AI-SaaS is absent from this control, matching finance SRF-L5-VAL-001 and insurance SRF-L5-VAL-002, because the customer owns nothing at L5 in AI-SaaS and there is no customer validation duty there."
-     },
-     {
-        "id": "SRF-COM-L5-007",
-        "layer": "L5",
-        "component": "Model Distribution",
-        "lifecycle_stage": "design",
-        "title": "Development-Time Model Artifact Access, Egress, and Provenance Controls",
-        "description": "Model Provider must protect model weights, checkpoints, training/fine-tuning artifacts, and associated configuration files during development, training, and pre-release staging against unauthorized access, exfiltration, or unapproved external disclosure. Access to model repositories, registries, and training storage must enforce least privilege, hardware-backed or short-lived credentials, egress controls blocking unauthorized external transfer, and cryptographic signing or integrity verification across artifact transfers. Model Provider is accountable for enforcing development-time model confidentiality and integrity under AI-SaaS.",
-        "accountable_persona": "ai-model-provider",
-        "accountable_by_model": {
-          "AI-SaaS": "ai-model-provider",
-          "AI-PaaS": "ai-model-provider",
-          "Agent-PaaS": "ai-model-provider",
-          "IaaS": "ai-model-provider"
-        },
-        "operating_models": [
-          "AI-SaaS",
-          "AI-PaaS",
-          "Agent-PaaS",
-          "IaaS"
-        ],
-        "common_status": "draft",
-        "mappings": {
-          "nist_ai_rmf": "MANAGE 3.2 (resources needed to manage AI risks are allocated and integrated into system development); MAP 1.5 (organizational risk tolerances are determined and documented)",
-          "eu_ai_act": "Article 15 (cybersecurity, robustness, and accuracy requirements for high-risk AI systems; where in scope)",
-          "iso_42001": "ISO/IEC 42001:2023, Annex A, A.8.2 and A.8.5",
-          "mitre_atlas": "AML.T0010 (ML Model Theft)"
-        },
-        "threshold": {
-          "metric": "development_model_artifact_unauthorized_access_or_egress_count",
-          "description": "Count of unauthorized access attempts, unsigned artifact promotions, or unapproved external egress events involving pre-release model weights, checkpoints, or training artifacts within the evaluation window. Any unapproved external transfer or unauthorized artifact access counts as a breach; target threshold is set per model tier.",
-          "evidence": {
-            "ocsf_class": "File Activity / API Activity",
-            "attribute": "TBD",
-            "ocsf_version": "1.8.0"
-          },
-          "operator": "==",
-          "param": "tier-defined",
-          "window": "continuous",
-          "breach_action": "revoke-compromised-credentials; quarantine-affected-model-artifacts; escalate-to-model-provider-security-within-1h"
-        }
-      }
+    }
   ]
 }
