@@ -53,175 +53,17 @@
     <main id="main" class="map-page" data-llm="relationship-map">
       <nav id="map-jump" class="map-jump" aria-label="On this page">
         <a href="#node-search" data-jump>Find</a>
-        <a href="#map-filters" data-jump>Filters</a>
-        <a href="#details-heading" data-jump>Node details</a>
+        <a href="#chain-settings" data-jump>Filters</a>
         <a id="jump-chain" href="#chain-heading" data-jump hidden>Chain</a>
-        <a id="jump-graph" href="#graph-workspace" data-jump hidden>Graph</a>
       </nav>
-
-      <div id="preview-more" class="map-preview">
-        <span class="map-preview__label">Preview</span>
-        <details class="map-preview__details esc-close">
-          <summary>What preview means</summary>
-          <p>
-            This map is a preview. Risk-to-obligation links are in the data.
-            Each link is indirect: it runs through a control that addresses the
-            risk and cites the obligation. The link does not mean the legal text
-            names the risk.
-          </p>
-          <p class="preview-requirements">
-            Looking for security requirements? A separate catalog is not in the data yet.
-            <button id="entry-requirement" class="link-button" type="button" aria-pressed="false">Why obligations stand in for them</button>
-          </p>
-          <aside id="entry-gap" class="callout entry-gap" hidden>
-              <h2 class="entry-gap__title">No security-requirement catalog</h2>
-              <p>
-                A security-requirement catalog is not in the data yet. This
-                explorer uses the word obligation for the records that exist.
-                Choose a risk or a control to see those obligations in the
-                chain. This list is not titled security requirements.
-              </p>
-            </aside>
-
-        </details>
-      </div>
 
       <div class="map-layout">
         <section class="map-stage" aria-labelledby="map-heading" data-llm="map">
-          <h2 id="map-heading" class="visually-hidden">Map</h2>
+          <h2 id="map-heading" class="visually-hidden">Map status</h2>
 
           <div id="map-error-box" class="map-error" hidden>
             <p id="map-error" class="map-error__text" role="alert"></p>
             <button id="map-retry" class="map-error__retry" type="button">Retry</button>
-          </div>
-
-          <div id="map-tools" class="map-tools">
-            <div class="entry-points" role="group" aria-label="Ways to start">
-              <button id="entry-threat" type="button" aria-pressed="false">Explore a risk</button>
-              <button id="entry-control" type="button" aria-pressed="false">Explore a control</button>
-              <button id="entry-account" type="button" aria-pressed="false">Explore accountability</button>
-            </div>
-            <section id="entry-account-panel" class="entry-account" hidden data-llm="illustrative-only">
-              <p class="auth-principle">
-                Authorization establishes what an AI agent is allowed to do.
-                Security ownership establishes who is accountable for what
-                happens next.
-              </p>
-              <h2 class="entry-account__title">Accountable personas</h2>
-              <p>Each name is one SRF persona. Choosing one lists the controls and risks that record that persona.</p>
-              <div id="persona-list" class="persona-list"></div>
-              <details class="illustrative-fold esc-close">
-                <summary>View illustrative handoff titles (examples, not SRF)</summary>
-                <p>
-                  These titles are examples from the handoff. They are not
-                  personas in the SRF, and they are not links.
-                </p>
-                <table class="illustrative">
-                  <caption>Illustrative security activities. Not persona records.</caption>
-                  <thead>
-                    <tr>
-                      <th scope="col">Security activity</th>
-                      <th scope="col">Illustrative title</th>
-                    </tr>
-                  </thead>
-                  <tbody>
-                    <tr><td>Agent identity provisioning</td><td>Identity owner</td></tr>
-                    <tr><td>Tool authorization</td><td>Application security owner</td></tr>
-                    <tr><td>Runtime policy enforcement</td><td>AI platform security owner</td></tr>
-                    <tr><td>Detection of unauthorized actions</td><td>Security operations owner</td></tr>
-                    <tr><td>Incident containment</td><td>Incident response owner</td></tr>
-                    <tr><td>Model supply-chain assurance</td><td>AI supply-chain security owner</td></tr>
-                  </tbody>
-                </table>
-              </details>
-            </section>
-            <form id="find-form" class="find-form" role="search">
-              <label class="find-form__label" for="node-search">Find a risk or a control</label>
-              <div class="find-form__row">
-                <input
-                  id="node-search"
-                  class="find-form__input"
-                  type="search"
-                  name="q"
-                  autocomplete="off"
-                  spellcheck="false"
-                  placeholder="Risk or control name"
-                  role="combobox"
-                  aria-autocomplete="list"
-                  aria-haspopup="listbox"
-                  aria-expanded="false"
-                  aria-controls="search-results"
-                  aria-describedby="map-help"
-                />
-                <button class="find-form__submit" type="submit">Find</button>
-              </div>
-              <p id="map-help" class="map-help">
-                Type a risk or a control name or a few words about it. Use the arrow keys to move through the matches, Enter to open one, and Escape to close the list.
-              </p>
-              <div id="map-filters" class="map-filters" tabindex="-1">
-                <h3 class="visually-hidden">Filters</h3>
-                <fieldset class="model-filter">
-                  <legend>Operating model</legend>
-                  <div id="model-filter-list" class="model-filter__list">
-                    <label class="model-option">
-                      <input type="radio" name="operating-model" value="all" checked />
-                      <span>All</span>
-                    </label>
-                  </div>
-                </fieldset>
-
-                <fieldset class="model-filter layer-filter">
-                  <legend>Layer</legend>
-                  <div id="layer-filter-list" class="model-filter__list"></div>
-                </fieldset>
-
-                <label class="tapestry-toggle" for="show-tapestry">
-                  <input id="show-tapestry" type="checkbox" />
-                  <span>Show Tapestry (proposed AI Alliance extension, not SRF v1.0)</span>
-                </label>
-
-                <details class="filter-help">
-                  <summary>About these filters</summary>
-                  <p id="model-note" class="filter-note"></p>
-                  <p class="filter-note">The layer filter narrows the finder and the lists. It does not remove controls from a chain that is already open.</p>
-                </details>
-              </div>
-              <p id="filter-summary" class="filter-summary" role="status"></p>
-              <button id="toggle-filters" class="toggle-filters" type="button" aria-expanded="false" aria-controls="map-filters">Change filters</button>
-              <p id="search-note" class="search-note" aria-live="polite"></p>
-              <div id="map-loading" class="load-placeholder" aria-hidden="true">
-                <span class="load-placeholder__bar"></span>
-                <span class="load-placeholder__bar"></span>
-                <span class="load-placeholder__bar"></span>
-                <span class="load-placeholder__bar load-placeholder__bar--short"></span>
-              </div>
-              <div id="search-results" class="search-listbox" role="listbox" aria-label="Matches" hidden></div>
-              <button id="show-all-results" class="show-all-results" type="button" hidden></button>
-              <div id="suggestions-wrap" class="pick-wrap">
-                <div id="risk-pick" class="pick-row">
-                  <label id="risk-suggestions-heading" class="suggestions-heading" for="risk-suggestions">Risk</label>
-                  <select id="risk-suggestions" class="pick-select"></select>
-                </div>
-                <div id="control-pick" class="pick-row">
-                  <label id="suggestions-heading" class="suggestions-heading" for="suggestions">Control</label>
-                  <select id="suggestions" class="pick-select"></select>
-                  <p id="control-source-note" class="filter-note">These controls come from the site's sector catalogs. They are not yet drawn from the CoSAI Risk Map controls.yaml. Narrow the list with Operating model and Layer.</p>
-                </div>
-              </div>
-            </form>
-
-            <div class="view-actions">
-              <button id="show-graph" type="button">Explore relationship graph</button>
-              <button id="widen-view" type="button" hidden>Widen the view</button>
-              <button id="show-chain" type="button" hidden>Show the chain</button>
-              <button id="show-context" type="button">Show layers</button>
-              <button id="start-one" type="button" hidden>Start from one risk or control</button>
-            </div>
-            <section class="layer-frames" aria-labelledby="layer-frames-heading" data-llm="security-domains">
-              <h2 id="layer-frames-heading">Security domains</h2>
-              <p>These sentences describe the five layers. The names on the records stay the same.</p>
-              <dl id="layer-frames"></dl>
-            </section>
           </div>
 
           <p id="map-status" class="map-status" role="status"><span class="visually-hidden">Loading map data.</span></p>
@@ -231,18 +73,9 @@
           <section class="details" aria-labelledby="details-heading" data-llm="node-details">
             <div class="details__bar">
               <h2 id="details-heading">Node details</h2>
-              <div class="details__buttons">
-                <button id="clear-selection" type="button" disabled><span class="label-wide">Clear selection</span><span class="label-narrow">Back to list</span></button>
-              </div>
             </div>
-            <div class="details__actions">
-              <button id="copy-chain" type="button" hidden>Copy chain as Markdown</button>
-              <button id="explore-from-details" type="button" hidden>Explore relationship graph</button>
-            </div>
-            <p id="details-summary" class="visually-hidden" aria-live="polite"></p>
-            <p id="copy-status" class="copy-status" role="status" aria-live="polite"></p>
-            <textarea id="copy-fallback" class="copy-fallback" readonly rows="8" aria-label="Chain as Markdown. Select all and copy." hidden></textarea>
-            <p id="details-empty">Select a risk or a control to see its record, sources, and links.</p>
+            <div class="details__actions"></div>
+            <p id="details-empty">Choose a column item to see its record, sources, and links.</p>
             <div id="details-body" hidden>
               <p id="details-kind"></p>
               <p id="details-id" class="details-id" hidden></p>
@@ -254,96 +87,197 @@
             </div>
           </section>
 
-          <section id="graph-workspace" class="graph-workspace" aria-labelledby="graph-workspace-heading" hidden data-llm="relationship-graph">
-            <div class="graph-workspace__bar">
-              <h2 id="graph-workspace-heading">Relationship graph</h2>
-              <div class="graph-workspace__actions" role="toolbar" aria-label="Graph controls">
-                <button id="hide-graph" type="button">Back to details</button>
-                <button id="clear-graph-selection" type="button"><span class="label-wide">Clear selection</span><span class="label-narrow">Back to list</span></button>
-                <button id="graph-fit" type="button" hidden>Fit to screen</button>
-                <button id="graph-zoom-in" type="button" hidden>Zoom in</button>
-                <button id="graph-zoom-out" type="button" hidden>Zoom out</button>
-                <button id="graph-reset" type="button" hidden>Reset view</button>
-                <button id="widen-view-graph" type="button" hidden>Widen the view</button>
+          <section id="chain-workspace" class="chain-workspace" aria-labelledby="chain-workspace-heading" data-llm="roca-chain">
+            <div class="chain-workspace__head">
+              <div class="chain-workspace__bar">
+                <h2 id="chain-workspace-heading"><abbr title="Risk, Obligation, Control, Accountable">ROCA</abbr> chain</h2>
+                <div class="chain-workspace__actions" role="group" aria-label="Chain controls">
+                  <button id="clear-chain-selection" type="button">Clear selection</button>
+                </div>
+              </div>
+
+              <div id="chain-settings" class="unified-controls" aria-label="Find and filter controls">
+                <div id="map-tools" class="unified-controls__find">
+                  <form id="find-form" class="find-form" role="search">
+                    <label class="find-form__label" for="node-search">Find a risk, obligation, control, or persona</label>
+                    <div class="find-form__row">
+                      <input
+                        id="node-search"
+                        class="find-form__input"
+                        type="search"
+                        name="q"
+                        autocomplete="off"
+                        spellcheck="false"
+                        placeholder="Name or a few words"
+                        role="combobox"
+                        aria-autocomplete="list"
+                        aria-haspopup="listbox"
+                        aria-expanded="false"
+                        aria-controls="search-results"
+                        aria-describedby="map-help"
+                      />
+                      <button class="find-form__submit" type="submit">Find</button>
+                    </div>
+                    <p id="map-help" class="visually-hidden">
+                      Type a name or a few words about a risk, an obligation, a control, or a persona. Use the arrow keys to move through the matches, Enter to open one, and Escape to close the list.
+                    </p>
+                    <p id="search-note" class="search-note" aria-live="polite"></p>
+                    <div id="search-results" class="search-listbox" role="listbox" aria-label="Matches" hidden></div>
+                    <button id="show-all-results" class="show-all-results" type="button" hidden></button>
+                  </form>
+                </div>
+
+                <div id="map-filters" class="unified-controls__filters" tabindex="-1">
+                  <h3 class="visually-hidden">Filters</h3>
+                  <fieldset class="filter-group model-filter">
+                    <legend class="filter-group__legend">Operating model</legend>
+                    <div id="model-filter-list" class="filter-chip-list">
+                      <label class="filter-chip">
+                        <input type="checkbox" name="operating-model" value="all" checked />
+                        <span>All</span>
+                      </label>
+                    </div>
+                  </fieldset>
+
+                  <fieldset class="filter-group layer-filter">
+                    <legend class="filter-group__legend">Layer</legend>
+                    <div id="layer-filter-list" class="filter-chip-list"></div>
+                  </fieldset>
+                </div>
+
+                <div class="unified-controls__footer">
+                  <div class="unified-controls__tapestry">
+                    <label class="tapestry-toggle" for="show-tapestry">
+                      <input id="show-tapestry" type="checkbox" />
+                      <span>Show Tapestry <span class="tapestry-toggle__sub">(proposed AI Alliance extension, not SRF v1.0)</span></span>
+                    </label>
+                  </div>
+
+                  <div class="unified-controls__status">
+                    <div id="active-filter-pills" class="filter-pills" aria-label="Active filters"></div>
+                    <button id="clear-filters" class="clear-filters-btn" type="button" hidden>Clear filters</button>
+                    <p id="scope-counts" class="scope-counts" role="status" aria-live="polite"></p>
+                  </div>
+                </div>
+
+                <p id="scope-summary" class="scope-summary visually-hidden" role="status" aria-live="polite"></p>
+                <p id="filter-summary" class="filter-summary visually-hidden" role="status"></p>
               </div>
             </div>
-            <p id="map-gesture" class="map-help">Drag to move the map. Use the scroll wheel or a pinch to zoom.</p>
-            <ul id="graph-kind-legend" class="graph-kind-legend" aria-label="Node kinds" hidden>
-              <li><span class="swatch" data-swatch="risk" aria-hidden="true"></span> Risk</li>
-              <li><span class="swatch" data-swatch="policy" aria-hidden="true"></span> Obligation</li>
-              <li><span class="swatch" data-swatch="control" aria-hidden="true"></span> Control</li>
-              <li><span class="swatch" data-swatch="persona" aria-hidden="true"></span> Persona</li>
-            </ul>
-            <div class="graph-wrap">
-              <div
-                id="graph"
-                class="graph"
-                role="img"
-                aria-label="Chain of risk, obligation, control, and accountable persona. Choose a risk or a control to begin."
-              ></div>
+
+            <div class="chain-copy-tools">
+              <div class="chain-copy-tools__actions" role="group" aria-label="Copy chain">
+                <button id="copy-chain" type="button" hidden>Copy chain</button>
+                <button id="download-chain-csv" type="button" hidden>Download CSV</button>
+              </div>
+              <p id="copy-status" class="copy-status copy-status--chain" role="status"></p>
+              <textarea id="copy-fallback" class="copy-fallback" readonly rows="8" aria-label="Chain as Markdown. Select all and copy." hidden></textarea>
+            </div>
+
+            <div class="chain-wrap">
               <div id="context-board" class="context-board" hidden></div>
-              <div id="chain" class="chain" hidden>
-                <h2 id="chain-heading" class="chain-heading" tabindex="-1">Chain</h2>
-                <nav class="chain-jump" aria-label="Chain columns">
-                  <a href="#chain-col-risk" data-jump>Risk</a>
-                  <a href="#chain-col-obligation" data-jump>Obligation</a>
-                  <a href="#chain-col-control" data-jump>Control</a>
-                  <a href="#chain-col-accountable" data-jump>Accountable</a>
-                  <a href="#node-search" data-jump>Find another</a>
-                </nav>
-                <div class="chain-legend-wrap">
-                  <ul class="chain-legend" id="chain-legend" aria-label="Line types">
-                    <li>
-                      <span class="legend-swatch legend-swatch--solid" aria-hidden="true"></span>
-                      <span>Solid: direct basis</span>
-                    </li>
-                    <li>
-                      <span class="legend-swatch legend-swatch--dashed" aria-hidden="true"></span>
-                      <span>Dashed: via shared control</span>
-                    </li>
-                    <li>
-                      <span class="legend-swatch legend-swatch--dotted" aria-hidden="true"></span>
-                      <span>Dotted: instrument level</span>
-                    </li>
-                  </ul>
-                  <details class="legend-help esc-close">
-                    <summary>What the lines mean</summary>
-                    <ul>
-                      <li>Solid. The record names this link. An obligation line is solid when the basis is the official text.</li>
-                      <li>Dashed. Shared control. The legal text does not name the risk.</li>
-                      <li>Dotted. Instrument-level. No article record matched.</li>
-                    </ul>
-                  </details>
+              <div id="chain" class="chain">
+                <div class="chain-header-bar">
+                  <h3 id="chain-heading" class="chain-heading" tabindex="-1">Chain</h3>
+                  <div class="chain-meta-toggles" role="group" aria-label="Legend and notes">
+                    <details id="legend-fold" class="chain-fold chain-fold--legend esc-close">
+                      <summary class="chain-fold__summary">Line types</summary>
+                      <div class="chain-fold__panel">
+                        <ul class="chain-legend" id="chain-legend" aria-label="Line types">
+                          <li>
+                            <svg class="legend-swatch" viewBox="0 0 48 8" aria-hidden="true" focusable="false">
+                              <line class="chain-line chain-line--solid" x1="0" y1="4" x2="48" y2="4"></line>
+                            </svg>
+                            <span><strong>Solid: direct basis.</strong> The record names this link. An obligation line is solid when the basis is the official text.</span>
+                          </li>
+                          <li>
+                            <svg class="legend-swatch" viewBox="0 0 48 8" aria-hidden="true" focusable="false">
+                              <line class="chain-line chain-line--dashed" x1="0" y1="4" x2="48" y2="4"></line>
+                            </svg>
+                            <span><strong>Dashed: via shared control.</strong> The legal text does not name the risk.</span>
+                          </li>
+                          <li>
+                            <svg class="legend-swatch" viewBox="0 0 48 8" aria-hidden="true" focusable="false">
+                              <line class="chain-line chain-line--long-dashed" x1="0" y1="4" x2="48" y2="4"></line>
+                            </svg>
+                            <span><strong>Dashed: via a cited obligation.</strong> The control cites a requirement the risk lists, and the risk record does not name the control.</span>
+                          </li>
+                          <li>
+                            <svg class="legend-swatch" viewBox="0 0 48 8" aria-hidden="true" focusable="false">
+                              <line class="chain-line chain-line--dotted" x1="0" y1="4" x2="48" y2="4"></line>
+                            </svg>
+                            <span><strong>Dotted: instrument level.</strong> No article record matched.</span>
+                          </li>
+                        </ul>
+                      </div>
+                    </details>
+
+                    <details id="notes-fold" class="chain-fold chain-fold--notes esc-close">
+                      <summary class="chain-fold__summary">Notes &amp; help</summary>
+                      <div class="chain-fold__panel">
+                        <p id="chain-help" class="chain-fold__text">
+                          Choose a risk, an obligation, a control, or an accountable persona in any menu. The boxes then show what links to it. Details for that choice sit beside the columns on a wide screen and below them on a narrow one.
+                        </p>
+                        <p id="chain-model-note" class="chain-model-note"></p>
+                        <p id="model-info-text" class="chain-fold__text"></p>
+                        <div class="chain-fold__section">
+                          <h4>Preview notice</h4>
+                          <p>
+                            This map is a preview. Risk-to-obligation links are in the data. Each link is indirect: it runs through a control that addresses the risk and cites the obligation. The link does not mean the legal text names the risk.
+                          </p>
+                          <p class="preview-requirements">
+                            Looking for security requirements? A separate catalog is not in the data yet.
+                            <button id="entry-requirement" class="link-button" type="button">Jump to obligations menu</button>
+                          </p>
+                        </div>
+                        <div class="chain-fold__section" data-llm="security-domains">
+                          <div class="chain-fold__section-head">
+                            <h4>Security domains (L1 to L5)</h4>
+                            <button id="show-context" class="chain-fold__action" type="button">Show layers view</button>
+                          </div>
+                          <dl id="layer-frames" class="layer-frames__dl"></dl>
+                        </div>
+                      </div>
+                    </details>
+                  </div>
                 </div>
-                <p id="chain-model-note" class="chain-model-note"></p>
+
+                <div id="map-loading" class="load-placeholder" aria-hidden="true">
+                  <span class="load-placeholder__bar"></span>
+                  <span class="load-placeholder__bar"></span>
+                  <span class="load-placeholder__bar"></span>
+                  <span class="load-placeholder__bar load-placeholder__bar--short"></span>
+                </div>
+
                 <div id="chain-board" class="chain-board" role="group" aria-label="Risk, obligation, control, and accountable"></div>
               </div>
-              <p id="graph-empty" class="graph-empty">Choose a risk or a control to see its chain.</p>
+              <div id="chain-details-slot" class="chain-details-slot"></div>
+              <p id="chain-empty" class="chain-empty">Choose a risk, an obligation, a control, or a persona to see its chain.</p>
             </div>
           </section>
         </div>
       </div>
-    <p class="coverage-link"><a href="?page=coverage">Data coverage and known gaps</a>, for people who maintain the records.</p>
-    <section id="coverage" class="coverage" aria-labelledby="coverage-heading" data-llm="coverage" hidden>
-      <p class="coverage-back"><a href="./">Back to the explorer</a></p>
-      <h2 id="coverage-heading">Coverage</h2>
-      <p>
-        These labels describe the records. A missing link is not a failed
-        control, and an unassessed pointer is not a test result.
-      </p>
-      <div id="coverage-body" class="load-placeholder load-placeholder--coverage" aria-busy="true">
-        <span class="visually-hidden">Loading coverage.</span>
-        <span class="load-placeholder__bar" aria-hidden="true"></span>
-        <span class="load-placeholder__bar" aria-hidden="true"></span>
-        <span class="load-placeholder__bar" aria-hidden="true"></span>
-        <span class="load-placeholder__bar load-placeholder__bar--short" aria-hidden="true"></span>
-      </div>
-    </section>
+
+      <p class="coverage-link"><a href="?page=coverage">Data coverage and known gaps</a>, my to-do list.</p>
+      <section id="coverage" class="coverage" aria-labelledby="coverage-heading" data-llm="coverage" hidden>
+        <p class="coverage-back"><a href="./">Back to the explorer</a></p>
+        <h2 id="coverage-heading">Coverage</h2>
+        <p>
+          These labels describe the records. A missing link is not a failed
+          control, and an unassessed pointer is not a test result.
+        </p>
+        <div id="coverage-body" class="load-placeholder load-placeholder--coverage" aria-busy="true">
+          <span class="visually-hidden">Loading coverage.</span>
+          <span class="load-placeholder__bar" aria-hidden="true"></span>
+          <span class="load-placeholder__bar" aria-hidden="true"></span>
+          <span class="load-placeholder__bar" aria-hidden="true"></span>
+          <span class="load-placeholder__bar load-placeholder__bar--short" aria-hidden="true"></span>
+        </div>
+      </section>
     </main>
 
     <site-footer></site-footer>
     <script defer src="/shared/vendor/graphology-0.26.0.umd.min.js"></script>
-    <script defer src="/shared/vendor/sigma-4.0.6.min.js"></script>
-    <script defer src="app.js"></script>
+    <script defer src="app.js?v=usability-2026-11-24"></script>
   </body>
 </html>

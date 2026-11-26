@@ -24,8 +24,9 @@ place to live in the catalog. Output: gap-register.json (machine-readable)
 and gap-register.md (NIST feedback draft).
 
 Beyond the baseline threshold catalog, the register now covers the six
-industry vertical control sets in data/*-controls.json (260 controls, each
-with a threshold tuple). Vertical controls that declare
+industry vertical control sets in data/*-controls.json (260 sector controls,
+each with a threshold tuple) and the all-sectors common set in
+data/common-controls.json. Sector vertical controls that declare
 threshold.evidence.oscal_bindings are resolved against the catalog exactly
 like baseline controls; controls without bindings are classified
 `no_binding` and counted per vertical. Generative and agentic thresholds
@@ -39,7 +40,6 @@ the source URI recorded in the threshold catalog and caches it in /tmp.
 """
 
 import argparse
-import datetime
 import json
 import pathlib
 import re
@@ -87,6 +87,15 @@ def load_vertical_controls():
         doc = json.loads(path.read_text())
         out[v] = [(c, path.name) for c in doc.get("controls", [])]
     return out
+
+
+def load_common_controls():
+    """All-sectors common controls from data/common-controls.json."""
+    path = HERE.parent / "data" / "common-controls.json"
+    if not path.exists():
+        return []
+    doc = json.loads(path.read_text())
+    return [(c, path.name) for c in doc.get("controls", [])]
 
 
 def get_catalog(path_arg, source_uri):
@@ -214,6 +223,40 @@ def classify_vertical_control(c, src_file, idx):
     return entry
 
 
+ISO_DATE_RE = re.compile(r"\b\d{4}-\d{2}-\d{2}\b")
+
+
+def derive_generated_date(meta):
+    """Derive the register date from repo input files and catalog metadata."""
+    dates = []
+
+    def add_iso(raw):
+        text = str(raw or "").strip()
+        m = re.match(r"^(\d{4}-\d{2}-\d{2})", text)
+        if m:
+            dates.append(m.group(1))
+
+    add_iso(meta.get("last-modified"))
+    data_dir = HERE.parent / "data"
+    for name in ("threats.json", "common-controls.json"):
+        path = data_dir / name
+        if path.exists():
+            doc = json.loads(path.read_text(encoding="utf-8"))
+            add_iso(doc.get("updated"))
+    for path in sorted(data_dir.glob("*-controls.json")):
+        if path.name == "common-controls.json":
+            continue
+        doc = json.loads(path.read_text(encoding="utf-8"))
+        add_iso(doc.get("updated"))
+        note = doc.get("mapping_status_note")
+        if isinstance(note, str):
+            dates.extend(ISO_DATE_RE.findall(note))
+
+    if not dates:
+        raise ValueError("No valid ISO date found in gap-register generator inputs")
+    return max(dates)
+
+
 def main():
     ap = argparse.ArgumentParser()
     ap.add_argument("--catalog", help="path to a local copy of the 800-53 rev5 OSCAL catalog JSON")
@@ -236,7 +279,7 @@ def main():
     meta = catalog["catalog"]["metadata"]
 
     register = {
-        "generated": datetime.date.today().isoformat(),
+        "generated": derive_generated_date(meta),
         "oscal_catalog": {
             "source": source_uri,
             "title": meta.get("title"),
@@ -296,12 +339,100 @@ def main():
             "controls": entries,
         }
 
+    common_ctls = load_common_controls()
+    common_entries = [classify_vertical_control(c, src, idx) for c, src in common_ctls]
+    common_bound = [e for e in common_entries if e["bindings"]]
+    register["control_coverage_gaps"] = load_control_coverage_gaps()
+    register["common"] = {
+        "source_file": common_ctls[0][1] if common_ctls else None,
+        "control_count": len(common_entries),
+        "with_bindings": len(common_bound),
+        "without_bindings": len(common_entries) - len(common_bound),
+        "controls": common_entries,
+    }
+
     (HERE / "gap-register.json").write_text(json.dumps(register, indent=2) + "\n")
     (HERE / "gap-register.md").write_text(render_markdown(register))
     n_vert = sum(vd["control_count"] for vd in register["verticals"].values())
+    n_common = register["common"]["control_count"]
     print(f"wrote gap-register.json and gap-register.md "
-          f"({len(register['controls'])} threshold controls, {n_vert} vertical "
-          f"controls, catalog version {meta.get('version')})")
+          f"({len(register['controls'])} threshold controls, {n_vert} sector "
+          f"controls, {n_common} common controls, catalog version {meta.get('version')})")
+
+
+def render_common_section(w, vd):
+    """Markdown for the all-sectors common control set."""
+    w("### All sectors (common) ({})".format(vd["source_file"]))
+    w("")
+    w("{} controls; {} with 800-53 bindings, {} classified `no_binding`.".format(
+        vd["control_count"], vd["with_bindings"], vd["without_bindings"]))
+    w("")
+    bound = [e for e in vd["controls"] if e["bindings"]]
+    if bound:
+        w("| Control | 800-53 binding | Gap class |")
+        w("| --- | --- | --- |")
+        for e in bound:
+            for b in e["bindings"]:
+                w(f"| `{e['id']}` | `{b['control_id']}` | `{b['gap_class']}` |")
+        w("")
+    by_layer = {}
+    for e in vd["controls"]:
+        if not e["bindings"]:
+            by_layer.setdefault(e["srf_layer"], []).append(e["id"])
+    if by_layer:
+        w("Unbound thresholds by layer: "
+          + "; ".join(f"{layer}: {len(ids)}"
+                      for layer, ids in sorted(by_layer.items())) + ".")
+        w("")
+
+
+SRF_MODELS = ("AI-SaaS", "AI-PaaS", "Agent-PaaS", "IaaS")
+
+
+def load_control_coverage_gaps():
+    """Risk cells whose related controls do not name an owner in that model.
+
+    The flag is no_linked_control_in_model on data/threats.json. The cell still
+    names one accountable persona. The gap is the missing control.
+    """
+    path = HERE.parent / "data" / "threats.json"
+    doc = json.loads(path.read_text())
+    gaps = []
+    for threat in doc.get("threats", []):
+        for model in SRF_MODELS:
+            cell = (threat.get("accountability") or {}).get(model) or {}
+            if not cell.get("no_linked_control_in_model"):
+                continue
+            gaps.append({
+                "threat_id": threat["id"],
+                "name": threat.get("name"),
+                "srf_layer": threat.get("srf_layer"),
+                "operating_model": model,
+                "accountable_persona": cell.get("accountable_persona"),
+                "gap_class": "no_linked_control_in_model",
+            })
+    return gaps
+
+
+def render_coverage_section(w, gaps):
+    w("## Risks with no linked control in an operating model")
+    w("")
+    w("A risk cell sets `no_linked_control_in_model` when none of its related "
+      "controls names an accountable persona in that operating model. The cell "
+      "still names one persona. The gap is the missing control.")
+    w("")
+    if not gaps:
+        w("No risk cell sets `no_linked_control_in_model`.")
+        w("")
+        return
+    w("| Risk | Name | Layer | Operating model | Accountable persona |")
+    w("| --- | --- | --- | --- | --- |")
+    for gap in gaps:
+        w(f"| `{gap['threat_id']}` | {gap['name']} | {gap['srf_layer']} | "
+          f"{gap['operating_model']} | `{gap['accountable_persona']}` |")
+    w("")
+    w(f"{len(gaps)} cells. Class: `no_linked_control_in_model`.")
+    w("")
 
 
 def render_markdown(reg):
@@ -356,18 +487,23 @@ def render_markdown(reg):
         w("")
     w("## Findings by industry vertical")
     w("")
+    n_common = reg.get("common", {}).get("control_count", 0)
     w("The six industry vertical control sets (`data/*-controls.json`, also "
       "published as OSCAL profiles under `/export/`) each declare a measured "
-      "threshold per control. This section records, per vertical, how many of "
-      "those thresholds have a proposed 800-53 binding and classifies the "
-      "bindings that exist. Controls without bindings are the backlog for the "
-      "COSAiS overlay effort: generative and agentic thresholds should bind "
-      "to NISTIR 8605B (Generative AI) and 8605D (Agentic AI) as those "
-      "overlays publish, since both are 800-53 overlays that carry "
-      "organization-defined parameters; predictive-AI thresholds map to "
-      "8605A. Until then they are classified `no_binding` here rather than "
-      "bound to invented anchors.")
+      "threshold per control (260 sector controls). The all-sectors common set "
+      "(`data/common-controls.json`, {} common controls) is included here too. "
+      "This section records, per source file, how many of those thresholds have "
+      "a proposed 800-53 binding and classifies the bindings that exist. Controls "
+      "without bindings are the backlog for the COSAiS overlay effort: "
+      "generative and agentic thresholds should bind to NISTIR 8605B (Generative "
+      "AI) and 8605D (Agentic AI) as those overlays publish, since both are "
+      "800-53 overlays that carry organization-defined parameters; predictive-AI "
+      "thresholds map to 8605A. Until then they are classified `no_binding` here "
+      "rather than bound to invented anchors.".format(n_common))
     w("")
+    common = reg.get("common")
+    if common:
+        render_common_section(w, common)
     for v, vd in reg.get("verticals", {}).items():
         w(f"### {v.replace('-', ' ').title()} ({vd['source_file']})")
         w("")
@@ -392,6 +528,7 @@ def render_markdown(reg):
               + "; ".join(f"{layer}: {len(ids)}"
                           for layer, ids in sorted(by_layer.items())) + ".")
             w("")
+    render_coverage_section(w, reg.get("control_coverage_gaps") or [])
     w("## Summary finding")
     w("")
     n = len(reg["controls"])
@@ -415,12 +552,16 @@ def render_markdown(reg):
       "typed parameter constraint (numeric with unit and window semantics) would let profiles "
       "carry operational thresholds natively, and would let a resolved threshold emit "
       "`set-parameter` values that provably match the live alerting configuration.")
-    w("3. **For the COSAiS overlay series (NISTIR 8605, 8605A-D):** the industry vertical "
-      "sections above enumerate 260 measured thresholds with no 800-53 binding yet. Where an "
-      "overlay control covers the same behavior (guardrail coverage, drift bounds, oversight "
-      "responsiveness), the overlay's ODPs are the natural home for these objectives; typed "
-      "measured-objective ODPs in 8605B (Generative AI) and 8605D (Agentic AI) would let the "
-      "vertical OSCAL profiles bind directly as the overlays publish.")
+    n_common = reg.get("common", {}).get("control_count", 0)
+    w(
+        "3. **For the COSAiS overlay series (NISTIR 8605, 8605A-D):** the sector vertical and "
+        f"common sections above enumerate 260 sector measured thresholds plus {n_common} common "
+        "thresholds with no 800-53 binding yet. Where an overlay control covers the same "
+        "behavior (guardrail coverage, drift bounds, oversight responsiveness), the overlay's "
+        "ODPs are the natural home for these objectives; typed measured-objective ODPs in 8605B "
+        "(Generative AI) and 8605D (Agentic AI) would let the vertical OSCAL profiles bind "
+        "directly as the overlays publish."
+    )
     w("4. **For the AI RMF Critical Infrastructure profile:** each prioritized outcome could name "
       "the measurable indicator that would make it auditable. The healthcare drift control "
       "(AISRF-MODEL-002) is a worked example of a profile-driven addition with a concrete SLI "

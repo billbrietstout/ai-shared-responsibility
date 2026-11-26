@@ -468,14 +468,14 @@ body {
 <main id="main" class="page-wrap" data-llm="layer-integration-matrix">
   <div class="wrap">
     <p class="view-note" style="margin-bottom:16px">Use this explorer to see who is accountable for each slice of the AI stack, how that maps to the MLOps lifecycle, and what each layer is for. Named accountable parties clarify procurement and vendor boundaries and tie stage-gate evidence to those parties. The SRF complements NIST AI RMF, ISO/IEC 42001, and the EU AI Act.</p>
-    <div class="tab-row">
-      <button type="button" class="tab active" onclick="showView('matrix', this)" aria-label="Responsibility matrix: nine components by SRF layer, primary versus shared">responsibility matrix</button>
-      <button type="button" class="tab" onclick="showView('supply', this)" aria-label="Lifecycle view: CRISP-ML Q phases and which layer is primarily accountable">lifecycle × accountable layer</button>
-      <button type="button" class="tab" onclick="showView('gaps', this)" aria-label="SRF benefit: why layering accountability speeds triage, scaling, and vendor handoffs; what each layer is for">value of layered accountability</button>
+    <div class="tab-row" role="tablist" aria-label="Layer matrix views">
+      <button type="button" class="tab active" role="tab" id="tab-matrix" aria-controls="matrix" aria-selected="true" tabindex="0" data-view="matrix" onclick="showView('matrix')" aria-label="Responsibility matrix: nine components by SRF layer, primary versus shared">responsibility matrix</button>
+      <button type="button" class="tab" role="tab" id="tab-supply" aria-controls="supply" aria-selected="false" tabindex="-1" data-view="supply" onclick="showView('supply')" aria-label="Lifecycle view: CRISP-ML Q phases and which layer is primarily accountable">lifecycle × accountable layer</button>
+      <button type="button" class="tab" role="tab" id="tab-gaps" aria-controls="gaps" aria-selected="false" tabindex="-1" data-view="gaps" onclick="showView('gaps')" aria-label="SRF benefit: why layering accountability speeds triage, scaling, and vendor handoffs; what each layer is for">value of layered accountability</button>
     </div>
     <p class="view-note" style="margin-top:-10px;margin-bottom:14px;font-size:11px;color:var(--color-text-tertiary)">Three views of one idea: <strong>decompose AI accountability by enterprise layer</strong> so obligations land on a <strong>named owner</strong>. Generic risk frameworks do not spell that out for AI-native, multi-vendor stacks.</p>
 
-    <div id="matrix" class="view active">
+    <div id="matrix" class="view active" role="tabpanel" aria-labelledby="tab-matrix">
       <p class="view-note">AI responsibility components mapped to the five layers of the <strong>CoSAI AI Shared Responsibility Framework</strong> (V1.0). Cells follow the RACI matrices in §A.1.2 – §A.1.5 of the whitepaper: <em>Primary</em> = accountable owner, <em>Shared</em> = responsible / supports, <em>Inherited</em> = not directly involved or inherited from an upstream layer.</p>
       <div class="legend-row">
         <div class="leg"><div class="leg-sq" style="background:#185FA5"></div> primary (accountable)</div>
@@ -488,12 +488,12 @@ body {
       </section>
     </div>
 
-    <div id="supply" class="view">
+    <div id="supply" class="view" role="tabpanel" aria-labelledby="tab-supply">
       <p class="view-note">CRISP-ML(Q) / MLOps lifecycle, with each phase tagged to the <strong>CoSAI AI SRF</strong> layer that holds primary accountability for the controls in that phase. Useful for mapping evidence (per §A.7 of the whitepaper) to lifecycle stage gates. Click a phase to expand.</p>
       <div class="sc-wrap" id="sc-phases"></div>
     </div>
 
-    <div id="gaps" class="view">
+    <div id="gaps" class="view" role="tabpanel" aria-labelledby="tab-gaps">
       <p class="gaps-intro">The <strong>CoSAI AI Shared Responsibility Framework</strong> (V1.0) is an <strong>accountability</strong> model: it names <strong>who owns</strong> each part of the AI stack so obligations from NIST AI RMF, ISO/IEC 42001, the EU AI Act, and your internal control sets can land on <strong>one primary party per concern</strong>. It works as a <strong>governance manual for decomposition</strong>: enterprise layers express invariant dependencies while operating models shift who supplies each layer. The outline below summarizes <strong>what each layer clarifies</strong>; the cards give <strong>illustrative AI concerns</strong> that become <strong>assignable and evidential</strong> once you name that owner.</p>
       <ol class="gaps-srf-outline">
         <li><strong>L1: Business &amp; Usage.</strong> <strong>L1 job: set permitted use, risk acceptance, and cascade:</strong> permitted AI use, risk acceptance, regulatory posture, and lifecycle governance decisions, so requirements <strong>cascade</strong> from business intent to the layers below, matching the framework’s “governance from the Business layer.”</li>
@@ -508,12 +508,43 @@ body {
 </main>
 
 <script>
-function showView(id, btn) {
-  document.querySelectorAll('.view').forEach(v => v.classList.remove('active'));
-  document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
-  document.getElementById(id).classList.add('active');
-  btn.classList.add('active');
+const TAB_HASH = { matrix: '', supply: 'lifecycle', gaps: 'value' };
+/* The matrix tab keeps no hash so the browser does not scroll to the #matrix panel. */
+const HASH_TAB = new Map([['', 'matrix'], ['matrix', 'matrix'], ['lifecycle', 'supply'], ['value', 'gaps']]);
+
+function setView(id) {
+  document.querySelectorAll('.view').forEach(v => v.classList.toggle('active', v.id === id));
+  document.querySelectorAll('[role="tab"]').forEach(t => {
+    const on = t.dataset.view === id;
+    t.classList.toggle('active', on);
+    t.setAttribute('aria-selected', String(on));
+    t.tabIndex = on ? 0 : -1;
+  });
 }
+
+function showView(id) {
+  setView(id);
+  const hash = TAB_HASH[id] ? '#' + TAB_HASH[id] : '';
+  history.replaceState(null, '', location.pathname + location.search + hash);
+}
+
+function viewFromHash() {
+  return HASH_TAB.get(location.hash.slice(1)) || 'matrix';
+}
+
+setView(viewFromHash());
+window.addEventListener('hashchange', () => setView(viewFromHash()));
+
+document.querySelector('[role="tablist"]').addEventListener('keydown', e => {
+  const tabs = [...document.querySelectorAll('[role="tab"]')];
+  const i = tabs.indexOf(document.activeElement);
+  if (i < 0) return;
+  const next = { ArrowRight: (i + 1) % tabs.length, ArrowLeft: (i - 1 + tabs.length) % tabs.length, Home: 0, End: tabs.length - 1 }[e.key];
+  if (next === undefined) return;
+  e.preventDefault();
+  tabs[next].focus();
+  tabs[next].click();
+});
 
 /* ── RACI matrix: layers are rows, components are columns ── */
 const layers = [
@@ -636,9 +667,9 @@ const phases = [
     security:['Data provenance & lineage tracked','PII/sensitive field inventory','Training data consent verified','Bias & fairness audit'],
     frameworks:['CoSAI AI SRF §A.1.5.1 (Training Data Governance)','NIST SP 800-53 SI-12','DAMA DMBOK data quality','ISO/IEC 5259 data quality for AI'] },
   { num:'03', color:'#854F0B', bg:'#FAEEDA', label:'Data preparation', sub:'Clean, transform, feature engineer', srf:'L2: AI Information · L5: AI Model Provider',
-    security:['Data poisoning controls','Differential privacy applied','Anonymisation / pseudonymisation','Audit log of transformations'],
+    security:['Data poisoning controls','Differential privacy applied','Anonymization / pseudonymization','Audit log of transformations'],
     frameworks:['CoSAI AI SRF §A.1.5.1 (Privacy-Preserving Training)','NIST SP 800-188 de-identification','ISO/IEC 27701 privacy','OWASP ML Top 10: poisoning'] },
-  { num:'04', color:'#993C1D', bg:'#FAECE7', label:'Modelling', sub:'Select, train, tune algorithms', srf:'L5: AI Model Provider',
+  { num:'04', color:'#993C1D', bg:'#FAECE7', label:'Modeling', sub:'Select, train, tune algorithms', srf:'L5: AI Model Provider',
     security:['Model card / transparency doc','Adversarial robustness testing','Hyperparameter access controls','Experiment tracking access logs'],
     frameworks:['CoSAI AI SRF §A.1.5.1 (Model Development Security)','NIST AI RMF: Map & Measure','MITRE ATLAS adversarial ML','Google Model Cards standard'] },
   { num:'05', color:'#993556', bg:'#FBEAF0', label:'Evaluation', sub:'Validate performance, fairness, safety', srf:'L5: AI Model Provider · L3: AI Application (red team)',

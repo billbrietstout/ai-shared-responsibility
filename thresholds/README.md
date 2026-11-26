@@ -48,12 +48,13 @@ Optional properties `persistence_scope`, `enforcement_plane`, `fail_closed`, and
 | `examples/healthcare.profile.yaml` | Overrides three controls, adds drift monitoring; cites FDA AI/ML SaMD guidance (PCCP), HIPAA Security Rule |
 | `generate-gap-register.py` | Resolves every `oscal_bindings` entry against the NIST 800-53 rev 5 OSCAL catalog and classifies parameter gaps |
 | `gap-register.md`, `gap-register.json` | Generated gap register; drafted as feedback for the NIST 800-53 AI overlay effort |
+| `orphan-baseline.json` | Orphan counts the ROCA check compares against. The rule and the local command are in `docs/roca-data.md`. |
 
 ## Gap register
 
 Every threshold control anchors to live 800-53 rev 5 controls (verified against catalog version 5.2.0), so catalog breadth is not the gap. The gap is parameter typing: no rev 5 ODP can carry a measured objective (target value, comparison, window, error budget). The best any binding achieves is a frequency ODP that can hold a review or test cadence. `gap-register.md` documents this per control and proposes typed measured-objective ODPs for the AI overlay. Regenerate with `python3 generate-gap-register.py` (downloads and caches the catalog, or pass `--catalog` a local copy).
 
-The register also covers the six industry vertical control sets in `data/*-controls.json` (260 measured thresholds), one section per vertical. Vertical controls that declare `threshold.evidence.oscal_bindings` resolve like baseline controls; the rest are classified `no_binding` and flagged as backlog for the COSAiS overlays (NISTIR 8605B Generative AI, 8605D Agentic AI) as those publish.
+The register also covers the six industry vertical control sets in `data/*-controls.json` (260 measured thresholds, one section per vertical) and the all-sectors common set in `data/common-controls.json`. Controls that declare `threshold.evidence.oscal_bindings` resolve like baseline controls; the rest are classified `no_binding` and flagged as backlog for the COSAiS overlays (NISTIR 8605B Generative AI, 8605D Agentic AI) as those publish.
 
 ## Relationship to the generated OSCAL vertical profiles
 

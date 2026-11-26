@@ -1,0 +1,526 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Prior Art for the Five SRF Layers | AI Shared Responsibility</title>
+    <meta
+      name="description"
+      content="How TOGAF, ArchiMate, OBASHI, Zachman, NIST CSF 2.0, NIST AI RMF 1.0, ISO/IEC 22989 and 42001, and the AWS and Microsoft shared responsibility models line up with the five CoSAI SRF layers, with a crosswalk table and a checked sources list."
+    />
+    <meta name="color-scheme" content="light dark" />
+    <link rel="canonical" href="https://aisharedresponsibility.com/framework/prior-art/" />
+    <link rel="stylesheet" href="/shared/styles.css" />
+    <style>
+      .pa-prose { max-width: 680px; line-height: var(--leading-normal); color: var(--slate-700); }
+      .pa-prose h2 {
+        font-family: var(--font-serif);
+        font-size: var(--text-xl);
+        font-weight: 600;
+        letter-spacing: -0.01em;
+        color: var(--slate-900);
+        margin: var(--sp-10) 0 var(--sp-3);
+      }
+      .pa-prose p { margin-bottom: var(--sp-4); }
+      .pa-prose ul { margin: 0 0 var(--sp-4) var(--sp-5); }
+      .pa-prose li { margin-bottom: var(--sp-2); }
+      .pa-prose a { overflow-wrap: anywhere; }
+
+      .pa-note {
+        max-width: 680px;
+        border-left: 3px solid var(--cosai-blue);
+        background: var(--cosai-blue-light);
+        padding: var(--sp-4) var(--sp-5);
+        font-size: var(--text-sm);
+        color: var(--slate-700);
+        line-height: var(--leading-normal);
+        margin: var(--sp-6) 0;
+      }
+
+      .pa-scroll {
+        overflow-x: auto;
+        -webkit-overflow-scrolling: touch;
+        margin: var(--sp-4) 0 var(--sp-6);
+        border: 1px solid var(--slate-200);
+      }
+      .pa-scroll:focus-visible { outline: 3px solid var(--cosai-blue); outline-offset: 2px; }
+      .pa-table {
+        width: 100%;
+        min-width: 920px;
+        border-collapse: collapse;
+        font-size: var(--text-sm);
+        background: var(--surface);
+      }
+      .pa-table caption {
+        text-align: left;
+        padding: var(--sp-3) var(--sp-4);
+        font-weight: 600;
+        color: var(--slate-900);
+        border-bottom: 1px solid var(--slate-200);
+      }
+      .pa-table th, .pa-table td {
+        text-align: left;
+        vertical-align: top;
+        padding: var(--sp-3) var(--sp-3);
+        border-bottom: 1px solid var(--slate-100);
+        line-height: var(--leading-normal);
+        color: var(--slate-700);
+      }
+      .pa-table thead th {
+        font-size: var(--text-xs);
+        font-weight: 700;
+        letter-spacing: 0.06em;
+        text-transform: uppercase;
+        color: var(--slate-600);
+        border-bottom: 2px solid var(--slate-200);
+      }
+      .pa-table tbody th { color: var(--slate-900); font-weight: 700; min-width: 150px; }
+      .pa-table tbody tr:last-child > * { border-bottom: none; }
+      .pa-table tr.pa-row--l1 > th { border-left: 4px solid var(--l1); }
+      .pa-table tr.pa-row--l2 > th { border-left: 4px solid var(--l2); }
+      .pa-table tr.pa-row--l3 > th { border-left: 4px solid var(--l3); }
+      .pa-table tr.pa-row--l4 > th { border-left: 4px solid var(--l4); }
+      .pa-table tr.pa-row--l5 > th { border-left: 4px solid var(--l5); }
+      .pa-table tr.pa-row--all > th { border-left: 4px solid var(--slate-400); }
+
+      .pa-sources { max-width: 760px; list-style: none; margin: var(--sp-4) 0 0; padding: 0; }
+      .pa-sources li {
+        font-size: var(--text-sm);
+        line-height: var(--leading-normal);
+        color: var(--slate-700);
+        padding: var(--sp-3) 0;
+        border-bottom: 1px solid var(--slate-100);
+        overflow-wrap: anywhere;
+      }
+      .pa-sources li:target { background: var(--cosai-blue-light); }
+      .pa-sources .pa-src__id { font-weight: 700; color: var(--slate-900); margin-right: var(--sp-2); }
+      .pa-cite { font-size: var(--text-sm); white-space: nowrap; }
+    </style>
+    <!-- llm:meta -->
+    <meta name="llm:type" content="reference" />
+    <meta name="llm:canonical-id" content="srf.page.framework-prior-art" />
+    <meta name="llm:concepts" content="srf.framework.cosai-srf, srf.layer.L1, srf.layer.L2, srf.layer.L3, srf.layer.L4, srf.layer.L5, srf.concept.accountability, srf.concept.responsibility-cascade, srf.concept.accountable-party" />
+    <!-- /llm:meta -->
+  </head>
+  <body>
+    <a class="skip-link" href="#main">Skip to content</a>
+    <script type="module" src="/shared/components.js"></script>
+    <site-nav current="framework"></site-nav>
+
+    <header class="page-hero" data-llm="summary">
+      <div class="page-hero__inner">
+        <span class="page-hero__eyebrow">Framework · Prior art</span>
+        <h1 class="page-hero__title">How established enterprise architectures support the five SRF layers</h1>
+        <p class="page-hero__lede">
+          The SRF compares well with the architecture and security frameworks
+          people already use. This page shows where each one lines up with
+          L1 to L5, where the SRF goes further, and how each source was checked.
+        </p>
+        <p class="page-hero__lede" style="margin-top:var(--sp-3);font-size:var(--text-sm);">
+          <a href="/framework/">← Back to the framework</a>
+        </p>
+      </div>
+    </header>
+
+    <main id="main" class="page-body" data-llm="prior-art">
+
+      <section class="pa-prose" aria-labelledby="intro-heading" data-llm="introduction">
+        <h2 id="intro-heading" style="margin-top:0;">Introduction</h2>
+        <p>
+          The CoSAI Shared Responsibility Framework (SRF) v1.0 sorts an AI system
+          into five layers: L1 AI Business &amp; Usage; L2 AI Information; L3 AI
+          Application; L4 AI Platform; L5 AI Model Provider.
+        </p>
+        <p>
+          The SRF calls these &ldquo;Enterprise Architecture layers&rdquo; that
+          &ldquo;provide solution dependencies.&rdquo; It also says &ldquo;Specific
+          Security &amp; Governance requirements cascade from the Business layer to
+          the supporting layers&rdquo; <a class="pa-cite" href="#src-1">[1]</a>. That
+          is a claim about architecture, so it makes sense to compare it with the
+          architecture and security frameworks people already use.
+        </p>
+        <p>
+          This page looks at seven: TOGAF and ArchiMate, OBASHI, the Zachman
+          Framework, NIST Cybersecurity Framework (CSF) 2.0, NIST AI Risk Management
+          Framework (AI RMF) 1.0, ISO/IEC 22989 and 42001, and the cloud
+          shared-responsibility models from AWS and Microsoft. Each one supports
+          part of the SRF. The first four layers line up with the business, data,
+          application, and technology domains used in long-standing architecture
+          frameworks such as TOGAF. The ownership model, one accountable
+          party per component, is consistent with OBASHI&rsquo;s ownership view
+          <a class="pa-cite" href="#src-7">[7, secondary]</a>. NIST and the cloud
+          providers call for documented roles and responsibilities.
+          Cloud providers also mark some responsibilities as shared. L5 AI Model Provider is where the SRF
+          extends the older frameworks, which treat an outside model as one more
+          supplier. Some AI frameworks list their parts in a different order, and
+          the SRF complements them by naming who is accountable at each layer.
+        </p>
+        <div class="pa-note" role="note">
+          This is an independent analysis on an independent site. It is not
+          affiliated with or endorsed by OASIS or CoSAI. Claims marked
+          &ldquo;secondary&rdquo; rest on a summary, not the official text.
+        </div>
+      </section>
+
+      <section class="pa-prose" aria-labelledby="bdat-heading" data-llm="business-data-application-technology">
+        <h2 id="bdat-heading">Business, data, application, technology</h2>
+        <p>
+          TOGAF, The Open Group&rsquo;s enterprise architecture standard, names four
+          core architecture domains: business, data, application and technology
+          <a class="pa-cite" href="#src-6">[6, secondary]</a>. Those map to L1, L2, L3 and L4, so
+          the SRF&rsquo;s first four layers follow a structure enterprise architects
+          already know. TOGAF&rsquo;s text is behind a sign-in, so the TOGAF points
+          here rest on search excerpts, a secondary source.
+        </p>
+        <p>
+          TOGAF also separates architecture building blocks, which are logical and
+          vendor-neutral, from solution building blocks, which are the products that
+          fill them <a class="pa-cite" href="#src-6">[6, secondary]</a>. That pair
+          supports the SRF operating models. An &ldquo;LLM gateway&rdquo; is the
+          component. Who owns the product behind it depends on whether the customer
+          uses AI-SaaS, AI-PaaS, Agent-PaaS or IaaS. The component stays in the same
+          layer, and only its owner changes.
+        </p>
+        <p>
+          ArchiMate, TOGAF&rsquo;s modeling language, supports the SRF with typed
+          links between components. ArchiMate 3.2 names relationship types such as
+          composition, aggregation, assignment, realization, serving, access, flow,
+          triggering and influence <a class="pa-cite" href="#src-5">[5]</a>. The Open
+          Group released ArchiMate 4 in April 2026 <a class="pa-cite" href="#src-2">[2,</a> <a class="pa-cite" href="#src-4">4]</a>.
+          The v4 relationship definitions are behind a sign-in, so the 3.2 wording is used here.
+        </p>
+        <p>
+          Typed links strengthen the SRF&rsquo;s cascade idea. The SRF says
+          requirements cascade down, and typed links also show how failures travel up
+          and sideways. When an L5 model changes, it serves an L4 gateway, which
+          serves an L3 agent. That agent realizes an L1 business process. The L1
+          owner is affected even though no business rule changed. With typed links,
+          &ldquo;cascade&rdquo; has a defined meaning.
+        </p>
+        <p>This analysis suggests two working rules:</p>
+        <ul>
+          <li>
+            L3 realizes L1 logic. When an agent at L3 runs a business process owned
+            at L1, record that link with the logic version and the L1 owner&rsquo;s
+            approval. This is both a design pattern and a control.
+          </li>
+          <li>
+            A control lowers impact. It does not stop a cascade. A component with a
+            working control is marked impacted instead of failed, and the cascade
+            keeps going past it.
+          </li>
+        </ul>
+      </section>
+
+      <section class="pa-prose" aria-labelledby="obashi-heading" data-llm="obashi-ownership">
+        <h2 id="obashi-heading">OBASHI brings Ownership as a view</h2>
+        <p>
+          OBASHI, a method for mapping business and IT assets, puts an Ownership layer
+          above Business Process, Application, System, Hardware and Infrastructure
+          <a class="pa-cite" href="#src-7">[7, secondary]</a>. That is consistent with
+          the SRF principle of &ldquo;exactly one accountable party per
+          component&rdquo; <a class="pa-cite" href="#src-1">[1]</a>. OBASHI&rsquo;s
+          lower three layers fit inside L4.
+        </p>
+        <p>
+          OBASHI&rsquo;s layers should not become SRF layers, because they would add
+          layers with no accountable persona. Instead, OBASHI&rsquo;s ownership idea
+          can be added as an overlay. The overlay shows the owner on every component,
+          so a component with no owner, or with two, stands out. OBASHI&rsquo;s
+          Dataflow Analysis View also points to a data flow view across layers, which
+          the SRF could add.
+        </p>
+      </section>
+
+      <section class="pa-prose" aria-labelledby="zachman-heading" data-llm="zachman-completeness">
+        <h2 id="zachman-heading">Zachman as a completeness check</h2>
+        <p>
+          The Zachman Framework is a 6-by-6 schema. Its columns are the questions
+          What, How, When, Who, Where and Why. Its rows are stages that go from
+          Identification to Instantiation. Zachman describes it as an ontology and
+          says it is not a methodology <a class="pa-cite" href="#src-8">[8]</a>.
+        </p>
+        <p>
+          Zachman&rsquo;s columns make a good completeness check for the SRF. Ask each
+          question of each SRF layer. In this analysis, the SRF answers Who well
+          (personas) and Why at L1 (obligations). It answers What at L2 and How at
+          L3. Where, such as data residency and jurisdiction, and When, such as
+          change windows and model version timing, are places the SRF could extend
+          its coverage. Zachman&rsquo;s rows do not map to SRF layers, because rows
+          are levels of abstraction and SRF layers are not. L1 is no more abstract
+          than L4. Each layer has its own concrete components and owners.
+        </p>
+      </section>
+
+      <section class="pa-prose" aria-labelledby="risk-heading" data-llm="security-and-ai-risk-frameworks">
+        <h2 id="risk-heading">Security and AI risk frameworks</h2>
+        <p>
+          NIST CSF 2.0 organizes outcomes into six functions: Govern, Identify,
+          Protect, Detect, Respond and Recover <a class="pa-cite" href="#src-9">[9]</a>.
+          These functions apply at every layer. Govern supports the SRF ownership
+          model most directly. Its Roles, Responsibilities, and Authorities category
+          (GV.RR) calls for cybersecurity roles and responsibilities &ldquo;to foster
+          accountability,&rdquo; and GV.SC-02 calls for roles and responsibilities for
+          &ldquo;suppliers, customers, and partners&rdquo; to be &ldquo;established,
+          communicated, and coordinated internally and externally&rdquo;
+          <a class="pa-cite" href="#src-9">[9]</a>. The two fit together. CSF says what
+          outcomes to reach, and the SRF says who is accountable for reaching them at
+          each layer.
+        </p>
+        <p>
+          NIST AI RMF 1.0 describes AI system dimensions: Application Context, Data
+          and Input, AI Model, and Task and Output, with People &amp; Planet at the
+          center <a class="pa-cite" href="#src-10">[10]</a>. Application Context fits
+          L1, and Data and Input fits L2. AI Model fits L5, with L4 serving it, and
+          Task and Output fits L3. The AI RMF also supports the ownership model.
+          GOVERN 2.1 asks that &ldquo;roles and responsibilities and lines of
+          communication related to mapping, measuring, and managing AI risks are
+          documented and are clear to individuals and teams throughout the
+          organization,&rdquo; and GOVERN 6 covers
+          &ldquo;AI risks and benefits arising from third-party software and data and
+          other supply chain issues&rdquo;
+          <a class="pa-cite" href="#src-10">[10]</a>. That includes a model obtained
+          from an outside AI Model Provider. The NIST AI RMF is being revised, so this
+          mapping will need a recheck.
+        </p>
+        <p>
+          ISO/IEC 42001 is a management system standard, so it has no layers. SRF
+          v1.0 says its accountability structure &ldquo;can satisfy ISO 42001 Clause
+          5.3 requirements,&rdquo; which cover roles, responsibilities and authorities
+          <a class="pa-cite" href="#src-1">[1,</a> <a class="pa-cite" href="#src-11">11]</a>.
+          ISO/IEC 22989 defines AI stakeholder roles: AI provider, AI producer, AI
+          customer, AI partner, AI subject and relevant authorities. SRF v1.0 maps
+          each of its personas to one of these roles, so the SRF builds on
+          ISO&rsquo;s role vocabulary <a class="pa-cite" href="#src-1">[1,</a>
+          <a class="pa-cite" href="#src-12">12]</a>.
+        </p>
+      </section>
+
+      <section class="pa-prose" aria-labelledby="cloud-heading" data-llm="cloud-shared-responsibility-models">
+        <h2 id="cloud-heading">Cloud shared-responsibility models</h2>
+        <p>
+          The SRF borrows its basic idea from cloud models. AWS describes
+          &ldquo;Security of the Cloud&rdquo; for the provider and &ldquo;Security in
+          the Cloud&rdquo; for the customer, with the dividing point moving by service
+          type <a class="pa-cite" href="#src-13">[13]</a>. SRF v1.0 applies the same
+          idea: responsibility is shared &ldquo;at the boundary of what is being
+          provided&rdquo; <a class="pa-cite" href="#src-1">[1]</a>.
+        </p>
+        <p>
+          Microsoft&rsquo;s AI shared responsibility model is the closest match. It
+          describes three layers, AI platform, AI application and AI usage, and
+          responsibility shifts across SaaS, PaaS and IaaS
+          <a class="pa-cite" href="#src-14">[14]</a>. Those line up with L4, L3 and
+          L1. Microsoft places the model, training data, and weights and biases in
+          the platform layer and has no separate data layer. The SRF extends this by giving data
+          (L2) and the AI Model Provider (L5) their own layers and owners.
+          Microsoft&rsquo;s article discusses the platform layer first. Its diagram
+          stacks usage at the top and platform at the bottom, the same visual order
+          the SRF uses from L1 down.
+        </p>
+        <p>
+          Microsoft&rsquo;s AI agent shared responsibility model supports the
+          SRF&rsquo;s Agent-PaaS operating model <a class="pa-cite" href="#src-15">[15]</a>.
+          It describes a &ldquo;PaaS agent&rdquo; built on a managed agent platform.
+          Microsoft provides the runtime, model hosting and platform safety controls.
+          The customer owns the agent&rsquo;s instructions, tool selection and
+          permissions, orchestration logic, memory design, identity and
+          authorization. In this reading, that is close to Agent-PaaS: the customer owns the
+          agent built on a provider-managed platform. Official SRF v1.0 marks
+          Agent-PaaS at L3 and L5 as Shared, because both parties have obligations
+          there.
+        </p>
+      </section>
+
+      <section aria-labelledby="crosswalk-heading" data-llm="crosswalk">
+        <div class="pa-prose">
+          <h2 id="crosswalk-heading">Crosswalk</h2>
+          <p>
+            This crosswalk is an analysis by this site, not CoSAI text. &ldquo;No
+            counterpart&rdquo; means no direct counterpart. &ldquo;Cuts across&rdquo;
+            means the element applies at several layers. On a narrow screen, scroll
+            the table sideways inside its frame.
+          </p>
+        </div>
+        <div class="pa-scroll" role="region" aria-labelledby="crosswalk-caption" tabindex="0">
+          <table class="pa-table">
+            <caption id="crosswalk-caption">SRF layers compared with six other frameworks</caption>
+            <thead>
+              <tr>
+                <th scope="col">SRF layer</th>
+                <th scope="col">TOGAF / ArchiMate</th>
+                <th scope="col">OBASHI</th>
+                <th scope="col">Zachman</th>
+                <th scope="col">NIST AI RMF 1.0</th>
+                <th scope="col">ISO/IEC 22989 roles (per SRF v1.0)</th>
+                <th scope="col">Microsoft AI shared responsibility</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr class="pa-row--l1">
+                <th scope="row">L1 AI Business &amp; Usage</th>
+                <td>Business architecture; ArchiMate strategy and business elements; motivation elements for obligations</td>
+                <td>Business Process (Ownership sits above it)</td>
+                <td>Why</td>
+                <td>Application Context</td>
+                <td>AI customer; relevant authority</td>
+                <td>AI usage</td>
+              </tr>
+              <tr class="pa-row--l2">
+                <th scope="row">L2 AI Information</th>
+                <td>Data architecture; business and data objects</td>
+                <td>Partial: Dataflow Analysis View</td>
+                <td>What</td>
+                <td>Data and Input</td>
+                <td>AI partner (data provider)</td>
+                <td>No separate data layer. Training data sits in the platform layer. Data governance also appears in the usage layer, and data connections in the application layer.</td>
+              </tr>
+              <tr class="pa-row--l3">
+                <th scope="row">L3 AI Application</th>
+                <td>Application architecture</td>
+                <td>Application</td>
+                <td>How</td>
+                <td>Task and Output</td>
+                <td>AI provider</td>
+                <td>AI application</td>
+              </tr>
+              <tr class="pa-row--l4">
+                <th scope="row">L4 AI Platform</th>
+                <td>Technology architecture</td>
+                <td>System, Hardware, Infrastructure</td>
+                <td>Where (partial)</td>
+                <td>Serves the AI Model</td>
+                <td>AI partner (platform and infrastructure)</td>
+                <td>AI platform</td>
+              </tr>
+              <tr class="pa-row--l5">
+                <th scope="row">L5 AI Model Provider</th>
+                <td>A supplier building block</td>
+                <td>No counterpart</td>
+                <td>No counterpart</td>
+                <td>AI Model</td>
+                <td>AI producer</td>
+                <td>Inside AI platform</td>
+              </tr>
+              <tr class="pa-row--all">
+                <th scope="row">Cuts across</th>
+                <td>Typed relationships; building block pairs</td>
+                <td>Ownership</td>
+                <td>Who (personas); When (SRF can extend)</td>
+                <td>People &amp; Planet</td>
+                <td>AI subject</td>
+                <td>No counterpart</td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+        <div class="pa-prose">
+          <p>
+            NIST CSF 2.0 and ISO/IEC 42001 are not in the table because neither has a
+            layer structure. Both still support the SRF, since CSF functions and 42001
+            clauses apply at every layer.
+          </p>
+        </div>
+      </section>
+
+      <section class="pa-prose" aria-labelledby="extends-heading" data-llm="where-the-srf-extends">
+        <h2 id="extends-heading">Where the SRF extends or complements these frameworks</h2>
+        <p>
+          L5 AI Model Provider extends the older frameworks. In this analysis, TOGAF, ArchiMate, OBASHI
+          and Zachman treat an outside model as one more supplier building block. The
+          SRF makes it a layer because the AI Model Provider controls training data,
+          model development and provenance, which a customer cannot inspect or fix.
+          That is a choice the SRF makes for accountability reasons. NIST points the
+          same way: CSF 2.0 (GV.SC) and the AI RMF (GOVERN 6) both treat supplier risk
+          as something to govern <a class="pa-cite" href="#src-9">[9,</a>
+          <a class="pa-cite" href="#src-10">10]</a>.
+        </p>
+        <p>
+          NIST AI RMF uses a different order, and the SRF complements it. Its
+          dimensions go Application Context, Data and Input, AI Model, then Task and
+          Output <a class="pa-cite" href="#src-10">[10]</a>. In SRF terms, that is L1,
+          L2, L5, then L3. NIST orders things by how an AI system works: context, data
+          in, model, output. The SRF orders them by dependency and accountability, so
+          the crosswalk is not a straight line. The two work together: the AI RMF
+          describes how the system works, and the SRF adds who is accountable at each
+          step. NIST&rsquo;s People &amp; Planet dimension has no SRF layer or
+          persona.
+        </p>
+        <p>
+          ISO/IEC 22989 roles complement SRF layers. Roles describe who someone is in
+          a relationship. Layers describe where a component sits. The AI partner role
+          shows up at L2 (data provider), at L4 (platform and infrastructure
+          provider) and for tool providers. An L4 provider can also be an AI provider
+          to its own customers. One party can hold components in several layers, and
+          SRF v1.0 maps its personas to ISO roles, so the two work together
+          <a class="pa-cite" href="#src-1">[1,</a>
+          <a class="pa-cite" href="#src-12">12; ISO roles as reported in SRF v1.0]</a>.
+          The AI subject role, the people affected, has no SRF persona. L1 threat
+          models should list affected people as stakeholders.
+        </p>
+        <p>
+          ArchiMate 4 and Zachman support reading SRF layers as areas of
+          accountability, not a strict stack. ArchiMate 4 replaced &ldquo;layers&rdquo;
+          with &ldquo;domains.&rdquo; Marc Lankhorst of Bizzdesign writes that reading
+          the old &ldquo;layer cake&rdquo; as a strict hierarchy, with business served
+          by applications served by infrastructure, was a misinterpretation
+          <a class="pa-cite" href="#src-3">[3, secondary]</a>. Zachman says its
+          framework implies nothing about whether you work top-down or bottom-up
+          <a class="pa-cite" href="#src-8">[8]</a>. SRF layers are areas of
+          accountability, and dependencies between components form a graph, not a
+          ladder.
+        </p>
+        <p>
+          CSF 2.0 functions work on a different axis, which makes them easy to combine
+          with the SRF. Its six functions are activities, not places in a system, so
+          each function applies in every layer.
+        </p>
+      </section>
+
+      <section class="pa-prose" aria-labelledby="open-heading" data-llm="open-areas">
+        <h2 id="open-heading">Open areas</h2>
+        <p>
+          These are possible directions that this analysis raises. CoSAI has not
+          committed to any of them, and they are not part of the published framework.
+        </p>
+        <ul>
+          <li>Typed links between components, so that &ldquo;cascade&rdquo; has a defined meaning.</li>
+          <li>Obligations linked to components in other layers.</li>
+          <li>A data flow view across layers.</li>
+          <li>A place for network, facilities, or location.</li>
+          <li>Lifecycle states for components.</li>
+        </ul>
+      </section>
+
+      <section aria-labelledby="sources-heading" data-llm="sources">
+        <div class="pa-prose">
+          <h2 id="sources-heading">Sources</h2>
+          <p>
+            How each was checked is noted. &ldquo;Secondary&rdquo; means the claim
+            rests on a summary, not the official text.
+          </p>
+        </div>
+        <ol class="pa-sources" style="list-style:none;">
+          <li id="src-1"><span class="pa-src__id">[1]</span>CoSAI Shared Responsibility Framework v1.0 (PGB approved May 26, 2026). Local canonical copy, read for §3, §3.1, §3.2.1 and A.1. The public site: <a href="https://aisharedresponsibility.com/">https://aisharedresponsibility.com/</a></li>
+          <li id="src-2"><span class="pa-src__id">[2]</span>The Open Group, &ldquo;The Open Group Announces ArchiMate 4 Specification,&rdquo; April 27, 2026. <a href="https://www.opengroup.org/The-Open-Group-Announces-ArchiMate%C2%AE-4-Specification" rel="noopener">https://www.opengroup.org/The-Open-Group-Announces-ArchiMate%C2%AE-4-Specification</a> (read Nov 17, 2026).</li>
+          <li id="src-3"><span class="pa-src__id">[3]</span>M. Lankhorst, Bizzdesign, &ldquo;What Really Changes in the ArchiMate 4 Specification,&rdquo; Aug 20, 2026. <a href="https://bizzdesign.com/blog/archimate-4-changes" rel="noopener">https://bizzdesign.com/blog/archimate-4-changes</a> (read Nov 17, 2026; secondary; source for &ldquo;domains replace layers&rdquo; and the concept count).</li>
+          <li id="src-4"><span class="pa-src__id">[4]</span>The Open Group Blog, &ldquo;Discussing the Release of the ArchiMate 4 Specification,&rdquo; May 20, 2026. <a href="https://blog.opengroup.org/2026/05/20/discussing-the-release-of-the-archimate-4-specification/" rel="noopener">https://blog.opengroup.org/2026/05/20/discussing-the-release-of-the-archimate-4-specification/</a> (read Nov 16, 2026).</li>
+          <li id="src-5"><span class="pa-src__id">[5]</span>The Open Group, ArchiMate 3.2 Specification Reference Cards. <a href="https://www.opengroup.org/sites/default/files/docs/downloads/n221p.pdf" rel="noopener">https://www.opengroup.org/sites/default/files/docs/downloads/n221p.pdf</a> (official PDF; source for relationship type wording).</li>
+          <li id="src-6"><span class="pa-src__id">[6]</span>The Open Group, TOGAF Standard, 10th Edition, Architecture Content. <a href="https://pubs.opengroup.org/togaf-standard/architecture-content/chap02.html" rel="noopener">https://pubs.opengroup.org/togaf-standard/architecture-content/chap02.html</a> (behind sign-in, rechecked Nov 17, 2026; search excerpts only; secondary).</li>
+          <li id="src-7"><span class="pa-src__id">[7]</span>Qatar NCSA, &ldquo;A Primer on OBASHI Framework.&rdquo; <a href="https://qcert.ncsa.gov.qa/sites/default/files/public/documents/cs-csps_primer_on_obashi_eng_v1.1.pdf" rel="noopener">https://qcert.ncsa.gov.qa/sites/default/files/public/documents/cs-csps_primer_on_obashi_eng_v1.1.pdf</a> (search excerpt; secondary). Wallis and Cloughley, The OBASHI Methodology (TSO, 2010). <a href="https://books.google.com/books/about/The_OBASHI_Methodology.html?id=ArW4BwAAQBAJ" rel="noopener">https://books.google.com/books/about/The_OBASHI_Methodology.html?id=ArW4BwAAQBAJ</a> (catalog entry only).</li>
+          <li id="src-8"><span class="pa-src__id">[8]</span>Zachman International, &ldquo;About the Zachman Framework.&rdquo; <a href="https://zachman-feac.com/zachman/about-the-zachman-framework" rel="noopener">https://zachman-feac.com/zachman/about-the-zachman-framework</a> (read Nov 17, 2026).</li>
+          <li id="src-9"><span class="pa-src__id">[9]</span>NIST, Cybersecurity Framework 2.0 (CSWP 29), Feb 26, 2024. <a href="https://nvlpubs.nist.gov/nistpubs/CSWP/NIST.CSWP.29.pdf" rel="noopener">https://nvlpubs.nist.gov/nistpubs/CSWP/NIST.CSWP.29.pdf</a> (read Nov 17, 2026; six functions, GV.RR and GV.SC).</li>
+          <li id="src-10"><span class="pa-src__id">[10]</span>NIST, AI Risk Management Framework 1.0 (AI 100-1). <a href="https://nvlpubs.nist.gov/nistpubs/ai/NIST.AI.100-1.pdf" rel="noopener">https://nvlpubs.nist.gov/nistpubs/ai/NIST.AI.100-1.pdf</a> (read Nov 17, 2026; Figure 2 dimensions, GOVERN 2.1 and GOVERN 6). Landing page with revision notice: <a href="https://www.nist.gov/itl/ai-risk-management-framework" rel="noopener">https://www.nist.gov/itl/ai-risk-management-framework</a> (read Nov 17, 2026).</li>
+          <li id="src-11"><span class="pa-src__id">[11]</span>ISO/IEC 42001:2023, AI management systems. <a href="https://www.iso.org/standard/81230.html" rel="noopener">https://www.iso.org/standard/81230.html</a> (catalog page read Nov 17, 2026; full text not read; Clause 5.3 claim is from SRF v1.0).</li>
+          <li id="src-12"><span class="pa-src__id">[12]</span>ISO/IEC 22989:2022, AI concepts and terminology. <a href="https://www.iso.org/standard/74296.html" rel="noopener">https://www.iso.org/standard/74296.html</a> (page blocks scripted access; role names and §5.19 numbers taken from SRF v1.0 §3.1; secondary).</li>
+          <li id="src-13"><span class="pa-src__id">[13]</span>AWS, &ldquo;Shared Responsibility Model.&rdquo; <a href="https://aws.amazon.com/compliance/shared-responsibility-model/" rel="noopener">https://aws.amazon.com/compliance/shared-responsibility-model/</a> (read Nov 17, 2026).</li>
+          <li id="src-14"><span class="pa-src__id">[14]</span>Microsoft Learn, &ldquo;Artificial intelligence shared responsibility model.&rdquo; <a href="https://learn.microsoft.com/en-us/azure/security/fundamentals/shared-responsibility-ai" rel="noopener">https://learn.microsoft.com/en-us/azure/security/fundamentals/shared-responsibility-ai</a> (read Nov 17, 2026).</li>
+          <li id="src-15"><span class="pa-src__id">[15]</span>Microsoft Learn, &ldquo;AI agent shared responsibility model,&rdquo; updated Aug 26, 2026. <a href="https://learn.microsoft.com/en-us/azure/security/fundamentals/shared-responsibility-ai-agent" rel="noopener">https://learn.microsoft.com/en-us/azure/security/fundamentals/shared-responsibility-ai-agent</a> (read Nov 17, 2026).</li>
+        </ol>
+      </section>
+
+    </main>
+
+    <site-footer></site-footer>
+  </body>
+</html>

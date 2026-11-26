@@ -1,6 +1,9 @@
 #!/usr/bin/env python3
 """Authoring helper: rebuild index.html from prompts.json. Not a site build step.
-The committed HTML is the page; re-run this after editing prompts.json."""
+The committed HTML is the page; re-run this after editing prompts.json.
+Then run build/inject_page_metadata.py and build/inject_chunk_markers.py from the
+repository root. The verify workflow applies the same injectors, and the page
+does not match the committed file without them."""
 from __future__ import annotations
 
 import html
@@ -408,6 +411,16 @@ def stage_section(qid: str, title: str, pack: dict) -> str:
 """
 
 
+def source_li(c: dict) -> str:
+    """One Sources entry. Uses the human-facing fields, never the model-facing note."""
+    lic = c.get("license", "")
+    lic_html = f" License: {esc(lic.rstrip('.'))}." if lic else ""
+    return (
+        f'<li><a href="{esc(c["url"])}">{esc(c["title"])}</a>. '
+        f'{esc(c["byline"])}.{lic_html} {esc(c["why_cited"])}</li>'
+    )
+
+
 def main():
     pack = PACK
     track_b = [p for p in pack["prompts"] if p["track"] == "B"]
@@ -416,22 +429,20 @@ def main():
     baselines = pack["baseline_prompts"]
     pb = "\n".join(f"<li><strong>{esc(q['letter'])}</strong> {esc(q['name'])}: {esc(q['ask'])}</li>" for q in pack["phantom_b_questions"])
     def role_li(r):
-        rest = r["tradecraft"]
-        if ". " in rest:
-            rest = rest.split(". ", 1)[1]
         notices = "; ".join(r.get("notices_first", []))
         declines = "; ".join(r.get("declines_to_opine", []))
         return (
             f"<li><strong>{esc(r['label'])}</strong> ({esc(r['id'])}). "
-            f"{esc(rest)} Notices first: {esc(notices)}. "
+            f"{esc(r['role_summary'])} Notices first: {esc(notices)}. "
             f"Declines to infer: {esc(declines)}.</li>"
         )
 
     roles = "\n".join(role_li(r) for r in pack["roles"])
-    q1 = stage_section("q1", "Set the review profile and claim boundary, then read the whole representation into a structured inventory.", pack)
-    q2 = stage_section("q2", "Complete typed STRIDE and conditional abuse and operational passes before PHANTOM-B. Then test AI-to-traditional paths and pinned source mappings.", pack)
-    q3 = stage_section("q3", "Map method labels, record evidence-backed importance, and choose one action with a testable control point.", pack)
-    q4 = stage_section("q4", "Check phase gates, denominators, evidence, and actions. Optional accountability and vertical joins run here before the report.", pack)
+    sources_html = "\n        ".join(source_li(c) for c in pack["citations"])
+    q1 = stage_section("q1", "Set the review scope and what the review does not claim. Then list the components, data flows, and trust boundaries the representation shows.", pack)
+    q2 = stage_section("q2", "Finish the STRIDE pass, then the abuse-case and operational passes where they apply. Then run PHANTOM-B on the AI components. Last, test paths where AI meets traditional software and map outside sources.", pack)
+    q3 = stage_section("q3", "Label each threat, order the threats by evidence, and choose one action for each threat, with a check someone can run.", pack)
+    q4 = stage_section("q4", "Check that every step finished, that coverage counts add up, and that each threat has evidence and an action. Optional Track B and Track C run here, before the report.", pack)
     track_b_html = "\n".join(prompt_block(p, pack) for p in track_b)
     track_c_html = "\n".join(prompt_block(p, pack) for p in track_c)
     export_html = "\n".join(prompt_block(p, pack) for p in export_prompts)
@@ -512,7 +523,7 @@ def main():
     <link rel="stylesheet" href="/shared/styles.css" />
     <style>
       .prompt-block {{
-        background: var(--cosai-navy);
+        background: var(--fill-navy);
         border-radius: var(--radius-lg);
         overflow: hidden;
         margin-bottom: var(--sp-6);
@@ -558,7 +569,7 @@ def main():
         max-width: 720px;
         margin: 0 0 var(--sp-8);
         padding: var(--sp-3) var(--sp-4);
-        background: #fff;
+        background: var(--surface);
         border: 1px solid var(--slate-200);
         border-radius: var(--radius);
       }}
@@ -572,7 +583,7 @@ def main():
         font-size: var(--text-xs);
         font-weight: 600;
         color: #fff;
-        background: var(--cosai-navy);
+        background: var(--fill-navy);
         border: 0;
         border-radius: var(--radius);
         padding: 6px 12px;
@@ -584,7 +595,7 @@ def main():
         padding: var(--sp-5);
         border: 1px solid var(--slate-200);
         border-radius: var(--radius);
-        background: #fff;
+        background: var(--surface);
       }}
       .deliverable__title {{
         font-size: var(--text-xs);
@@ -641,22 +652,22 @@ def main():
         font-size: var(--text-xs);
         font-weight: 600;
         color: var(--slate-600);
-        background: #fff;
+        background: var(--surface);
         border: 1px solid var(--slate-200);
         border-radius: var(--radius);
         padding: 4px 10px;
         cursor: pointer;
       }}
       .shortcut-paste button.is-copied {{
-        color: #047857;
-        border-color: #6ee7b7;
+        color: var(--dm-fg-047857);
+        border-color: var(--dm-bd-6ee7b7);
       }}
       .shortcut-more {{
         margin: 0 0 var(--sp-5);
         padding: var(--sp-3) var(--sp-4);
         border: 1px dashed var(--slate-300);
         border-radius: var(--radius);
-        background: #fff;
+        background: var(--surface);
       }}
       .shortcut-more > summary {{
         cursor: pointer;
@@ -766,6 +777,11 @@ def main():
 
     <main id="main" class="page-body" data-llm="threat-model-prompts">
 
+      <div class="callout callout--warn prompt-injection-warning" role="note">
+        <strong>Prompt injection warning</strong>
+        Always review prompts before referencing or copying them into an assistant, agent, or production system.
+      </div>
+
       <h2 class="section-label">On this page</h2>
       <ul class="q-list">
         <li><a href="#shortcut">Start here</a> (<a href="#shortcut-a">Track A</a>, <a href="#shortcut-b">Track B</a>, <a href="#shortcut-c">Track C</a>)</li>
@@ -780,24 +796,26 @@ def main():
       <div class="deliverable" id="shortcut">
         <h2 class="deliverable__title">Start here: one chat</h2>
         <ol>
-          <li>Attach the representation and set <code>representation_kind</code> to <code>image</code>, <code>mermaid</code>, or <code>svg</code>.</li>
+          <li>Attach the representation. Say whether it is an image, Mermaid, or SVG (<code>representation_kind</code>: <code>image</code>, <code>mermaid</code>, or <code>svg</code>).</li>
           <li>Copy the Track A shortcut. Send it once with the representation.</li>
           <li>Save the four export replies as <code>.md</code>, <code>.json</code>, <code>.csv</code>, and <code>.mmd</code>.</li>
         </ol>
         <p>
           The model loads
           <a href="/tools/prompts/threat-model/prompts.json">prompts.json</a>
-          and runs Track A through the four exports. Omitted fields stay empty.
-          Catalog, SRF, and vertical mapping without injected data are not
-          applicable. Optional JSON stays on this page; it is not in the copied
-          shortcut. If the chat cannot load that file, use
+          and runs Track A, then the four exports. It treats anything you leave
+          out as empty. Without data that you paste in, the catalog, SRF, and
+          vertical steps are marked not applicable. The optional JSON on this
+          page is not part of the copied shortcut. If the chat cannot load
+          prompts.json, use
           <a href="#copy-one-block">Run one prompt at a time</a>.
         </p>
         <h3 id="shortcut-a">Track A</h3>
         <p>
-          Default path. Representation and <code>representation_kind</code> are
-          enough. Default role is experienced-threat-modeler. Default
-          <code>if_no_ai_nodes</code> is <code>continue_without_llm</code>.
+          Default path. You need only the representation and its type. The
+          default role is experienced-threat-modeler. If the diagram shows no AI
+          components, the run continues without the AI steps
+          (<code>if_no_ai_nodes</code>: <code>continue_without_llm</code>).
         </p>
 {shortcut_a_html}
         <details class="shortcut-more" id="example-a">
@@ -810,15 +828,16 @@ def main():
             <code>application-security</code>, <code>llm-caller</code>.
             Profile values: <code>full-system</code>,
             <code>bounded-subsystem</code>, <code>artifact-only</code>.
-            A catalog overlay is a <code>source_manifest</code> object with
-            pinned entries; omit it to leave catalog coverage not applicable.
+            To add outside catalogs, include a <code>source_manifest</code>
+            object with one pinned entry per catalog. Without it, catalog
+            coverage is not applicable.
           </p>
 {example_a_html}
           <p id="example-a-artifact">
-            Artifact-only confirmation. Traditional-phase
-            <code>not_applicable</code> is allowed only when
-            <code>profile_confirmation.operator_confirmed</code> is true and
-            <code>evidence_ref</code> states that integration is out of scope.
+            Artifact-only confirmation. The run may skip the traditional STRIDE
+            pass only when <code>profile_confirmation.operator_confirmed</code>
+            is true and <code>evidence_ref</code> states that integration is
+            out of scope.
           </p>
 {example_a_artifact_html}
         </details>
@@ -826,9 +845,11 @@ def main():
           <summary>Track B: assign SRF accountability</summary>
           <p>
             Use this when the first message already includes an operating model
-            plus the full <a href="/data/personas.json">personas</a>,
+            plus the full contents of three files:
+            <a href="/data/personas.json">personas</a>,
             <a href="/data/matrix.json">matrix</a>, and
-            <a href="/data/threats.json">threat_crosswalk</a> objects.
+            <a href="/data/threats.json">threats</a> (the pack calls the last
+            one <code>threat_crosswalk</code>).
             Operating model values: <code>AI-SaaS</code>, <code>AI-PaaS</code>,
             <code>Agent-PaaS</code>, <code>IaaS</code>.
           </p>
@@ -837,8 +858,8 @@ def main():
             <li>Open the three files. Copy each file's full JSON object.</li>
             <li>Copy the example below. Replace the three
               <code>REPLACE_WITH_FULL_OBJECT</code> strings with those objects.
-              Keep <code>operating_model</code> the same in
-              <code>review_context_input</code> and <code>srf_inputs</code>.</li>
+              Use the same operating model in <code>review_context_input</code>
+              and <code>srf_inputs</code>.</li>
             <li>Paste the shortcut, the representation, and the filled JSON in
               the same first message.</li>
           </ol>
@@ -848,8 +869,9 @@ def main():
         <details class="shortcut-more" id="shortcut-c">
           <summary>Track C: join vertical obligations</summary>
           <p>
-            Use this after Track B inputs are in the first message, plus
-            <code>vertical_ids</code> and <code>vertical_source_rows</code>.
+            Use this after Track B inputs are in the first message, plus the
+            vertical ids and the vertical source rows
+            (<code>vertical_ids</code> and <code>vertical_source_rows</code>).
             The two rows in the example are reshaped from
             <a href="/data/healthcare-controls.json">healthcare-controls.json</a>.
             Copy more rows from that file or the matching vertical file and keep
@@ -863,7 +885,7 @@ def main():
           </p>
           <ol>
             <li>Complete the Track B packing steps.</li>
-            <li>Set <code>vertical_ids</code> and <code>jurisdictions</code> on
+            <li>Add the vertical ids and jurisdictions to
               <code>review_context_input</code>.</li>
             <li>Add obligation and control-candidate rows. Paste shortcut,
               representation, and the filled JSON in the same first message.</li>
@@ -880,9 +902,10 @@ def main():
         Copy P-context first, then use Copy next. Optional review context, SRF
         data, and vertical rows still belong in the first message.
         Role values: {esc(role_ids)}. Default is experienced-threat-modeler.
-        Copy-one-block text starts with a <code>[chain]</code> line. A chain
-        run of P-stride repeats in the same reply until its typed denominator
-        closes. P-importance is required before P-act. After P-report, run the
+        Each copied prompt starts with a <code>[chain]</code> line that names
+        the step and the next step. P-stride repeats in the same reply until
+        every in-scope process, actor, store, and flow has the STRIDE categories that apply to its type.
+        P-importance is required before P-act. After P-report, run the
         <a href="#export-report">export steps</a>.
       </p>
 
@@ -902,8 +925,7 @@ def main():
         <li>Did we do a good job?</li>
       </ol>
       <p class="section-note">
-        Wording is from the Four Question Framework (CC-BY). Use those four sentences as written.
-        State the team view and what we are working on right now.
+        The wording comes from the Four Question Framework (CC-BY). Use the four sentences as written.
       </p>
 
       <h2 class="section-label">PHANTOM-B questions (LLM subset)</h2>
@@ -911,32 +933,32 @@ def main():
         {pb}
       </ul>
       <p class="section-note">
-        Ask these eight questions for each eligible AI node after traditional
-        applicability closes. Write mitigations in P-act.
+        These questions adapt the PHANTOM-B white paper. Ask all eight about each
+        AI component, after the traditional STRIDE pass is done or marked not
+        applicable. Write mitigations in P-act, not here.
       </p>
 
-      <h2 class="section-label">Roles</h2>
+      <h2 class="section-label" id="roles">Roles</h2>
       <ul class="cite-list">
         {roles}
       </ul>
 
-      <h2 class="section-label">Sources</h2>
+      <h2 class="section-label" id="sources">Sources</h2>
       <ul class="cite-list">
-        <li>Adam Shostack, <a href="https://shostack.org/files/papers/The_Four_Question_Framework.pdf">The Four Question Framework for Threat Modeling</a> (CC-BY).</li>
-        <li>Adam Shostack, <a href="https://shostack.org/files/papers/PHANTOM-B_Whitepaper_Shostack.pdf">PHANTOM-B: A STRIDE Analog for LLMs</a> (CC-BY).</li>
-        <li>Crossman et al., <a href="https://arxiv.org/abs/2503.09586">Auspex</a> (arXiv:2503.09586). Two-stage chain, cumulative prompt fill, threat matrix, SME evaluation. The prompts here are rebuilt from the paper's published figures. JPMC's withheld tradecraft text is not in this pack.</li>
-        <li>IETF <a href="https://datatracker.ietf.org/doc/html/rfc6819">RFC 6819</a>. Attack assumptions and existing features are stated before new threats. Do not copy its OAuth threat list onto an unrelated diagram.</li>
-        <li>CoSAI SRF accountability data: <a href="/data/threats.json">threats.json</a>, <a href="/data/personas.json">personas.json</a>, <a href="/data/matrix.json">matrix.json</a>.</li>
-        <li>External source registry: <a href="/data/threat-sources.json">threat-sources.json</a>. A run records the exact source versions and hashes in <code>source_manifest</code>.</li>
+        {sources_html}
+        <li>SRF data on this site: <a href="/data/threats.json">threats.json</a>, <a href="/data/personas.json">personas.json</a>, <a href="/data/matrix.json">matrix.json</a>. Track B reads them to assign a layer, a persona, and a party to each threat.</li>
+        <li>Outside source registry: <a href="/data/threat-sources.json">threat-sources.json</a>. It lists the catalogs a run may cite, such as MITRE ATT&amp;CK and OWASP. A run records the version and hash of each catalog it uses (field <code>source_manifest</code>).</li>
       </ul>
 
       <h2 class="section-label">What each track records</h2>
       <p class="section-note">
-        Track A records review context, the full inventory, traditional and AI
-        applicability, composition paths, threats, actions, and source provenance.
-        Track B assigns one SRF layer, persona, and party. Track C adds source-bound
-        obligations, control candidates, and acceptance authority. A catalog entry
-        needs an inventory referent and evidence before it can attach to a threat.
+        Track A records the review context, the inventory of diagram elements,
+        which traditional and AI checks apply, paths where AI meets traditional
+        software, threats, actions, and where each outside reference came from.
+        Track B assigns one SRF layer, persona, and party. Track C adds
+        obligations tied to a named source, candidate controls, and the
+        authority that accepts each threat. A catalog entry needs a matching
+        diagram element and evidence before it can attach to a threat.
       </p>
 
 {q1}
@@ -959,15 +981,15 @@ def main():
           <code>mermaid.json</code> / <code>svg.json</code>).
         </p>
         <ul>
-          <li><code>review_context</code>, <code>inventory</code>, <code>solution_description</code>, <code>replica_coverage</code>, and <code>llm_subset_empty</code>.</li>
-          <li><code>adversary</code>: assumptions and positions (who already sits in which zone).</li>
-          <li><code>existing_controls</code> with shown coverage, plus <code>control_absences</code> for expected controls not shown at a named referent.</li>
-          <li><code>claim_boundary</code>: what this review does not claim, plus the time or component box.</li>
-          <li><code>traditional_coverage</code>, typed <code>stride_coverage</code>, <code>phantom_coverage</code>, and <code>composition_coverage</code> record method denominators and gaps.</li>
-          <li><code>source_manifest</code> pins every external source used by a mapping.</li>
-          <li><code>threats</code>: stable ids with referents, method sources, evidence, external references, importance factors, one action, and validation on mitigate or eliminate.</li>
-          <li><code>review_order</code> records the review sequence without claiming likelihood, impact, or residual risk.</li>
-          <li><code>qa</code> records failed checks. P-report later fills <code>report.markdown</code> as a full projection of the matrix: grouped threat tables, every threat/position/control id, architecture prose, and coverage counts. Leave <code>report.reviewer</code> empty.</li>
+          <li>The review context, the inventory of diagram elements, and the solution description (<code>review_context</code>, <code>inventory</code>, <code>solution_description</code>). Also <code>replica_coverage</code> and <code>llm_subset_empty</code>.</li>
+          <li>The adversary: assumptions, and who already sits in which zone (<code>adversary</code>).</li>
+          <li>Existing controls that the diagram shows (<code>existing_controls</code>), and expected controls that the diagram does not show at a named element (<code>control_absences</code>).</li>
+          <li>What the review does not claim, plus the time or component box (<code>claim_boundary</code>).</li>
+          <li>Coverage counts and gaps for each method: <code>traditional_coverage</code>, <code>stride_coverage</code> (by element type), <code>phantom_coverage</code>, and <code>composition_coverage</code>.</li>
+          <li>The outside sources used for mappings, each pinned to a version (<code>source_manifest</code>).</li>
+          <li>The threats (<code>threats</code>). Each has a stable id, a diagram element, the method that found it, evidence, outside references, importance factors, and one action. A mitigate or eliminate action also needs a validation check.</li>
+          <li>The order to review threats in (<code>review_order</code>). It does not claim likelihood, impact, or residual risk.</li>
+          <li>Failed self-checks (<code>qa</code>). P-report then writes <code>report.markdown</code>: grouped threat tables, every threat, position, and control id, architecture prose, and coverage counts. Leave <code>report.reviewer</code> empty.</li>
         </ul>
         <p>
           Track B and Track C are optional. After the selected tracks, return to
@@ -990,16 +1012,17 @@ def main():
       <div class="deliverable" id="track-b-output">
         <h2 class="deliverable__title">What Track B has filled</h2>
         <p>
-          The assistant JSON after P-srf-coverage is the Track A matrix with
-          <code>srf</code> on every threat and a <code>layer_coverage</code> audit.
-          <code>chain_meta.track_b_applied</code> is true only when that audit closes.
+          After P-srf-coverage, the assistant JSON is the Track A matrix with an
+          SRF assignment (<code>srf</code>) on every threat and a layer coverage
+          check (<code>layer_coverage</code>). The field
+          <code>chain_meta.track_b_applied</code> is true only when that check passes.
         </p>
         <ul>
-          <li><code>srf.layer</code>: L1 to L5, the layer where the control point lives.</li>
-          <li><code>srf.persona</code>: one id from <a href="/data/personas.json">personas.json</a>.</li>
-          <li><code>srf.party</code>: <code>customer</code> or <code>provider</code>. Never <code>shared</code>.</li>
-          <li><code>srf.join.ai_exchange_slug</code>: a published slug from <a href="/data/threats.json">threats.json</a>, or null.</li>
-          <li><code>layer_coverage</code>: expected, considered, and remaining SRF layers.</li>
+          <li>Layer (<code>srf.layer</code>): L1 to L5, the layer where the control point lives.</li>
+          <li>Persona (<code>srf.persona</code>): one persona id from <a href="/data/personas.json">personas.json</a>.</li>
+          <li>Party (<code>srf.party</code>): <code>customer</code> or <code>provider</code>, never <code>shared</code>. Each threat gets one accountable persona.</li>
+          <li>OWASP AI Exchange link (<code>srf.join.ai_exchange_slug</code>): a published slug from <a href="/data/threats.json">threats.json</a>, or null.</li>
+          <li>Layer coverage (<code>layer_coverage</code>): which SRF layers were expected, which were considered, and which remain.</li>
         </ul>
         <p>
           Track B does not add threats. A threat with no matching crosswalk row still

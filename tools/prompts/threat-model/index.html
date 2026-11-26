@@ -288,24 +288,26 @@
       <div class="deliverable" id="shortcut">
         <h2 class="deliverable__title">Start here: one chat</h2>
         <ol>
-          <li>Attach the representation and set <code>representation_kind</code> to <code>image</code>, <code>mermaid</code>, or <code>svg</code>.</li>
+          <li>Attach the representation. Say whether it is an image, Mermaid, or SVG (<code>representation_kind</code>: <code>image</code>, <code>mermaid</code>, or <code>svg</code>).</li>
           <li>Copy the Track A shortcut. Send it once with the representation.</li>
           <li>Save the four export replies as <code>.md</code>, <code>.json</code>, <code>.csv</code>, and <code>.mmd</code>.</li>
         </ol>
         <p>
           The model loads
           <a href="/tools/prompts/threat-model/prompts.json">prompts.json</a>
-          and runs Track A through the four exports. Omitted fields stay empty.
-          Catalog, SRF, and vertical mapping without injected data are not
-          applicable. Optional JSON stays on this page; it is not in the copied
-          shortcut. If the chat cannot load that file, use
+          and runs Track A, then the four exports. It treats anything you leave
+          out as empty. Without data that you paste in, the catalog, SRF, and
+          vertical steps are marked not applicable. The optional JSON on this
+          page is not part of the copied shortcut. If the chat cannot load
+          prompts.json, use
           <a href="#copy-one-block">Run one prompt at a time</a>.
         </p>
         <h3 id="shortcut-a">Track A</h3>
         <p>
-          Default path. Representation and <code>representation_kind</code> are
-          enough. Default role is experienced-threat-modeler. Default
-          <code>if_no_ai_nodes</code> is <code>continue_without_llm</code>.
+          Default path. You need only the representation and its type. The
+          default role is experienced-threat-modeler. If the diagram shows no AI
+          components, the run continues without the AI steps
+          (<code>if_no_ai_nodes</code>: <code>continue_without_llm</code>).
         </p>
         <div class="shortcut-paste">
           <button type="button" data-shortcut-target="shortcut-text-a" data-copy-label="Copy shortcut" aria-label="Copy Track A one-chat shortcut">Copy shortcut</button>
@@ -332,8 +334,9 @@ Do not rephrase Shostack's four questions. Do not put mitigations in P-phantom.<
             <code>application-security</code>, <code>llm-caller</code>.
             Profile values: <code>full-system</code>,
             <code>bounded-subsystem</code>, <code>artifact-only</code>.
-            A catalog overlay is a <code>source_manifest</code> object with
-            pinned entries; omit it to leave catalog coverage not applicable.
+            To add outside catalogs, include a <code>source_manifest</code>
+            object with one pinned entry per catalog. Without it, catalog
+            coverage is not applicable.
           </p>
         <div class="shortcut-paste">
           <button type="button" data-shortcut-target="example-text-a" data-copy-label="Copy example" aria-label="Copy Track A review-context example">Copy example</button>
@@ -402,10 +405,10 @@ Do not rephrase Shostack's four questions. Do not put mitigations in P-phantom.<
 }</pre>
         </div>
           <p id="example-a-artifact">
-            Artifact-only confirmation. Traditional-phase
-            <code>not_applicable</code> is allowed only when
-            <code>profile_confirmation.operator_confirmed</code> is true and
-            <code>evidence_ref</code> states that integration is out of scope.
+            Artifact-only confirmation. The run may skip the traditional STRIDE
+            pass only when <code>profile_confirmation.operator_confirmed</code>
+            is true and <code>evidence_ref</code> states that integration is
+            out of scope.
           </p>
         <div class="shortcut-paste">
           <button type="button" data-shortcut-target="example-text-a-artifact" data-copy-label="Copy example" aria-label="Copy Track A artifact-only example">Copy example</button>
@@ -446,9 +449,11 @@ Do not rephrase Shostack's four questions. Do not put mitigations in P-phantom.<
           <summary>Track B: assign SRF accountability</summary>
           <p>
             Use this when the first message already includes an operating model
-            plus the full <a href="/data/personas.json">personas</a>,
+            plus the full contents of three files:
+            <a href="/data/personas.json">personas</a>,
             <a href="/data/matrix.json">matrix</a>, and
-            <a href="/data/threats.json">threat_crosswalk</a> objects.
+            <a href="/data/threats.json">threats</a> (the pack calls the last
+            one <code>threat_crosswalk</code>).
             Operating model values: <code>AI-SaaS</code>, <code>AI-PaaS</code>,
             <code>Agent-PaaS</code>, <code>IaaS</code>.
           </p>
@@ -457,8 +462,8 @@ Do not rephrase Shostack's four questions. Do not put mitigations in P-phantom.<
             <li>Open the three files. Copy each file's full JSON object.</li>
             <li>Copy the example below. Replace the three
               <code>REPLACE_WITH_FULL_OBJECT</code> strings with those objects.
-              Keep <code>operating_model</code> the same in
-              <code>review_context_input</code> and <code>srf_inputs</code>.</li>
+              Use the same operating model in <code>review_context_input</code>
+              and <code>srf_inputs</code>.</li>
             <li>Paste the shortcut, the representation, and the filled JSON in
               the same first message.</li>
           </ol>
@@ -553,8 +558,9 @@ Do not rephrase Shostack's four questions. Do not put mitigations in P-phantom.<
         <details class="shortcut-more" id="shortcut-c">
           <summary>Track C: join vertical obligations</summary>
           <p>
-            Use this after Track B inputs are in the first message, plus
-            <code>vertical_ids</code> and <code>vertical_source_rows</code>.
+            Use this after Track B inputs are in the first message, plus the
+            vertical ids and the vertical source rows
+            (<code>vertical_ids</code> and <code>vertical_source_rows</code>).
             The two rows in the example are reshaped from
             <a href="/data/healthcare-controls.json">healthcare-controls.json</a>.
             Copy more rows from that file or the matching vertical file and keep
@@ -568,7 +574,7 @@ Do not rephrase Shostack's four questions. Do not put mitigations in P-phantom.<
           </p>
           <ol>
             <li>Complete the Track B packing steps.</li>
-            <li>Set <code>vertical_ids</code> and <code>jurisdictions</code> on
+            <li>Add the vertical ids and jurisdictions to
               <code>review_context_input</code>.</li>
             <li>Add obligation and control-candidate rows. Paste shortcut,
               representation, and the filled JSON in the same first message.</li>
@@ -700,9 +706,10 @@ Do not rephrase Shostack's four questions. Do not put mitigations in P-phantom.<
         Copy P-context first, then use Copy next. Optional review context, SRF
         data, and vertical rows still belong in the first message.
         Role values: experienced-threat-modeler, application-security, llm-caller. Default is experienced-threat-modeler.
-        Copy-one-block text starts with a <code>[chain]</code> line. A chain
-        run of P-stride repeats in the same reply until its typed denominator
-        closes. P-importance is required before P-act. After P-report, run the
+        Each copied prompt starts with a <code>[chain]</code> line that names
+        the step and the next step. P-stride repeats in the same reply until
+        every in-scope process, actor, store, and flow has the STRIDE categories that apply to its type.
+        P-importance is required before P-act. After P-report, run the
         <a href="#export-report">export steps</a>.
       </p>
 
@@ -722,8 +729,7 @@ Do not rephrase Shostack's four questions. Do not put mitigations in P-phantom.<
         <li>Did we do a good job?</li>
       </ol>
       <p class="section-note">
-        Wording is from the Four Question Framework (CC-BY). Use those four sentences as written.
-        State the team view and what we are working on right now.
+        The wording comes from the Four Question Framework (CC-BY). Use the four sentences as written.
       </p>
 
       <h2 class="section-label">PHANTOM-B questions (LLM subset)</h2>
@@ -738,38 +744,42 @@ Do not rephrase Shostack's four questions. Do not put mitigations in P-phantom.<
 <li><strong>B</strong> Biases: What biases does this model carry into this use case, and are they acceptable here?</li>
       </ul>
       <p class="section-note">
-        Ask these eight questions for each eligible AI node after traditional
-        applicability closes. Write mitigations in P-act.
+        These questions adapt the PHANTOM-B white paper. Ask all eight about each
+        AI component, after the traditional STRIDE pass is done or marked not
+        applicable. Write mitigations in P-act, not here.
       </p>
 
-      <h2 class="section-label">Roles</h2>
+      <h2 class="section-label" id="roles">Roles</h2>
       <ul class="cite-list">
-        <li><strong>Experienced threat modeler</strong> (experienced-threat-modeler). Enumerate concrete scenarios a builder could act on this sprint. Prefer data-flow and trust-boundary analysis over catalogs. When a STRIDE letter does not apply to an element, say so and give a reason. Notices first: entry points, trust-boundary crossings, high-value stores, and controls whose shown coverage is uncertain; low-prerequisite attack paths available from an adversary position already recorded in the matrix. Declines to infer: provider capacity, undocumented controls, or business impact that the diagram and prior matrix do not show; likelihood or residual-risk scores when the input supplies no evidence for them.</li>
-<li><strong>Application security</strong> (application-security). Focus on entry points, authn/authz, input mediation, session handling, and control points the application team can change. Keep a provider-owned infrastructure threat in scope only when the diagram shows it and the application team must demand evidence. Notices first: public inputs that can bypass, disable, or choose whether a drawn filter runs; authorization decisions, session boundaries, parser transitions, and application-owned control points. Declines to infer: provider DDoS capacity, datacenter controls, or model-training controls that are not shown; a provider-owned remediation when the application team can only require an attestation.</li>
-<li><strong>LLM caller</strong> (llm-caller). Focus on prompt construction, tool and retrieval inputs, over-reliance, and what the model is allowed to decide. Do not assume you can retrain the base model. Notices first: where untrusted content enters prompt assembly, retrieval, tools, memory, or model output handling; decisions or actions delegated to model output without a drawn approval or policy control. Declines to infer: base-model retraining, provider internals, or training-data facts that are not shown; model intent, consciousness, guilt, or a provider guarantee not present in the diagram.</li>
+        <li><strong>Experienced threat modeler</strong> (experienced-threat-modeler). Finds concrete attack scenarios that a builder can act on this sprint. It starts from data flows and trust boundaries, not from catalog lists. When a STRIDE category does not apply to an element, it says so and gives the reason. Notices first: entry points, trust-boundary crossings, high-value stores, and controls whose shown coverage is uncertain; low-prerequisite attack paths available from an adversary position already recorded in the matrix. Declines to infer: provider capacity, undocumented controls, or business impact that the diagram and prior matrix do not show; likelihood or residual-risk scores when the input supplies no evidence for them.</li>
+<li><strong>Application security</strong> (application-security). Looks at entry points, authentication and authorization, input handling, session handling, and controls the application team can change. It keeps a provider-owned infrastructure threat in scope only when the diagram shows it and the application team needs evidence from the provider. Notices first: public inputs that can bypass, disable, or choose whether a drawn filter runs; authorization decisions, session boundaries, parser transitions, and application-owned control points. Declines to infer: provider DDoS capacity, datacenter controls, or model-training controls that are not shown; a provider-owned remediation when the application team can only require an attestation.</li>
+<li><strong>LLM caller</strong> (llm-caller). For a team that calls an LLM, hosted or local. Looks at how prompts are built, which tool and retrieval inputs reach the model, over-reliance on model output, and what the model is allowed to decide. It does not assume the team can retrain the base model. Notices first: where untrusted content enters prompt assembly, retrieval, tools, memory, or model output handling; decisions or actions delegated to model output without a drawn approval or policy control. Declines to infer: base-model retraining, provider internals, or training-data facts that are not shown; model intent, consciousness, guilt, or a provider guarantee not present in the diagram.</li>
       </ul>
 
-      <h2 class="section-label">Sources</h2>
+      <h2 class="section-label" id="sources">Sources</h2>
       <ul class="cite-list">
-        <li>Adam Shostack, <a href="https://shostack.org/files/papers/The_Four_Question_Framework.pdf">The Four Question Framework for Threat Modeling</a> (CC-BY).</li>
-        <li>Adam Shostack, <a href="https://shostack.org/files/papers/PHANTOM-B_Whitepaper_Shostack.pdf">PHANTOM-B: A STRIDE Analog for LLMs</a> (CC-BY).</li>
-        <li>Crossman et al., <a href="https://arxiv.org/abs/2503.09586">Auspex</a> (arXiv:2503.09586). Two-stage chain, cumulative prompt fill, threat matrix, SME evaluation. The prompts here are rebuilt from the paper's published figures. JPMC's withheld tradecraft text is not in this pack.</li>
-        <li>IETF <a href="https://datatracker.ietf.org/doc/html/rfc6819">RFC 6819</a>. Attack assumptions and existing features are stated before new threats. Do not copy its OAuth threat list onto an unrelated diagram.</li>
-        <li>CoSAI SRF accountability data: <a href="/data/threats.json">threats.json</a>, <a href="/data/personas.json">personas.json</a>, <a href="/data/matrix.json">matrix.json</a>.</li>
-        <li>External source registry: <a href="/data/threat-sources.json">threat-sources.json</a>. A run records the exact source versions and hashes in <code>source_manifest</code>.</li>
+        <li><a href="https://shostack.org/files/papers/The_Four_Question_Framework.pdf">The Four Question Framework for Threat Modeling</a>. Adam Shostack, Shostack + Associates, white paper, November 2024. License: Framework text CC-BY. This white paper: CC BY-NC 4.0. We use the four questions word for word as the four main parts of the pack: What are we working on? What can go wrong? What are we going to do about it? Did we do a good job?</li>
+        <li><a href="https://shostack.org/files/papers/PHANTOM-B_Whitepaper_Shostack.pdf">PHANTOM-B: A STRIDE Analog for LLMs</a>. Adam Shostack, Shostack + Associates, white paper, July 2026. License: CC-BY. We use its eight threat categories for the AI parts of a system, such as prompt injection and hallucination. The pack words each category as a question and asks it about every AI component. The white paper leaves out defenses, so the pack writes mitigations in the P-act step.</li>
+        <li><a href="https://learn.microsoft.com/en-us/azure/security/develop/threat-modeling-tool-threats#stride-model">STRIDE</a>. Microsoft Learn, Microsoft Threat Modeling Tool threats page. We use STRIDE on the whole diagram, including parts that have no AI. PHANTOM-B covers only the AI parts.</li>
+        <li><a href="https://arxiv.org/abs/2503.09586">Auspex: Building Threat Modeling Tradecraft into an Artificial Intelligence-based Copilot</a>. Andrew Crossman and four co-authors at JPMorgan Chase, arXiv preprint, March 2025. We follow its two-stage design. Stage one describes the system. Stage two builds a threat matrix. Each prompt receives the output of the earlier prompts. We wrote our prompts from the paper's published figures. The authors withheld their full prompt text for later publication, so none of it is in this pack.</li>
+        <li><a href="https://datatracker.ietf.org/doc/html/rfc6819">OAuth 2.0 Threat Model and Security Considerations</a>. IETF, RFC 6819, Informational, January 2013. We borrow its order only. It states attack assumptions (section 2.2) and existing security features (section 3) before it lists threats (section 4). The pack asks for the same order. The OAuth threats in the RFC do not apply to other systems, so the pack does not use them.</li>
+        <li>SRF data on this site: <a href="/data/threats.json">threats.json</a>, <a href="/data/personas.json">personas.json</a>, <a href="/data/matrix.json">matrix.json</a>. Track B reads them to assign a layer, a persona, and a party to each threat.</li>
+        <li>Outside source registry: <a href="/data/threat-sources.json">threat-sources.json</a>. It lists the catalogs a run may cite, such as MITRE ATT&amp;CK and OWASP. A run records the version and hash of each catalog it uses (field <code>source_manifest</code>).</li>
       </ul>
 
       <h2 class="section-label">What each track records</h2>
       <p class="section-note">
-        Track A records review context, the full inventory, traditional and AI
-        applicability, composition paths, threats, actions, and source provenance.
-        Track B assigns one SRF layer, persona, and party. Track C adds source-bound
-        obligations, control candidates, and acceptance authority. A catalog entry
-        needs an inventory referent and evidence before it can attach to a threat.
+        Track A records the review context, the inventory of diagram elements,
+        which traditional and AI checks apply, paths where AI meets traditional
+        software, threats, actions, and where each outside reference came from.
+        Track B assigns one SRF layer, persona, and party. Track C adds
+        obligations tied to a named source, candidate controls, and the
+        authority that accepts each threat. A catalog entry needs a matching
+        diagram element and evidence before it can attach to a threat.
       </p>
 
       <h2 class="section-label" id="q1">Q1. What are we working on?</h2>
-      <p class="section-note">Set the review profile and claim boundary, then read the whole representation into a structured inventory.</p>
+      <p class="section-note">Set the review scope and what the review does not claim. Then list the components, data flows, and trust boundaries the representation shows.</p>
       <div class="prompt-block is-collapsed" id="P-context-block" data-prompt-id="P-context">
         <div class="prompt-block__header">
           <span class="prompt-block__label">P-context · Establish review context · Track A · next P-norm</span>
@@ -1444,7 +1454,7 @@ Return JSON:
       </div>
 
       <h2 class="section-label" id="q2">Q2. What can go wrong?</h2>
-      <p class="section-note">Complete typed STRIDE and conditional abuse and operational passes before PHANTOM-B. Then test AI-to-traditional paths and pinned source mappings.</p>
+      <p class="section-note">Finish the STRIDE pass, then the abuse-case and operational passes where they apply. Then run PHANTOM-B on the AI components. Last, test paths where AI meets traditional software and map outside sources.</p>
       <div class="prompt-block is-collapsed" id="P-stride-block" data-prompt-id="P-stride">
         <div class="prompt-block__header">
           <span class="prompt-block__label">P-stride · STRIDE elicitation · Track A · repeat until complete</span>
@@ -2014,7 +2024,7 @@ A valid affected CVE or NVD external_ref keeps applicability_evidence {"supplier
       </div>
 
       <h2 class="section-label" id="q3">Q3. What are we going to do about it?</h2>
-      <p class="section-note">Map method labels, record evidence-backed importance, and choose one action with a testable control point.</p>
+      <p class="section-note">Label each threat, order the threats by evidence, and choose one action for each threat, with a check someone can run.</p>
       <div class="prompt-block is-collapsed" id="P-cia-block" data-prompt-id="P-cia">
         <div class="prompt-block__header">
           <span class="prompt-block__label">P-cia · CIA mapping · Track A · next P-stride-map</span>
@@ -2310,7 +2320,7 @@ Return the same threats and review_order. Preserve each threats[].importance exa
       </div>
 
       <h2 class="section-label" id="q4">Q4. Did we do a good job?</h2>
-      <p class="section-note">Check phase gates, denominators, evidence, and actions. Optional accountability and vertical joins run here before the report.</p>
+      <p class="section-note">Check that every step finished, that coverage counts add up, and that each threat has evidence and an action. Optional Track B and Track C run here, before the report.</p>
       <div class="prompt-block is-collapsed" id="P-qa-block" data-prompt-id="P-qa">
         <div class="prompt-block__header">
           <span class="prompt-block__label">P-qa · Self-check · Track A · next P-report or optional P-srf-join</span>
@@ -2471,15 +2481,15 @@ Return the full incoming matrix plus:
           <code>mermaid.json</code> / <code>svg.json</code>).
         </p>
         <ul>
-          <li><code>review_context</code>, <code>inventory</code>, <code>solution_description</code>, <code>replica_coverage</code>, and <code>llm_subset_empty</code>.</li>
-          <li><code>adversary</code>: assumptions and positions (who already sits in which zone).</li>
-          <li><code>existing_controls</code> with shown coverage, plus <code>control_absences</code> for expected controls not shown at a named referent.</li>
-          <li><code>claim_boundary</code>: what this review does not claim, plus the time or component box.</li>
-          <li><code>traditional_coverage</code>, typed <code>stride_coverage</code>, <code>phantom_coverage</code>, and <code>composition_coverage</code> record method denominators and gaps.</li>
-          <li><code>source_manifest</code> pins every external source used by a mapping.</li>
-          <li><code>threats</code>: stable ids with referents, method sources, evidence, external references, importance factors, one action, and validation on mitigate or eliminate.</li>
-          <li><code>review_order</code> records the review sequence without claiming likelihood, impact, or residual risk.</li>
-          <li><code>qa</code> records failed checks. P-report later fills <code>report.markdown</code> as a full projection of the matrix: grouped threat tables, every threat/position/control id, architecture prose, and coverage counts. Leave <code>report.reviewer</code> empty.</li>
+          <li>The review context, the inventory of diagram elements, and the solution description (<code>review_context</code>, <code>inventory</code>, <code>solution_description</code>). Also <code>replica_coverage</code> and <code>llm_subset_empty</code>.</li>
+          <li>The adversary: assumptions, and who already sits in which zone (<code>adversary</code>).</li>
+          <li>Existing controls that the diagram shows (<code>existing_controls</code>), and expected controls that the diagram does not show at a named element (<code>control_absences</code>).</li>
+          <li>What the review does not claim, plus the time or component box (<code>claim_boundary</code>).</li>
+          <li>Coverage counts and gaps for each method: <code>traditional_coverage</code>, <code>stride_coverage</code> (by element type), <code>phantom_coverage</code>, and <code>composition_coverage</code>.</li>
+          <li>The outside sources used for mappings, each pinned to a version (<code>source_manifest</code>).</li>
+          <li>The threats (<code>threats</code>). Each has a stable id, a diagram element, the method that found it, evidence, outside references, importance factors, and one action. A mitigate or eliminate action also needs a validation check.</li>
+          <li>The order to review threats in (<code>review_order</code>). It does not claim likelihood, impact, or residual risk.</li>
+          <li>Failed self-checks (<code>qa</code>). P-report then writes <code>report.markdown</code>: grouped threat tables, every threat, position, and control id, architecture prose, and coverage counts. Leave <code>report.reviewer</code> empty.</li>
         </ul>
         <p>
           Track B and Track C are optional. After the selected tracks, return to
@@ -2721,16 +2731,17 @@ Return the full matrix with:
       <div class="deliverable" id="track-b-output">
         <h2 class="deliverable__title">What Track B has filled</h2>
         <p>
-          The assistant JSON after P-srf-coverage is the Track A matrix with
-          <code>srf</code> on every threat and a <code>layer_coverage</code> audit.
-          <code>chain_meta.track_b_applied</code> is true only when that audit closes.
+          After P-srf-coverage, the assistant JSON is the Track A matrix with an
+          SRF assignment (<code>srf</code>) on every threat and a layer coverage
+          check (<code>layer_coverage</code>). The field
+          <code>chain_meta.track_b_applied</code> is true only when that check passes.
         </p>
         <ul>
-          <li><code>srf.layer</code>: L1 to L5, the layer where the control point lives.</li>
-          <li><code>srf.persona</code>: one id from <a href="/data/personas.json">personas.json</a>.</li>
-          <li><code>srf.party</code>: <code>customer</code> or <code>provider</code>. Never <code>shared</code>.</li>
-          <li><code>srf.join.ai_exchange_slug</code>: a published slug from <a href="/data/threats.json">threats.json</a>, or null.</li>
-          <li><code>layer_coverage</code>: expected, considered, and remaining SRF layers.</li>
+          <li>Layer (<code>srf.layer</code>): L1 to L5, the layer where the control point lives.</li>
+          <li>Persona (<code>srf.persona</code>): one persona id from <a href="/data/personas.json">personas.json</a>.</li>
+          <li>Party (<code>srf.party</code>): <code>customer</code> or <code>provider</code>, never <code>shared</code>. Each threat gets one accountable persona.</li>
+          <li>OWASP AI Exchange link (<code>srf.join.ai_exchange_slug</code>): a published slug from <a href="/data/threats.json">threats.json</a>, or null.</li>
+          <li>Layer coverage (<code>layer_coverage</code>): which SRF layers were expected, which were considered, and which remain.</li>
         </ul>
         <p>
           Track B does not add threats. A threat with no matching crosswalk row still

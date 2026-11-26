@@ -1,0 +1,1896 @@
+{
+  "schema_version": "0.1",
+  "srf_version": "1.0",
+  "label": "All sectors (common)",
+  "description": "Sector-neutral control schema for the CoSAI AI Shared Responsibility Framework. Holds controls that apply to every sector and do not depend on a sector regulator, supervisory letter, or lifecycle. Each control carries an accountable persona per SRF operating model and a threshold tuple. Common is not an industry vertical, so it has no vertical node and no applies_to_vertical edges.",
+  "regulatory_context": "No sector regulation scopes this file. Mappings point to horizontal sources only: NIST AI RMF 1.0, the EU AI Act, ISO/IEC 42001, and the other general frameworks named in common_mapping_keys.",
+  "scaling_rule": "The schema defines measurement methods and parameter names; it does not encode fixed values. Each organization sets parameter values per model tier.",
+  "id_convention": "SRF-COM-{layer}-{seq}",
+  "id_convention_note": "layer is L1 to L5. seq is three digits and runs per layer, starting at 001.",
+  "canonical_id_namespace": "srf.control.common.<id>",
+  "scope_node": "srf.concept.common-controls",
+  "common_status_values": [
+    "draft"
+  ],
+  "lifecycle_stage_values": [
+    "design",
+    "validate",
+    "operate",
+    "change",
+    "retire"
+  ],
+  "lifecycle_stage_note": "These values apply to common controls only. Defense and manufacturing files use lifecycle_stage with different values (for example validation and ops); do not compare across files.",
+  "operating_models_allowed": [
+    "AI-SaaS",
+    "AI-PaaS",
+    "Agent-PaaS",
+    "IaaS"
+  ],
+  "common_mapping_keys": {
+    "required": [
+      "nist_ai_rmf",
+      "eu_ai_act",
+      "iso_42001"
+    ],
+    "optional": [
+      "finos_aigf",
+      "aicm",
+      "owasp_llm",
+      "cis",
+      "mitre_atlas",
+      "nist_csf_2",
+      "nist_cyber_ai",
+      "gdpr"
+    ]
+  },
+  "optional_fields": [
+    "principles",
+    "former_ids",
+    "eu_ai_act_risk_class",
+    "cross_layer_controls",
+    "cross_layer_note",
+    "accountable_persona_note",
+    "implementing_persona_note"
+  ],
+  "principles_note": "principles lists informative IDs from data/ai-agentic-principles.json and data/security-principles.json. They create no governed_by edges.",
+  "mapping_status_note": "EU AI Act Article 4 text checked against the consolidated text of July 27, 2026 (02024R1689), as recorded in data/moral-regulatory-hierarchy.json. EUR-Lex was not fetched. ISO standards are cited by number only. Do not substitute invented IDs. EU AI Act Articles 10, 12, 15, 26, and 72 on the L2 controls repeat citations already in the sector control files and were not checked again against the consolidated text. GDPR Article 5 and the ISO/IEC 42001 Annex A numbers come from the controls' source request and were not checked against the standards. The L1 controls' EU AI Act articles other than Article 4 (6, 17, 25, 26, 27, 43, 49, 72, 73, and Annex III), the NIST AI RMF subcategory wording on SRF-COM-L1-002 to 010 (taken from NIST AI 100-1 where the repository holds it), and the ISO/IEC 42001 clause and Annex A numbers on those controls come from the controls' source request and were not checked against the consolidated text or the standard. EU AI Act Articles 9, 13, 14, 15, and 86 on the L3 controls repeat citations already in the sector control files and were not checked again against the consolidated text. SRF-COM-L3-008 names EU AI Act Article 50 in its description only. The hierarchy has no Article 50 obligation record, so no obligation id was created and the citation stays unmatched. The ISO/IEC 42001 Annex A numbers on the L3 controls come from the source request and were not checked against the standard. EU AI Act Articles 12 and 15 on the L4 controls repeat citations already in the sector control files or in earlier common controls and were not checked again against the consolidated text. The ISO/IEC 42001 Annex A numbers on the L4 controls (A.4.5, A.6.2.4, A.6.2.5, and A.6.2.8) come from the source request and were not checked against the standard. The NIST AI RMF subcategory wording on the L4 controls repeats glosses already used in this file. EU AI Act Articles 9, 11, 13, 15, 43, 53, and 72 and Annex IV on the L5 controls repeat citations already in the sector control files or in earlier common controls and were not checked again against the consolidated text. Article 55 is not cited on these controls. The hierarchy has no Article 55 obligation record, so no obligation id was created. The ISO/IEC 42001 Annex A numbers on the L5 controls (A.6.2.4, A.6.2.7, A.8.2, and A.8.5) come from the source request and were not checked against the standard. ISO/IEC 42001 citations that say edition-level name the standard and not an annex control. The NIST AI RMF subcategory wording on the L5 controls repeats glosses already used in this file, except MANAGE 3.2, whose gloss is the first sentence of that subcategory in NIST AI 100-1.",
+  "eu_ai_act_citation_format": "EU AI Act citations use the form 'Article N' with an optional short gloss in parentheses. 'N/A' means no EU AI Act nexus. 'TBD:' prefix marks an unverified mapping.",
+  "controls": [
+    {
+      "id": "SRF-COM-L1-001",
+      "former_ids": [
+        "srf.control.finance.SRF-L1-DEV-006"
+      ],
+      "layer": "L1",
+      "component": "Processes & Governance",
+      "lifecycle_stage": "operate",
+      "title": "Acceptable Use Policy Acknowledgment by AI System Users",
+      "description": "Each person who uses an AI system for the organization must read the acceptable use policy and acknowledge it before first use of any AI system. Each user must acknowledge the policy again when it changes in a way that affects permitted use, prohibited use, or escalation paths. The organization must keep a record of each acknowledgment that names the user, the policy version, and the date. Access to an AI system must not start or continue for a user whose acknowledgment is missing or out of date. AI System Governance issues the policy. AI System Users are accountable for reading it, acknowledging it, and using AI systems within it. EU AI Act Article 4 (AI literacy) requires providers and deployers to take measures to support AI literacy, sets no required level, and does not require a review cadence. The annual review window in the threshold is an SRF choice, not a legal requirement.",
+      "accountable_persona": "ai-system-users",
+      "accountable_by_model": {
+        "AI-SaaS": "ai-system-users",
+        "AI-PaaS": "ai-system-users",
+        "Agent-PaaS": "ai-system-users",
+        "IaaS": "ai-system-users"
+      },
+      "operating_models": [
+        "AI-SaaS",
+        "AI-PaaS",
+        "Agent-PaaS",
+        "IaaS"
+      ],
+      "common_status": "draft",
+      "mappings": {
+        "finos_aigf": "AIR-OP-018 (Model Overreach / Expanded Use)",
+        "nist_ai_rmf": "GOVERN 1.2 (trustworthy AI characteristics are integrated into policies)",
+        "eu_ai_act": "Article 4 (AI literacy; requires providers and deployers to take measures to support AI literacy; sets no required level)",
+        "iso_42001": "ISO/IEC 42001:2023, Clause 7.3",
+        "aicm": "GRC-09 (Acceptable Use of the AI Service)"
+      },
+      "threshold": {
+        "metric": "aup_user_acknowledgment_currency",
+        "description": "Percentage of active AI system users whose acknowledgment matches the current version of the acceptable use policy, recorded in the HR, IAM, or GRC system. The annual review window is an SRF choice, not a legal requirement.",
+        "evidence": {
+          "ocsf_class": "TBD: records management artifact. Where acknowledgment is captured through an IAM or GRC system, authentication events at the acknowledgment step can confirm which user completed it.",
+          "attribute": "TBD",
+          "ocsf_version": "1.8.0"
+        },
+        "operator": ">=",
+        "param": "tier-defined",
+        "window": "annual-review",
+        "breach_action": "suspend-ai-system-access-until-acknowledged; notify-policy-owner"
+      }
+    },
+    {
+      "id": "SRF-COM-L1-002",
+      "layer": "L1",
+      "component": "Business Units & Accountability",
+      "lifecycle_stage": "operate",
+      "title": "AI Use Within the Acceptable Use Policy",
+      "description": "Each person who uses an AI system for the organization must use it only for purposes the acceptable use policy permits. Before relying on an AI output for a decision, a message to a customer, or published work, the user must check it against a source or against their own judgment, at the level of care the policy sets for that use. Users must report misuse they see, AI outputs that look wrong or harmful, and any use they are unsure the policy allows, through the reporting channel the policy names. AI System Governance issues the policy and keeps the reporting channel open. AI System Users are accountable for staying within the policy, checking output, and reporting. Acknowledgment of the policy is covered by SRF-COM-L1-001, and issue and review of the policy by SRF-COM-L1-003. EU AI Act Article 26 sets deployer duties for high-risk AI systems, so that citation applies where in scope.",
+      "accountable_persona": "ai-system-users",
+      "accountable_by_model": {
+        "AI-SaaS": "ai-system-users",
+        "AI-PaaS": "ai-system-users",
+        "Agent-PaaS": "ai-system-users",
+        "IaaS": "ai-system-users"
+      },
+      "operating_models": [
+        "AI-SaaS",
+        "AI-PaaS",
+        "Agent-PaaS",
+        "IaaS"
+      ],
+      "common_status": "draft",
+      "mappings": {
+        "finos_aigf": "AIR-OP-018 (Model Overreach / Expanded Use)",
+        "nist_ai_rmf": "GOVERN 1.2 (trustworthy AI characteristics are integrated into policies); MANAGE 4.3 (incidents and errors are communicated to relevant AI actors, including affected communities)",
+        "eu_ai_act": "Article 26 (deployer obligations; where in scope)",
+        "iso_42001": "ISO/IEC 42001:2023, Annex A, A.3.3 and A.9.4",
+        "aicm": "GRC-09 (Acceptable Use of the AI Service)"
+      },
+      "threshold": {
+        "metric": "ai_use_conformance_review_coverage",
+        "description": "Percentage of business units with AI systems in production that completed a conformance review within the review window. The review samples AI use against the permitted uses in the policy, confirms that users are told to check output before relying on it, and lists the misuse and concern reports received and what was done about each. A business unit with AI systems in production and no review on file counts as a miss. The annual-review window is the loosest window among the source controls, and the target percentage is set per model tier.",
+        "evidence": {
+          "ocsf_class": "TBD: this is a records artifact, not streaming telemetry. Where reports arrive through a ticketing or GRC system, its records can show the reports received and how each was closed.",
+          "attribute": "TBD",
+          "ocsf_version": "1.8.0"
+        },
+        "operator": ">=",
+        "param": "tier-defined",
+        "window": "annual-review",
+        "breach_action": "restrict-ai-system-access-for-non-conforming-business-unit; notify-policy-owner"
+      }
+    },
+    {
+      "id": "SRF-COM-L1-003",
+      "layer": "L1",
+      "component": "Processes & Governance",
+      "lifecycle_stage": "design",
+      "title": "Acceptable Use Policy Issued, Versioned, and Reviewed",
+      "description": "AI System Governance must issue one acceptable use policy for AI use in the organization. The policy states permitted use, prohibited use, the categories of user it covers, and the reporting channel for misuse and concerns. Each issued version carries a version identifier, an issue date, and a named approver, and earlier versions are kept. AI System Governance must review the policy on a review cycle it sets and records, and must also review it when a new operating model, a new category of use, or a change in law or contract terms affects what use is permitted. A change to permitted or prohibited use produces a new version, and SRF-COM-L1-001 then requires users to acknowledge it. The review cycle is an SRF choice, not a legal requirement. EU AI Act Article 26 sets deployer duties for high-risk AI systems, so that citation applies where in scope.",
+      "accountable_persona": "ai-system-governance",
+      "accountable_by_model": {
+        "AI-SaaS": "ai-system-governance",
+        "AI-PaaS": "ai-system-governance",
+        "Agent-PaaS": "ai-system-governance",
+        "IaaS": "ai-system-governance"
+      },
+      "operating_models": [
+        "AI-SaaS",
+        "AI-PaaS",
+        "Agent-PaaS",
+        "IaaS"
+      ],
+      "common_status": "draft",
+      "mappings": {
+        "nist_ai_rmf": "GOVERN 1.2 (trustworthy AI characteristics are integrated into policies); GOVERN 1.4 (the risk management process and its outcomes are set through transparent policies and procedures); GOVERN 1.5 (ongoing monitoring and periodic review of the risk management process are planned)",
+        "eu_ai_act": "Article 26 (deployer obligations; where in scope)",
+        "iso_42001": "ISO/IEC 42001:2023, Clause 5.2 and Annex A, A.2.2 and A.2.4",
+        "aicm": "GRC-09 (Acceptable Use of the AI Service)"
+      },
+      "threshold": {
+        "metric": "aup_issued_versioned_and_reviewed",
+        "description": "Binary: a current acceptable use policy exists with a version identifier, an issue date, and a named approver, and was reviewed within the review window. A policy with no version record, or with no review on file within the window, counts as a miss. The annual-review window is the loosest window among the source controls. It is an SRF choice, not a legal requirement.",
+        "evidence": {
+          "ocsf_class": "TBD: this is a records artifact, not streaming telemetry. The policy repository's version history can show issue and review dates.",
+          "attribute": "TBD",
+          "ocsf_version": "1.8.0"
+        },
+        "operator": "==",
+        "param": "true",
+        "window": "annual-review",
+        "breach_action": "notify-policy-owner; schedule-policy-review; report-to-governance-body"
+      }
+    },
+    {
+      "id": "SRF-COM-L1-004",
+      "layer": "L1",
+      "component": "Business Units & Accountability",
+      "lifecycle_stage": "design",
+      "title": "AI Use-Case and System Inventory with Risk Tier",
+      "description": "AI System Governance must keep an inventory that lists every AI use case and every AI system the organization builds, buys, or runs. Each entry records the use case or system name, its operating model (AI-SaaS, AI-PaaS, Agent-PaaS, or IaaS), its accountable owner, and a risk tier. The tier comes from criteria that AI System Governance documents and approves. An entry must exist before a system goes into production. A system found in production without an entry must be added, tiered, and given an owner within the time the organization sets for late discoveries. The organization reviews the inventory on a cycle it sets, and reassigns the tier when the use or the model changes in a material way. Where a legal risk class applies, such as an EU AI Act risk class, the entry records it. EU AI Act Articles 6 and 49 and Annex III apply only to high-risk AI systems, so those citations apply where in scope.",
+      "accountable_persona": "ai-system-governance",
+      "accountable_by_model": {
+        "AI-SaaS": "ai-system-governance",
+        "AI-PaaS": "ai-system-governance",
+        "Agent-PaaS": "ai-system-governance",
+        "IaaS": "ai-system-governance"
+      },
+      "operating_models": [
+        "AI-SaaS",
+        "AI-PaaS",
+        "Agent-PaaS",
+        "IaaS"
+      ],
+      "common_status": "draft",
+      "mappings": {
+        "nist_ai_rmf": "GOVERN 1.6 (mechanisms are in place to inventory AI systems); MAP 1.5 (organizational risk tolerances are determined and documented)",
+        "eu_ai_act": "Article 6 (classification of high-risk AI systems; where in scope); Article 49 (registration; where in scope); Annex III (high-risk use cases; where in scope)",
+        "iso_42001": "ISO/IEC 42001:2023, Clause 6.1.2 and Annex A, A.4.2",
+        "aicm": "GRC-02 (Risk Management Program)"
+      },
+      "threshold": {
+        "metric": "ai_inventory_entry_completeness",
+        "description": "Percentage of known production AI use cases and systems that have an inventory entry with an operating model, an accountable owner, and a risk tier. Known systems are counted from procurement records, identity provider application registrations, and cloud billing. A system found in production with no entry, or with an entry missing any of the three fields, counts as a miss. The quarterly window is the loosest window among the source controls, and the target percentage is set per model tier.",
+        "evidence": {
+          "ocsf_class": "TBD: this is a records artifact, not streaming telemetry. Where application registrations are exported from an identity provider, they can be compared with the inventory to find systems with no entry.",
+          "attribute": "TBD",
+          "ocsf_version": "1.8.0"
+        },
+        "operator": ">=",
+        "param": "tier-defined",
+        "window": "quarterly",
+        "breach_action": "identify-unlisted-systems; assign-owner-and-tier; notify-governance-body"
+      },
+      "principles": [
+        "model-registries-non-negotiable",
+        "every-critical-system-has-an-owner"
+      ]
+    },
+    {
+      "id": "SRF-COM-L1-005",
+      "layer": "L1",
+      "component": "Processes & Governance",
+      "lifecycle_stage": "design",
+      "title": "AI Governance Body, Named Accountable Executive, and Risk Appetite",
+      "description": "The organization must charter an AI governance body. The charter names the members, the decision rights, the meeting cadence, the quorum, and the escalation path, and the body records its decisions in minutes. The body must meet at the cadence its charter sets. One named senior executive must own AI risk for the organization. That executive holds an AI risk appetite statement, approved by the body or the board, which sets risk tolerances for each operating model in use. The charter sets the review cycle for the statement. When the executive changes, the organization records the change and updates the designation. AI System Governance is accountable for chartering the body, naming the executive, and keeping the statement current. EU AI Act Article 17 requires a quality management system from providers of high-risk AI systems, so that citation applies where in scope.",
+      "accountable_persona": "ai-system-governance",
+      "accountable_by_model": {
+        "AI-SaaS": "ai-system-governance",
+        "AI-PaaS": "ai-system-governance",
+        "Agent-PaaS": "ai-system-governance",
+        "IaaS": "ai-system-governance"
+      },
+      "operating_models": [
+        "AI-SaaS",
+        "AI-PaaS",
+        "Agent-PaaS",
+        "IaaS"
+      ],
+      "common_status": "draft",
+      "mappings": {
+        "nist_ai_rmf": "GOVERN 2.1 (roles, responsibilities, and lines of communication for AI risk are documented); GOVERN 2.3 (executive leadership takes responsibility for decisions about AI risk)",
+        "eu_ai_act": "Article 17 (quality management system; where in scope)",
+        "iso_42001": "ISO/IEC 42001:2023, Clauses 5.1, 5.3, and 9.3, and Annex A, A.3.2",
+        "aicm": "GRC-06 (Governance Responsibility Model); GRC-02 (Risk Management Program)"
+      },
+      "threshold": {
+        "metric": "governance_body_executive_and_appetite_current",
+        "description": "Binary: a chartered AI governance body exists, it met at its chartered cadence in the review window with minutes on file, and one named executive owns an AI risk appetite statement that was approved within the review cycle the charter sets. A missing charter, a missed meeting with no recorded reason, no named executive, or a statement not approved within its cycle counts as a miss. The annual-review window is the loosest window among the source controls.",
+        "evidence": {
+          "ocsf_class": "TBD: this is a records artifact, not streaming telemetry. Meeting minutes and the approval record for the statement are the evidence.",
+          "attribute": "TBD",
+          "ocsf_version": "1.8.0"
+        },
+        "operator": "==",
+        "param": "true",
+        "window": "annual-review",
+        "breach_action": "convene-governance-body; document-gap; escalate-to-board"
+      },
+      "principles": [
+        "board-level-accountability-for-ai-risk"
+      ]
+    },
+    {
+      "id": "SRF-COM-L1-006",
+      "layer": "L1",
+      "component": "Processes & Governance",
+      "lifecycle_stage": "design",
+      "title": "Third-Party AI Supplier Register, Due Diligence, and Contract Terms",
+      "description": "AI System Governance must keep a register of every third-party AI supplier whose systems, models, data services, or professional services the organization uses in production or in AI development. Each entry names an internal accountable owner and one of the seven vendor-risk categories at https://aisharedresponsibility.com/tools/vendor-risk/. Due diligence on each supplier is recorded within the review window, and its depth follows that page's three-axis tier: data sensitivity, autonomy, and stack depth. For a supplier that embeds or resells a model from another party, the entry also holds that model supplier's evidence package: model card, artifact signing or BoAIM, and vulnerability disclosure. Each contract with a registered supplier must state what the supplier discloses, including incident notification and the documentation for any model it supplies. It must also state how the organization exits, including notice and the return or deletion of the organization's data, and how its data and configurations move out of the service (portability). A supplier in use that is not in the register must be added and assessed, or stopped. EU AI Act Article 25 sets duties along the AI value chain for high-risk AI systems, so that citation applies where in scope.",
+      "accountable_persona": "ai-system-governance",
+      "accountable_by_model": {
+        "AI-SaaS": "ai-system-governance",
+        "AI-PaaS": "ai-system-governance",
+        "Agent-PaaS": "ai-system-governance",
+        "IaaS": "ai-system-governance"
+      },
+      "operating_models": [
+        "AI-SaaS",
+        "AI-PaaS",
+        "Agent-PaaS",
+        "IaaS"
+      ],
+      "common_status": "draft",
+      "mappings": {
+        "finos_aigf": "AIR-PREV-007 (Legal and Contractual Frameworks for AI Systems)",
+        "nist_ai_rmf": "GOVERN 6.1 (policies address AI risks associated with third-party entities); GOVERN 6.2 (contingency processes cover failures or incidents in third-party AI systems); MAP 4.1 (legal risks of AI components, including third-party data and software, are mapped)",
+        "eu_ai_act": "Article 25 (responsibilities along the AI value chain; where in scope)",
+        "iso_42001": "ISO/IEC 42001:2023, Annex A, A.10.2 and A.10.3",
+        "owasp_llm": "LLM03: Supply Chain",
+        "aicm": "STA-14 (Supply Chain Governance Review); STA-11 (Supply Chain Agreement Review)",
+        "cis": "CIS Control 15: Service Provider Management"
+      },
+      "threshold": {
+        "metric": "ai_supplier_register_coverage",
+        "description": "Percentage of AI suppliers in use that are in the register with a named owner, a due diligence record dated within the review window, and a contract that covers disclosure, exit, and portability. A supplier in use but missing from the register, or listed without any of the three items, counts as a miss. The annual-review window is the loosest window among the source controls, and the target percentage is set per model tier.",
+        "evidence": {
+          "ocsf_class": "TBD: this is a records artifact, not streaming telemetry. Accounts payable and contract records can be compared with the register to find suppliers in use that are not listed.",
+          "attribute": "TBD",
+          "ocsf_version": "1.8.0"
+        },
+        "operator": ">=",
+        "param": "tier-defined",
+        "window": "annual-review",
+        "breach_action": "identify-suppliers-without-owner-or-assessment; freeze-new-supplier-onboarding; notify-governance-body"
+      },
+      "accountable_persona_note": "Some sector supplier checks, for example the L5 model-supplier controls, name the AI Model Provider side. This control covers the deploying organization's register and contracts, so AI System Governance is accountable in all four operating models."
+    },
+    {
+      "id": "SRF-COM-L1-007",
+      "layer": "L1",
+      "component": "Processes & Governance",
+      "lifecycle_stage": "validate",
+      "title": "AI Impact Assessment Before Deployment and on Material Change",
+      "description": "Before an AI system goes into production, and again before a major change goes live, AI System Governance must see that an impact assessment has been completed and recorded. The assessment names the people and groups the system affects, the harms and benefits expected for each, the safeguards applied, the residual risk, and how impacts will be monitored after go-live. A major change is one that alters the system's purpose, its model, its training or retrieval data, or the population it serves. A system without a recorded assessment must not go live. The organization keeps the record for the life of the system and gives it to a regulator on request. The Application Developer supplies the facts about the system that the assessment needs. EU AI Act Article 27 requires a fundamental rights impact assessment from certain deployers of high-risk AI systems, so that citation applies where in scope.",
+      "accountable_persona": "ai-system-governance",
+      "accountable_by_model": {
+        "AI-SaaS": "ai-system-governance",
+        "AI-PaaS": "ai-system-governance",
+        "Agent-PaaS": "ai-system-governance",
+        "IaaS": "ai-system-governance"
+      },
+      "operating_models": [
+        "AI-SaaS",
+        "AI-PaaS",
+        "Agent-PaaS",
+        "IaaS"
+      ],
+      "common_status": "draft",
+      "mappings": {
+        "nist_ai_rmf": "MAP 1.1 (the intended purpose, context of use, and prospective settings of the AI system are understood and documented); MAP 5.1 (the likelihood and magnitude of each identified impact are identified and documented)",
+        "eu_ai_act": "Article 27 (fundamental rights impact assessment for deployers; where in scope)",
+        "iso_42001": "ISO/IEC 42001:2023, Clauses 6.1.4 and 8.4, and Annex A, A.5.2 to A.5.5",
+        "aicm": "GRC-10 (AI Impact Assessment)"
+      },
+      "threshold": {
+        "metric": "impact_assessment_before_go_live_coverage",
+        "description": "Percentage of AI systems that went live, or went live after a major change, in the review window with a completed impact assessment dated before go-live. A system that went live with no assessment, or with one dated after go-live, counts as a miss. The per-deployment window is the loosest window among the source controls, and the target percentage is set per model tier.",
+        "evidence": {
+          "ocsf_class": "TBD: this is a records artifact, not streaming telemetry. Change and release records can be compared with assessment dates to find releases that went live first.",
+          "attribute": "TBD",
+          "ocsf_version": "1.8.0"
+        },
+        "operator": ">=",
+        "param": "tier-defined",
+        "window": "per-deployment",
+        "breach_action": "block-deployment; schedule-assessment; notify-governance-body"
+      },
+      "cross_layer_note": "Two source controls sit at L3: the defense control SRF-L3-TEVV-002 and the public sector control SRF-L3-VAL-002. Both name the Application Developer as accountable for completing the assessment of the system it builds. This control sits at L1 and names AI System Governance, which owns the requirement that an assessment is recorded before go-live and after a major change. The Application Developer still supplies the system facts the assessment needs. The two L3 controls stay in their sector files and are not changed."
+    },
+    {
+      "id": "SRF-COM-L1-008",
+      "layer": "L1",
+      "component": "Processes & Governance",
+      "lifecycle_stage": "operate",
+      "title": "AI Incident Response and Reporting",
+      "description": "AI System Governance must keep a documented incident response procedure that covers AI incidents: unexpected or harmful outputs, operator overrides of consequential decisions, system failures, and attacks on an AI system. The procedure classifies each incident by severity and type, names who handles it, and names the parties to notify, for example regulators, affected customers, contract counterparties, and internal leadership. Each incident is reported to those parties within the deadline set by law, contract, or internal policy. When more than one deadline applies, the shortest one governs. The organization tests the procedure on a cycle it sets, and records each test and each incident. EU AI Act Article 73 sets serious incident reporting deadlines for providers of high-risk AI systems, so that citation applies where in scope.",
+      "accountable_persona": "ai-system-governance",
+      "accountable_by_model": {
+        "AI-SaaS": "ai-system-governance",
+        "AI-PaaS": "ai-system-governance",
+        "Agent-PaaS": "ai-system-governance",
+        "IaaS": "ai-system-governance"
+      },
+      "operating_models": [
+        "AI-SaaS",
+        "AI-PaaS",
+        "Agent-PaaS",
+        "IaaS"
+      ],
+      "common_status": "draft",
+      "mappings": {
+        "nist_ai_rmf": "MANAGE 4.1 (post-deployment monitoring plans are implemented, including incident response and recovery); MANAGE 4.3 (incidents and errors are communicated to relevant AI actors, including affected communities)",
+        "eu_ai_act": "Article 73 (reporting of serious incidents; where in scope)",
+        "iso_42001": "ISO/IEC 42001:2023, Clause 10.2 and Annex A, A.8.4",
+        "aicm": "LOG-13 (Failures and Anomalies Reporting)"
+      },
+      "threshold": {
+        "metric": "ai_incident_deadline_adherence",
+        "description": "Percentage of AI incidents in the review window that were classified and reported to the required parties within the deadline set by law, contract, or internal policy. An incident with no classification record, or reported after its deadline, counts as a miss. The annual window is the loosest window among the source controls, and the target percentage is set per model tier.",
+        "evidence": {
+          "ocsf_class": "TBD: this is a records artifact, not streaming telemetry. Incident tickets with open, classification, and notification timestamps are the evidence.",
+          "attribute": "TBD",
+          "ocsf_version": "1.8.0"
+        },
+        "operator": ">=",
+        "param": "tier-defined",
+        "window": "annual",
+        "breach_action": "escalate-to-incident-owner; submit-late-report-with-explanation; notify-governance-body"
+      }
+    },
+    {
+      "id": "SRF-COM-L1-009",
+      "layer": "L1",
+      "component": "Processes & Governance",
+      "lifecycle_stage": "operate",
+      "title": "AI Training and Literacy by Role",
+      "description": "AI System Governance must set role-based AI training for staff who build, run, or use AI systems. Builders and operators learn the system's capabilities, limits, and failure modes. Users learn permitted use and how to check output. Each person with AI access completes the training for their role before access starts and again on a cycle the organization sets, and after a major model change that alters the role's duties. AI System Governance tracks completion by person and role. EU AI Act Article 4 (as amended; consolidated text of July 27, 2026) requires providers and deployers to take measures to support AI literacy and sets no required level. The training cycle in this control is an SRF choice, not a legal requirement.",
+      "accountable_persona": "ai-system-governance",
+      "accountable_by_model": {
+        "AI-SaaS": "ai-system-governance",
+        "AI-PaaS": "ai-system-governance",
+        "Agent-PaaS": "ai-system-governance",
+        "IaaS": "ai-system-governance"
+      },
+      "operating_models": [
+        "AI-SaaS",
+        "AI-PaaS",
+        "Agent-PaaS",
+        "IaaS"
+      ],
+      "common_status": "draft",
+      "mappings": {
+        "nist_ai_rmf": "GOVERN 2.2 (personnel and partners receive AI risk management training for their duties)",
+        "eu_ai_act": "Article 4 (AI literacy, as amended; consolidated text of July 27, 2026; requires providers and deployers to take measures to support AI literacy and sets no required level)",
+        "iso_42001": "ISO/IEC 42001:2023, Clauses 7.2 and 7.3, and Annex A, A.4.6"
+      },
+      "threshold": {
+        "metric": "ai_role_training_currency",
+        "description": "Percentage of people with access to an AI system who completed the training for their role within the review window, counted from the learning system's records against the roster of people with AI access. A person with access and no completion record counts as a miss. The annual window is the loosest window among the source controls and is an SRF choice, not a legal requirement. The target percentage is set per model tier.",
+        "evidence": {
+          "ocsf_class": "TBD: this is a records artifact, not streaming telemetry. Learning system completion records, joined to the access roster, are the evidence.",
+          "attribute": "TBD",
+          "ocsf_version": "1.8.0"
+        },
+        "operator": ">=",
+        "param": "tier-defined",
+        "window": "annual",
+        "breach_action": "identify-untrained-staff; notify-supervisor; restrict-access-until-trained"
+      }
+    },
+    {
+      "id": "SRF-COM-L1-010",
+      "layer": "L1",
+      "component": "Processes & Governance",
+      "lifecycle_stage": "change",
+      "title": "AI Change Management, Monitoring Plan, and Decommission",
+      "description": "AI System Governance must require three things for each AI system in production. First, each change to the model, its training or retrieval data, its prompts or configuration, or its tools needs an approval recorded before release, with a rollback plan. A change outside the scope of an earlier approval needs a new approval before release, and notice to a regulator where the law requires it. Second, a post-deployment monitoring plan must exist that names the metrics, how they are collected, the owner, how often results are reviewed, and the threshold that triggers corrective action. Third, a retirement procedure must cover shutdown, deletion or retention of data under the applicable retention rules, removal from the inventory and from any register where the system is listed, and retention of records after retirement. EU AI Act Article 43 (conformity assessment of substantially modified high-risk AI systems) and Article 72 (post-market monitoring) apply only where in scope.",
+      "accountable_persona": "ai-system-governance",
+      "accountable_by_model": {
+        "AI-SaaS": "ai-system-governance",
+        "AI-PaaS": "ai-system-governance",
+        "Agent-PaaS": "ai-system-governance",
+        "IaaS": "ai-system-governance"
+      },
+      "operating_models": [
+        "AI-SaaS",
+        "AI-PaaS",
+        "Agent-PaaS",
+        "IaaS"
+      ],
+      "common_status": "draft",
+      "mappings": {
+        "nist_ai_rmf": "GOVERN 1.7 (processes are in place for decommissioning and phasing out AI systems safely); MANAGE 4.1 (post-deployment monitoring plans are implemented, including change management and decommissioning)",
+        "eu_ai_act": "Article 43 (conformity assessment of substantially modified systems; where in scope); Article 72 (post-market monitoring; where in scope)",
+        "iso_42001": "ISO/IEC 42001:2023, Clause 6.3 and Annex A, A.6.2.6",
+        "aicm": "MDS-10 (Model Continuous Monitoring); GRC-01 (Governance Program Policy and Procedures)"
+      },
+      "threshold": {
+        "metric": "ai_lifecycle_control_coverage",
+        "description": "Percentage of AI systems in production that have all three of: an approval record for each change released in the review window, a current post-deployment monitoring plan, and a documented retirement procedure. A system missing any of the three counts as a miss. The annual-review window is the loosest window among the source controls, and the target percentage is set per model tier.",
+        "evidence": {
+          "ocsf_class": "TBD: this is a records artifact, not streaming telemetry. Change tickets, the monitoring plan, and the retirement procedure are the evidence.",
+          "attribute": "TBD",
+          "ocsf_version": "1.8.0"
+        },
+        "operator": ">=",
+        "param": "tier-defined",
+        "window": "annual-review",
+        "breach_action": "hold-further-changes; create-missing-plan-or-procedure; notify-governance-body"
+      },
+      "principles": [
+        "decommissioning-is-a-designed-capability"
+      ],
+      "cross_layer_note": "One source control sits at L5: the healthcare control SRF-L5-PMS-001 names the AI Model Provider for the monitoring plan of the model it supplies. This control sits at L1 and covers the monitoring plan of each system the deploying organization operates. Monitoring of the model itself by its provider is outside this control."
+    },
+    {
+      "id": "SRF-COM-L2-001",
+      "layer": "L2",
+      "component": "AI Training Data",
+      "lifecycle_stage": "design",
+      "title": "Training, Fine-Tuning, and RAG Data Provenance and Authority to Use",
+      "description": "Before a dataset is used to train a model, fine-tune a model, or fill a retrieval-augmented generation (RAG) corpus, the Data Provider must put a record on file. The record names the dataset's source, its license or contract terms, the consent or other legal basis that covers any personal data in it, and the uses its owner permits, including use for AI training. For a third-party dataset, the record also names the internal owner who answers for that source. The Data Provider must update the record when the source, the terms, or the intended use changes, and must keep it as long as the dataset, or any model or corpus built from it, stays in use. A dataset without a current record must not enter a training run or a RAG corpus. When the record shows that the permitted use does not cover the intended use, the Data Provider must get authorization from the data owner before use starts. EU AI Act Article 10 data governance duties apply only to high-risk AI systems, so that citation applies where in scope.",
+      "accountable_persona": "data-provider",
+      "accountable_by_model": {
+        "AI-SaaS": "data-provider",
+        "AI-PaaS": "data-provider",
+        "Agent-PaaS": "data-provider",
+        "IaaS": "data-provider"
+      },
+      "operating_models": [
+        "AI-SaaS",
+        "AI-PaaS",
+        "Agent-PaaS",
+        "IaaS"
+      ],
+      "common_status": "draft",
+      "mappings": {
+        "finos_aigf": "AIR-RC-023 (Intellectual Property and Copyright)",
+        "nist_ai_rmf": "MAP 4.1 (legal and technology risks of third-party data are mapped); GOVERN 6.1 (third-party policies are in place)",
+        "eu_ai_act": "Article 10 (data and data governance; where in scope)",
+        "iso_42001": "ISO/IEC 42001:2023, Annex A, A.7.3 and A.7.5",
+        "owasp_llm": "LLM03: Supply Chain",
+        "aicm": "DSP-20 (Data Provenance and Transparency)"
+      },
+      "threshold": {
+        "metric": "dataset_provenance_record_coverage",
+        "description": "Percentage of datasets in use for training, fine-tuning, or RAG that have a current record of source, license, consent where personal data is involved, and permitted use. Counted from the dataset inventory: datasets with a complete record divided by datasets in use. A dataset with no inventory entry counts as a miss. The annual window is the loosest window among the sector controls this control was distilled from, and the target percentage is set per model tier.",
+        "evidence": {
+          "ocsf_class": "TBD: provenance is a records artifact. Where data pipeline events are captured, api_activity events at data ingestion endpoints can show which datasets were ingested and when, to compare against the provenance records.",
+          "attribute": "TBD",
+          "ocsf_version": "1.8.0"
+        },
+        "operator": ">=",
+        "param": "tier-defined",
+        "window": "annual-review",
+        "breach_action": "suspend-use-of-undocumented-data; notify-data-owner"
+      },
+      "principles": [
+        "training-data-curation-is-foundational"
+      ]
+    },
+    {
+      "id": "SRF-COM-L2-002",
+      "layer": "L2",
+      "component": "Privacy Controls & Policies",
+      "lifecycle_stage": "operate",
+      "title": "Classification and Labeling of AI-Accessible Data",
+      "description": "Every data store that an AI system can read at runtime must carry a current sensitivity label that the data owner assigned or approved. This covers RAG corpora, grounding databases, and APIs that tools call. The Data Provider must label a store before an AI system gets access to it, and must label each store connected later before the AI system first reads it. Retrieval and tool calls must respect the label: an AI system must not read an unlabeled store, and must not return content from a store to a person or system that the label does not permit. When the data owner raises a store's sensitivity level, the Data Provider must re-evaluate which AI systems keep access to it. The label scheme is the organization's own, for example public, internal, confidential, and restricted. EU AI Act Article 10 applies only where in scope.",
+      "accountable_persona": "data-provider",
+      "accountable_by_model": {
+        "AI-SaaS": "data-provider",
+        "AI-PaaS": "data-provider",
+        "Agent-PaaS": "data-provider",
+        "IaaS": "data-provider"
+      },
+      "operating_models": [
+        "AI-SaaS",
+        "AI-PaaS",
+        "Agent-PaaS",
+        "IaaS"
+      ],
+      "common_status": "draft",
+      "mappings": {
+        "finos_aigf": "AIR-PREV-006 (Data Quality & Classification/Sensitivity)",
+        "nist_ai_rmf": "MEASURE 2.10 (privacy risk is examined and documented)",
+        "eu_ai_act": "Article 10 (data and data governance; where in scope)",
+        "iso_42001": "ISO/IEC 42001:2023 (edition-level)",
+        "owasp_llm": "LLM02: Sensitive Information Disclosure",
+        "aicm": "DSP-04 (Data Classification); DSP-03 (Data Inventory)",
+        "cis": "CIS Control 3: Data Protection"
+      },
+      "threshold": {
+        "metric": "ai_accessible_store_label_coverage",
+        "description": "Percentage of data stores that AI systems accessed in the review window that appear in the classification register with a current label. A store accessed by an AI system but missing from the register counts as a miss. The quarterly window is the loosest window among the source controls, and the target percentage is set per model tier.",
+        "evidence": {
+          "ocsf_class": "api_activity",
+          "attribute": "Cross-reference api_activity events (resource.uid or dst_endpoint.resource) against the data classification register to identify unlabeled stores being accessed by AI systems.",
+          "ocsf_version": "1.8.0"
+        },
+        "operator": ">=",
+        "param": "tier-defined",
+        "window": "quarterly",
+        "breach_action": "quarantine-unlabeled-store-from-ai-access; notify-data-owner"
+      },
+      "principles": [
+        "classification-labels-propagate",
+        "cis18-3"
+      ]
+    },
+    {
+      "id": "SRF-COM-L2-003",
+      "layer": "L2",
+      "component": "AI Training Data",
+      "lifecycle_stage": "validate",
+      "title": "Data Quality, Representativeness, and Bias Assessment",
+      "description": "Before a model is deployed, the Data Provider must assess its training and test data against documented targets for quality (completeness, valid value ranges, and consistency) and for coverage of the population the system will serve. The Data Provider must also check the data for bias. That check covers two things: groups that are under-represented in the data, and any feature that lets a model infer a protected trait indirectly. A postal code that tracks race is one example, and a first name that tracks sex is another; the protected trait itself does not have to appear in the data. The assessment must name each gap it finds and record what was done: fix the data, restrict the use, or accept the gap with a named approver. The assessment is kept with the model documentation. The Data Provider must repeat it when the training data changes in a material way and on the organization's review cycle. In production, the Data Provider must also compare input quality (missing and out-of-range values) with the same targets, and for systems that make or inform decisions about people, check outputs across protected groups on that cycle. EU AI Act Article 10 applies only where in scope.",
+      "accountable_persona": "data-provider",
+      "accountable_by_model": {
+        "AI-SaaS": "data-provider",
+        "AI-PaaS": "data-provider",
+        "Agent-PaaS": "data-provider",
+        "IaaS": "data-provider"
+      },
+      "operating_models": [
+        "AI-SaaS",
+        "AI-PaaS",
+        "Agent-PaaS",
+        "IaaS"
+      ],
+      "common_status": "draft",
+      "mappings": {
+        "finos_aigf": "AIR-OP-019 (Data Quality and Drift)",
+        "nist_ai_rmf": "MAP 2.3 (data collection and selection considerations are documented); MEASURE 2.11 (fairness and bias are evaluated and documented)",
+        "eu_ai_act": "Article 10 (data and data governance, including examination for bias; where in scope)",
+        "iso_42001": "ISO/IEC 42001:2023, Annex A, A.7.4, A.7.6, and A.5.4",
+        "aicm": "DSP-24 (Data Differentiation and Relevance)"
+      },
+      "threshold": {
+        "metric": "data_quality_and_bias_assessment_currency",
+        "description": "Percentage of in-scope AI systems whose training and test data have a completed, documented quality, coverage, and bias assessment dated within the review window. An in-scope system with no assessment on file counts as a miss. The annual window is the loosest window among the source controls, and the target percentage is set per model tier.",
+        "evidence": {
+          "ocsf_class": "TBD: the assessment is a records artifact. No OCSF class carries data quality or bias findings.",
+          "attribute": "TBD",
+          "ocsf_version": "1.8.0"
+        },
+        "operator": ">=",
+        "param": "tier-defined",
+        "window": "annual",
+        "breach_action": "notify-data-owner; schedule-assessment; document-gap"
+      }
+    },
+    {
+      "id": "SRF-COM-L2-004",
+      "layer": "L2",
+      "component": "AI Training Data",
+      "lifecycle_stage": "operate",
+      "title": "Input and Data Drift Monitoring",
+      "description": "For each AI system in production, the Data Provider must compare the distribution of production inputs with a reference distribution recorded at training or deployment. The comparison uses a statistical measure such as the Population Stability Index (PSI) or an equivalent. The reference distribution is stored with the model or corpus version it belongs to and covers every input feature that is monitored. The organization sets a drift threshold per model tier. When drift passes the threshold, the Data Provider must open a review that decides whether to retrain, re-validate, restrict use, or accept the drift with a named approver, and must record the outcome. For a RAG corpus, the same comparison applies to the content that retrieval returns. Where EU AI Act Article 72 applies, this monitoring can feed the provider's post-market monitoring plan.",
+      "accountable_persona": "data-provider",
+      "accountable_by_model": {
+        "AI-SaaS": "data-provider",
+        "AI-PaaS": "data-provider",
+        "Agent-PaaS": "data-provider",
+        "IaaS": "data-provider"
+      },
+      "operating_models": [
+        "AI-SaaS",
+        "AI-PaaS",
+        "Agent-PaaS",
+        "IaaS"
+      ],
+      "common_status": "draft",
+      "mappings": {
+        "finos_aigf": "AIR-OP-019 (Data Quality and Drift); AIR-DET-004 (AI System Observability)",
+        "nist_ai_rmf": "MEASURE 2.4 (the deployed AI system is monitored for changes); MANAGE 4.1 (post-deployment monitoring plans are implemented)",
+        "eu_ai_act": "Article 72 (post-market monitoring; where in scope)",
+        "iso_42001": "ISO/IEC 42001:2023, Annex A, A.6.2.6",
+        "aicm": "MDS-10 (Model Continuous Monitoring)"
+      },
+      "threshold": {
+        "metric": "input_drift_score",
+        "description": "Highest drift score (PSI or an equivalent measure) across the monitored input features in the monitoring window, compared with the tier threshold. Conventional PSI readings are below 0.1 for stable, 0.1 to 0.25 for investigate, and above 0.25 for re-validate; they are a starting point, and the organization sets alert levels per tier. The window and the threshold are set per model tier, which is the loosest setting among the source controls.",
+        "evidence": {
+          "ocsf_class": "ai_operation",
+          "attribute": "message_context: input feature distributions observable from ai_operation events at inference time can be aggregated to compute the drift score against the stored reference distribution.",
+          "ocsf_version": "1.8.0",
+          "ocsf_class_status": "unverified-proposal"
+        },
+        "operator": "<=",
+        "param": "tier-defined",
+        "window": "tier-defined",
+        "breach_action": "alert-data-provider; open-drift-review; notify-model-owner"
+      }
+    },
+    {
+      "id": "SRF-COM-L2-005",
+      "layer": "L2",
+      "component": "Privacy Controls & Policies",
+      "lifecycle_stage": "operate",
+      "title": "AI Decision and Interaction Log Retention",
+      "description": "The organization must keep logs of AI interactions: prompts, outputs, decisions, operator overrides, and the version of the model that produced each output. Before deployment, the Data Provider must set the retention period for each AI use case. The period is the longest one that any records schedule, contract, or law applying to that use case requires, and the Data Provider must review it when those requirements change. Logs must sit in tamper-evident storage, meaning that any change or deletion after writing can be detected, and must be retrievable on request by the deployer, an auditor, or a regulator. For use cases that make or inform high-stakes decisions, a named reviewer must also read the logs on a cadence the organization sets, looking for anomalous patterns. EU AI Act Article 12 requires automated logs for high-risk AI systems, and Article 26 requires deployers of those systems to keep the logs under their control for at least six months. Both apply only where in scope, and this control sets no retention number of its own.",
+      "accountable_persona": "data-provider",
+      "accountable_by_model": {
+        "AI-SaaS": "data-provider",
+        "AI-PaaS": "data-provider",
+        "Agent-PaaS": "data-provider",
+        "IaaS": "data-provider"
+      },
+      "operating_models": [
+        "AI-SaaS",
+        "AI-PaaS",
+        "Agent-PaaS",
+        "IaaS"
+      ],
+      "common_status": "draft",
+      "mappings": {
+        "nist_ai_rmf": "MEASURE 2.8 (risks associated with transparency and accountability are examined and documented)",
+        "eu_ai_act": "Article 12 (record-keeping; where in scope); Article 26 (deployer obligations, including log retention; where in scope)",
+        "iso_42001": "ISO/IEC 42001:2023, Annex A, A.6.2.8"
+      },
+      "threshold": {
+        "metric": "ai_log_retention_compliance",
+        "description": "Percentage of in-scope AI use cases whose logs are kept for the configured retention period in tamper-evident storage, as confirmed by the records owner or an audit of the storage configuration. A use case with no configured retention period counts as a miss. The annual window is the loosest window among the source controls, and the target percentage is set per model tier.",
+        "evidence": {
+          "ocsf_class": "audit_activity (3002). Log storage metadata: retention policy applied.",
+          "attribute": "metadata.retention_days",
+          "ocsf_version": "1.8.0"
+        },
+        "operator": ">=",
+        "param": "tier-defined",
+        "window": "annual-review",
+        "breach_action": "extend-retention-period; halt-log-deletion-pending-review; notify-records-owner"
+      },
+      "principles": [
+        "immutable-tamper-evident-logging",
+        "cis18-8"
+      ]
+    },
+    {
+      "id": "SRF-COM-L2-006",
+      "layer": "L2",
+      "component": "Privacy Controls & Policies",
+      "lifecycle_stage": "operate",
+      "title": "Data Boundary, Minimization, and Egress Control",
+      "description": "An AI system must receive only the data it needs for its stated purpose. The Data Provider must define a boundary for each dataset by environment, network zone, and sensitivity level, and must record which AI systems may read data inside it. Data must not cross that boundary without the data owner's approval on record. Data must also not reach an AI service provider for any purpose, including the provider's own model training, without that approval. The Data Provider must check each AI service's data-sharing settings at onboarding and after any change to the service's terms. Production data must stay out of development, test, and staging environments unless those environments meet the same controls as production. Agent and RAG context stores may hold personal data only for the current session or the approved retention period. The Data Provider must log each boundary crossing and each egress, and review any that lack approval. EU AI Act Article 10 applies only where in scope. GDPR Article 5 applies where in scope, that is, where the organization processes personal data covered by the GDPR.",
+      "accountable_persona": "data-provider",
+      "accountable_by_model": {
+        "AI-SaaS": "data-provider",
+        "AI-PaaS": "data-provider",
+        "Agent-PaaS": "data-provider",
+        "IaaS": "data-provider"
+      },
+      "operating_models": [
+        "AI-SaaS",
+        "AI-PaaS",
+        "Agent-PaaS",
+        "IaaS"
+      ],
+      "common_status": "draft",
+      "mappings": {
+        "nist_ai_rmf": "MEASURE 2.10 (privacy risk is examined and documented)",
+        "eu_ai_act": "Article 10 (data and data governance, including data minimization; where in scope)",
+        "iso_42001": "ISO/IEC 42001:2023 (edition-level)",
+        "gdpr": "Article 5 (principles for processing personal data, including purpose limitation and data minimization; where in scope)",
+        "owasp_llm": "LLM02: Sensitive Information Disclosure",
+        "aicm": "DSP-04 (Data Classification)"
+      },
+      "threshold": {
+        "metric": "data_boundary_verification_currency",
+        "description": "Percentage of in-scope AI systems whose data boundary, egress controls, and provider training-sharing settings were verified within the review window. A system with no verification on record counts as a miss. The annual window is the loosest window among the source controls, and the target percentage is set per model tier.",
+        "evidence": {
+          "ocsf_class": "network_activity (4001) or audit_activity (3002). Egress events must log source environment, destination, data classification, and detection method.",
+          "attribute": "dst_endpoint.zone; src_endpoint.zone; observables",
+          "ocsf_version": "1.8.0"
+        },
+        "operator": ">=",
+        "param": "tier-defined",
+        "window": "annual",
+        "breach_action": "restrict-access-until-verified; notify-data-owner; open-security-incident"
+      },
+      "principles": [
+        "least-privilege",
+        "nist-p3"
+      ]
+    },
+    {
+      "id": "SRF-COM-L2-007",
+      "layer": "L2",
+      "component": "AI Training Data",
+      "lifecycle_stage": "validate",
+      "title": "Poisoning Checks Before Training, Fine-Tuning, or RAG Ingestion",
+      "description": "Before data is used to train or fine-tune a model or is loaded into a RAG corpus, the Data Provider must check it for poisoning. Poisoning means records that were altered or injected on purpose to change model behavior, for example planted backdoor triggers, mislabeled examples, or hidden instructions in documents. The checks compare the data with its recorded source and hash, and screen for records that depart from the rest of the dataset. When a check fails, the dataset or the affected records are quarantined from use, and the Data Provider records the finding and who cleared or rejected the data. This control covers the ingestion stage, the point where the Data Provider can still reject the data. Protection of RAG stores, agent memory, and context stores once they are in use is covered by SRF-COM-L2-008. EU AI Act Article 15 applies only where in scope.",
+      "accountable_persona": "data-provider",
+      "accountable_by_model": {
+        "AI-SaaS": "data-provider",
+        "AI-PaaS": "data-provider",
+        "Agent-PaaS": "data-provider",
+        "IaaS": "data-provider"
+      },
+      "operating_models": [
+        "AI-SaaS",
+        "AI-PaaS",
+        "Agent-PaaS",
+        "IaaS"
+      ],
+      "common_status": "draft",
+      "mappings": {
+        "nist_ai_rmf": "MEASURE 2.7 (security and resilience are evaluated and documented)",
+        "eu_ai_act": "Article 15 (accuracy, robustness, and cybersecurity, including measures against data poisoning; where in scope)",
+        "iso_42001": "ISO/IEC 42001:2023 (edition-level)",
+        "owasp_llm": "LLM04: Data and Model Poisoning",
+        "aicm": "DSP-21 (Data Poisoning Prevention & Detection)"
+      },
+      "threshold": {
+        "metric": "ingestion_poisoning_check_coverage",
+        "description": "Percentage of in-scope training and fine-tuning datasets and RAG corpora that have a completed poisoning check dated before first use, measured when each system is promoted to production. A dataset or corpus with no check on record counts as a miss. The target percentage is set per model tier, and the per-system window is the loosest among the source controls.",
+        "evidence": {
+          "ocsf_class": "api_activity",
+          "attribute": "Monitor api_activity events at data ingestion endpoints, such as the write operations that load a dataset or a corpus. Compare each ingestion event with the poisoning check record, and flag an ingestion with no check on file.",
+          "ocsf_version": "1.8.0"
+        },
+        "operator": ">=",
+        "param": "tier-defined",
+        "window": "per-system",
+        "breach_action": "block-promotion; quarantine-affected-data; notify-data-owner"
+      },
+      "principles": [
+        "training-data-curation-is-foundational",
+        "iso-integrity"
+      ],
+      "accountable_persona_note": "Ingestion is the stage where the Data Provider can still reject the data, so this control stays with the Data Provider in all four operating models. Protection of stores in use at runtime is SRF-COM-L2-008, which follows the owners recorded on threat dsgai11."
+    },
+    {
+      "id": "SRF-COM-L2-008",
+      "layer": "L2",
+      "component": "Master Data Management",
+      "lifecycle_stage": "operate",
+      "title": "Runtime Protection of RAG Stores, Agent Memory, and Context Stores",
+      "description": "Every RAG store, agent memory store, and context store that an AI system reads or writes at runtime must be protected from tampering and from injected content. Stores include vector stores, episodic and working memory, session caches, and any other mutable store the AI system reads from or writes to. A store accepts writes only from actors on an authorized list. Writes and reads stay within the session, user, or tenant scope that the store assigns, so content from one context does not appear in another. Content that is written or retrieved is screened for injected instructions before it reaches model context. Each write is logged, and the integrity of a store is checked before an AI system uses its content, so that a change made outside the authorized path is detected. When a check fails, the store or the affected entries are quarantined and the owner is alerted. EU AI Act Article 15 applies only where in scope.",
+      "accountable_persona": "ai-platform-provider",
+      "accountable_by_model": {
+        "AI-SaaS": "ai-platform-provider",
+        "AI-PaaS": "ai-platform-provider",
+        "Agent-PaaS": "ai-platform-provider",
+        "IaaS": "ai-platform-provider"
+      },
+      "operating_models": [
+        "AI-SaaS",
+        "AI-PaaS",
+        "Agent-PaaS",
+        "IaaS"
+      ],
+      "common_status": "draft",
+      "mappings": {
+        "finos_aigf": "AIR-SEC-027 (Agent State Persistence Poisoning)",
+        "nist_ai_rmf": "MEASURE 2.7 (security and resilience are evaluated and documented)",
+        "eu_ai_act": "Article 15 (accuracy, robustness, and cybersecurity; where in scope)",
+        "iso_42001": "ISO/IEC 42001:2023 (edition-level)",
+        "owasp_llm": "LLM08: Vector and Embedding Weaknesses",
+        "aicm": "AIS-14 (AI Cache Protection); DSP-23 (Data Integrity Check)"
+      },
+      "threshold": {
+        "metric": "runtime_store_protection_coverage",
+        "description": "Percentage of in-scope RAG stores, agent memory stores, and context stores in use that have an authorized writer list, write logging, and an integrity check that runs before content is used. A store in use that lacks any of the three counts as a miss. The target percentage is set per model tier, and the per-system window is the loosest among the source controls.",
+        "evidence": {
+          "ocsf_class": "api_activity",
+          "attribute": "Monitor api_activity events on store endpoints for write and read operations. Compare actor identity (actor.user.uid or actor.process.name) with the authorized writer list for the store, and flag a write from an unlisted actor or a read outside the assigned scope.",
+          "ocsf_version": "1.8.0"
+        },
+        "operator": ">=",
+        "param": "tier-defined",
+        "window": "per-system",
+        "breach_action": "quarantine-affected-store; alert-store-owner; open-security-incident"
+      },
+      "principles": [
+        "memory-is-attack-surface",
+        "iso-integrity"
+      ],
+      "accountable_persona_note": "The owners match threat dsgai11 in data/threats.json, which names AI Platform Provider in all four operating models. The sector controls this one draws on, SRF-L2-MON-003 (finance) and SRF-L2-PMS-003 (healthcare), name the Data Provider and apply only under Agent-PaaS. Under this control the Data Provider stays accountable for checking data before ingestion, which is SRF-COM-L2-007. Under IaaS, dsgai11 names AI Platform Provider as the persona and the customer as the accountable party, because the customer runs the stack. This control follows that persona.",
+      "implementing_persona_note": "The Data Provider defines which actors may write to a store and which content the store may hold. The AI Platform Provider owns enforcement and detection on the stores in use."
+    },
+    {
+      "id": "SRF-COM-L3-001",
+      "layer": "L3",
+      "component": "Application Platforms",
+      "lifecycle_stage": "operate",
+      "title": "Prompt Injection Defense and Detection",
+      "description": "The Application Developer must keep the instructions sent to a model separate from untrusted input and from retrieved content. Untrusted input is text a person or another system submits. Retrieved content includes documents, records, and tool results the application fetches. Both are checked for injection attempts, including attempts to override the instructions, switch the role, or jailbreak the model, before they are placed in the model context. In operation the application detects those attempts and logs each detection with the application, the time, and the action taken. EU AI Act Article 15 applies only where in scope.",
+      "accountable_persona": "application-developer",
+      "accountable_by_model": {
+        "AI-SaaS": "application-developer",
+        "AI-PaaS": "application-developer",
+        "Agent-PaaS": "application-developer",
+        "IaaS": "application-developer"
+      },
+      "operating_models": [
+        "AI-SaaS",
+        "AI-PaaS",
+        "Agent-PaaS",
+        "IaaS"
+      ],
+      "common_status": "draft",
+      "mappings": {
+        "finos_aigf": "AIR-SEC-010 (Prompt Injection); AIR-PREV-003 (User/App/Model Firewalling/Filtering); AIR-DET-004 (AI System Observability)",
+        "nist_ai_rmf": "MEASURE 2.7 (security and resilience are evaluated and documented)",
+        "eu_ai_act": "Article 15 (accuracy, robustness, and cybersecurity; where in scope)",
+        "iso_42001": "ISO/IEC 42001:2023 (edition-level)",
+        "owasp_llm": "LLM01: Prompt Injection",
+        "aicm": "AIS-08 (Input Validation); AIS-15 (Prompt Differentiation)"
+      },
+      "threshold": {
+        "metric": "prompt_injection_defense_coverage",
+        "description": "Percentage of in-scope AI applications in production that keep untrusted input and retrieved content apart from instructions and that log injection detection. An application missing the separation or the detection log counts as a miss. The tier-defined window is the loosest window among the source controls, and the target percentage is set per model tier.",
+        "evidence": {
+          "ocsf_class": "detection_finding (2004). Detection events log the application, the time, and the action taken.",
+          "attribute": "finding.type_uid; finding.severity_id",
+          "ocsf_version": "1.8.0"
+        },
+        "operator": ">=",
+        "param": "tier-defined",
+        "window": "tier-defined",
+        "breach_action": "block-release-until-detection-is-logging; alert-application-developer"
+      },
+      "principles": [
+        "untrusted-content-segregated-and-labeled"
+      ]
+    },
+    {
+      "id": "SRF-COM-L3-002",
+      "layer": "L3",
+      "component": "Agents & Orchestration Models",
+      "lifecycle_stage": "operate",
+      "title": "Agent Task Boundary and Tool-Execution Authorization",
+      "description": "An agent may act only inside a task scope that is written down before deployment. The scope names the actions the agent may take and the conditions under which it must stop and refer to a person. Each tool call is checked against that scope and against the rights of the user the agent acts for. The check runs at each step of a multi-step task, because a check only at session start would miss a later call. A call outside the scope or outside those rights is blocked and logged with the agent, the tool, the user, and the time. EU AI Act Articles 14 and 15 apply only where in scope.",
+      "accountable_persona": "application-developer",
+      "accountable_by_model": {
+        "AI-SaaS": "application-developer",
+        "AI-PaaS": "application-developer",
+        "Agent-PaaS": "agentic-platform-provider",
+        "IaaS": "application-developer"
+      },
+      "operating_models": [
+        "AI-SaaS",
+        "AI-PaaS",
+        "Agent-PaaS",
+        "IaaS"
+      ],
+      "common_status": "draft",
+      "mappings": {
+        "finos_aigf": "AIR-PREV-018 (Agent Authority Least Privilege Framework); AIR-SEC-024 (Agent Action Authorization Bypass); AIR-SEC-025 (Tool Chain Manipulation and Injection)",
+        "nist_ai_rmf": "GOVERN 3.2 (policies define human-AI configurations and oversight); MEASURE 2.7 (security and resilience are evaluated and documented)",
+        "eu_ai_act": "Article 14 (human oversight; where in scope); Article 15 (accuracy, robustness, and cybersecurity; where in scope)",
+        "iso_42001": "ISO/IEC 42001:2023 (edition-level)",
+        "owasp_llm": "LLM06: Excessive Agency",
+        "aicm": "AIS-11 (Agents Security Boundaries); IAM-19 (Agent Access Restriction)"
+      },
+      "threshold": {
+        "metric": "agent_scope_and_tool_check_coverage",
+        "description": "Percentage of in-scope agent deployments that have a written task scope and a tool-call check against that scope and the user's rights. A deployment missing either counts as a miss. The per-deployment window is looser than the continuous and per-session windows in the source controls, and the target percentage is set per model tier.",
+        "evidence": {
+          "ocsf_class": "api_activity",
+          "attribute": "api_activity events on tool endpoints. A denied call has status Failure and status_code 403 or the equivalent. Compare actor identity with the task scope and the user's rights.",
+          "ocsf_version": "1.8.0"
+        },
+        "operator": ">=",
+        "param": "tier-defined",
+        "window": "per-deployment",
+        "breach_action": "block-tool-call; log-denied-call; alert-accountable-owner"
+      },
+      "principles": [
+        "tool-permissions-never-exceed-function-need"
+      ],
+      "accountable_persona_note": "Application Developer is accountable on AI-SaaS, AI-PaaS, and IaaS. Agentic Platform & Framework Providers is accountable on Agent-PaaS, where the platform checks task scope and tool rights.",
+      "cross_layer_note": "One source control sits at L1: finance SRF-L1-DEV-004, a written agent authorization policy owned by AI System Governance on Agent-PaaS. This control sits at L3 and covers the runtime task scope and the per-call tool check. The written policy stays on the L1 control."
+    },
+    {
+      "id": "SRF-COM-L3-003",
+      "layer": "L3",
+      "component": "Application Platforms",
+      "lifecycle_stage": "operate",
+      "title": "Human Oversight Gate for High-Impact Outputs and Actions",
+      "description": "A named person must approve a high-impact output or action before it takes effect. The organization classes an output or action as high-impact when it can harm a person, change a person's rights or access to a service, or change a safety-critical state. The approval is an explicit act by that person, recorded with the person's name, the time, and the outcome. The output or action does not take effect on a timeout or because no one responded. Where a validated safety case shows that waiting for approval would itself cause harm, the organization records that case and the automatic action it authorizes. EU AI Act Article 14 applies only where in scope.",
+      "accountable_persona": "application-developer",
+      "accountable_by_model": {
+        "AI-SaaS": "application-developer",
+        "AI-PaaS": "application-developer",
+        "Agent-PaaS": "application-developer",
+        "IaaS": "application-developer"
+      },
+      "operating_models": [
+        "AI-SaaS",
+        "AI-PaaS",
+        "Agent-PaaS",
+        "IaaS"
+      ],
+      "common_status": "draft",
+      "mappings": {
+        "nist_ai_rmf": "GOVERN 3.2 (policies define human-AI configurations and oversight); MAP 3.5 (processes for human oversight are assessed)",
+        "eu_ai_act": "Article 14 (human oversight; where in scope)",
+        "iso_42001": "ISO/IEC 42001:2023, Annex A, A.9.2",
+        "aicm": "GRC-15 (Human supervision)"
+      },
+      "threshold": {
+        "metric": "high_impact_approval_coverage",
+        "description": "Percentage of high-impact outputs and actions that have a recorded approval by a named person before they take effect. A high-impact output or action with no recorded approval counts as a miss, except where a validated safety case authorizes an automatic action and that case is on record. The annual window is the loosest window among the source controls, and the target percentage is set per model tier.",
+        "evidence": {
+          "ocsf_class": "audit_activity (3002). Approval events log the named person, the time, and the outcome.",
+          "attribute": "actor.user.name; time; activity_id",
+          "ocsf_version": "1.8.0"
+        },
+        "operator": ">=",
+        "param": "tier-defined",
+        "window": "annual",
+        "breach_action": "hold-output-or-action; notify-named-approver"
+      },
+      "principles": [
+        "approval-before-high-impact-actions"
+      ],
+      "cross_layer_note": "Two source controls sit at L1. Defense SRF-L1-OVR-011 is an escalation chain that is documented and rehearsed. Healthcare SRF-L1-HOR-003 is a policy that records when a clinician overrides a recommendation. This control sits at L3 and covers approval before a high-impact output or action takes effect. The escalation chain and the override-documentation policy stay on those L1 controls."
+    },
+    {
+      "id": "SRF-COM-L3-004",
+      "layer": "L3",
+      "component": "Application Platforms",
+      "lifecycle_stage": "operate",
+      "title": "Operator Override and Stop Capability, Tested",
+      "description": "An operator must be able to override an AI output or stop the system from the operator interface. The control is labeled, and using it does not require technical knowledge of the model. Each use is logged with the operator, the time, and a reason. The organization tests the stop within the review window, records the time from the stop request to the halt, and compares that time with the response time set for the system. The test result is kept through the review window. EU AI Act Article 14 applies only where in scope.",
+      "accountable_persona": "application-developer",
+      "accountable_by_model": {
+        "AI-SaaS": "application-developer",
+        "AI-PaaS": "application-developer",
+        "Agent-PaaS": "agentic-platform-provider",
+        "IaaS": "application-developer"
+      },
+      "operating_models": [
+        "AI-SaaS",
+        "AI-PaaS",
+        "Agent-PaaS",
+        "IaaS"
+      ],
+      "common_status": "draft",
+      "mappings": {
+        "nist_ai_rmf": "MANAGE 2.4 (mechanisms are in place to disengage systems that deviate from intended use)",
+        "eu_ai_act": "Article 14 (human oversight; where in scope)",
+        "iso_42001": "ISO/IEC 42001:2023 (edition-level)",
+        "aicm": "GRC-15 (Human supervision)"
+      },
+      "threshold": {
+        "metric": "stop_test_coverage",
+        "description": "Percentage of in-scope AI systems whose override or stop was tested within the review window, with the measured time to stop recorded and compared with the response time set for that system. A system with no current test, or a test with no measured time, counts as a miss. The annual window is the loosest window among the source controls, and the target percentage is set per model tier. The response time itself is set per system.",
+        "evidence": {
+          "ocsf_class": "audit_activity (3002). Override and stop events log the operator, the time, and the reason. The stop test record stores the measured time to halt.",
+          "attribute": "actor.user.name; time; activity_id",
+          "ocsf_version": "1.8.0"
+        },
+        "operator": ">=",
+        "param": "tier-defined",
+        "window": "annual",
+        "breach_action": "restrict-operation-until-stop-is-tested; notify-accountable-owner"
+      },
+      "principles": [
+        "time-to-stop-is-a-measured-control"
+      ],
+      "accountable_persona_note": "Application Developer is accountable on AI-SaaS, AI-PaaS, and IaaS. Agentic Platform & Framework Providers is accountable on Agent-PaaS, where the platform provides the operator override and stop.",
+      "cross_layer_note": "One source control sits at L4: defense SRF-L4-OVR-012, a platform-level emergency stop tested on a cycle and owned by the AI Platform Provider. This control sits at L3 and covers the operator override and the tested stop on the application. The platform stop stays on the L4 control. The response time is set per system. This control does not set a time in seconds."
+    },
+    {
+      "id": "SRF-COM-L3-005",
+      "layer": "L3",
+      "component": "Application Platforms",
+      "lifecycle_stage": "operate",
+      "title": "Explanation, Notice, and Appeal for Adverse Decisions",
+      "description": "When an AI system makes or informs a decision that goes against a person, that person receives a plain-language reason and a way to appeal. The reason states the main factors in the decision in words that do not require technical knowledge of the model, and it is delivered with the notice of the decision. The appeal path names the office that reviews the appeal, the time allowed for the review, and that a person with authority to change the decision conducts the review. Both the reason and the appeal path are in place before the decision is issued. EU AI Act Articles 13 and 86 apply only where in scope.",
+      "accountable_persona": "application-developer",
+      "accountable_by_model": {
+        "AI-SaaS": "application-developer",
+        "AI-PaaS": "application-developer",
+        "Agent-PaaS": "application-developer",
+        "IaaS": "application-developer"
+      },
+      "operating_models": [
+        "AI-SaaS",
+        "AI-PaaS",
+        "Agent-PaaS",
+        "IaaS"
+      ],
+      "common_status": "draft",
+      "mappings": {
+        "nist_ai_rmf": "MEASURE 2.9 (the AI model is explained, validated, and documented)",
+        "eu_ai_act": "Article 13 (transparency and provision of information; where in scope); Article 86 (right to explanation of individual decision-making; where in scope)",
+        "iso_42001": "ISO/IEC 42001:2023, Annex A, A.8.2 and A.8.3",
+        "aicm": "GRC-15 (Human supervision)"
+      },
+      "threshold": {
+        "metric": "adverse_decision_notice_and_appeal_coverage",
+        "description": "Percentage of in-scope adverse AI-assisted decisions that include a plain-language reason and a way to appeal. A decision missing either counts as a miss. The annual-review window is the loosest window among the source controls, and the target percentage is set per model tier.",
+        "evidence": {
+          "ocsf_class": "audit_activity (3002). Decision notice events record whether a plain-language reason and an appeal path were included.",
+          "attribute": "activity_id; observables",
+          "ocsf_version": "1.8.0"
+        },
+        "operator": ">=",
+        "param": "tier-defined",
+        "window": "annual-review",
+        "breach_action": "hold-adverse-notice; notify-accountable-owner"
+      }
+    },
+    {
+      "id": "SRF-COM-L3-006",
+      "layer": "L3",
+      "component": "APIs & Fine-tuned Models",
+      "lifecycle_stage": "operate",
+      "title": "Output Filtering and Content Safety",
+      "description": "Model outputs pass through safety filters before they reach a person or another system. The filters apply the output categories the organization prohibits, and they run after every model call, including a call in the middle of an agent task. The organization measures, by category, how often a filter blocks or redacts an output and how often an output gets past a filter that should have blocked it. Both counts are compared with limits set per model tier. EU AI Act Article 15 applies only where in scope.",
+      "accountable_persona": "application-developer",
+      "accountable_by_model": {
+        "AI-SaaS": "application-developer",
+        "AI-PaaS": "application-developer",
+        "Agent-PaaS": "application-developer",
+        "IaaS": "application-developer"
+      },
+      "operating_models": [
+        "AI-SaaS",
+        "AI-PaaS",
+        "Agent-PaaS",
+        "IaaS"
+      ],
+      "common_status": "draft",
+      "mappings": {
+        "finos_aigf": "AIR-PREV-003 (User/App/Model Firewalling/Filtering)",
+        "nist_ai_rmf": "MEASURE 2.6 (safety risks are evaluated and documented)",
+        "eu_ai_act": "Article 15 (accuracy, robustness, and cybersecurity; where in scope)",
+        "iso_42001": "ISO/IEC 42001:2023 (edition-level)",
+        "owasp_llm": "LLM05: Improper Output Handling",
+        "aicm": "AIS-09 (Output Validation); TVM-11 (Guardrails)"
+      },
+      "threshold": {
+        "metric": "output_filter_measurement_coverage",
+        "description": "Percentage of in-scope AI systems whose outputs pass a safety filter and whose filter blocks and bypasses are measured by category. A system with no filter, or with no measurement of blocks and bypasses, counts as a miss. The tier-defined window is the loosest window among the source controls, and the target percentage is set per model tier.",
+        "evidence": {
+          "ocsf_class": "security_finding (2001). Filter decisions are logged by category for blocks and for bypasses.",
+          "attribute": "finding.type_uid; finding.severity_id",
+          "ocsf_version": "1.8.0"
+        },
+        "operator": ">=",
+        "param": "tier-defined",
+        "window": "tier-defined",
+        "breach_action": "alert-application-developer; review-filter-limits"
+      },
+      "principles": [
+        "monitored-output-treated-as-hostile-to-monitors"
+      ]
+    },
+    {
+      "id": "SRF-COM-L3-007",
+      "layer": "L3",
+      "component": "Application Platforms",
+      "lifecycle_stage": "validate",
+      "title": "Pre-Deployment Testing, Red Teaming, and Adversarial Robustness",
+      "description": "A release of an AI system requires a test record against criteria written down before the test. The criteria cover functional behavior, safety boundaries, and security. The record includes adversarial tests and a red-team test, using hostile inputs such as prompt injection and attempts to manipulate the model, and it records the findings. A named reviewer signs the record before release. EU AI Act Articles 9 and 15 apply only where in scope.",
+      "accountable_persona": "application-developer",
+      "accountable_by_model": {
+        "AI-SaaS": "application-developer",
+        "AI-PaaS": "application-developer",
+        "Agent-PaaS": "application-developer",
+        "IaaS": "application-developer"
+      },
+      "operating_models": [
+        "AI-SaaS",
+        "AI-PaaS",
+        "Agent-PaaS",
+        "IaaS"
+      ],
+      "common_status": "draft",
+      "mappings": {
+        "nist_ai_rmf": "MEASURE 2.1 (approaches for evaluating AI system trustworthiness are established); MEASURE 2.7 (security and resilience are evaluated and documented); MAP 2.3 (scientific integrity and TEVV considerations are identified and documented)",
+        "eu_ai_act": "Article 9 (risk management system; where in scope); Article 15 (accuracy, robustness, and cybersecurity; where in scope)",
+        "iso_42001": "ISO/IEC 42001:2023, Annex A, A.6.2.4",
+        "owasp_llm": "LLM01: Prompt Injection",
+        "aicm": "AIS-05 (Application Security Testing); MDS-06 (Adversarial Attack Analysis); TVM-06 (Penetration Testing)"
+      },
+      "threshold": {
+        "metric": "pre_deployment_test_coverage",
+        "description": "Percentage of AI system releases in the review window that have a signed test record covering the documented criteria, including adversarial tests and a red-team test. A release with no such record counts as a miss. The per-deployment window matches the source controls, and the target percentage is set per model tier.",
+        "evidence": {
+          "ocsf_class": "TBD: this is a records artifact, not streaming telemetry. The signed test record for the release is the evidence.",
+          "attribute": "TBD",
+          "ocsf_version": "1.8.0"
+        },
+        "operator": ">=",
+        "param": "tier-defined",
+        "window": "per-deployment",
+        "breach_action": "block-release; notify-named-reviewer"
+      },
+      "principles": [
+        "defenses-evaluated-against-adaptive-adversaries"
+      ]
+    },
+    {
+      "id": "SRF-COM-L3-008",
+      "layer": "L3",
+      "component": "Application Platforms",
+      "lifecycle_stage": "operate",
+      "title": "AI Interaction Disclosure and Content Labeling",
+      "description": "A person who interacts with an AI system is told, at the start of the interaction and in the interface the person is using, that the other party is an AI system. Content the system generates is labeled as generated where a law or an organizational rule requires a label, and the label stays with the content when the content is stored or shown. No control in the six sector files states this duty. This common control has no sector source and states the duty for every sector. EU AI Act Article 50 sets transparency duties for certain AI systems, including telling a person they are interacting with an AI system and labeling generated content. data/moral-regulatory-hierarchy.json has no Article 50 obligation record, so this control cites Article 50 in this text only, leaves the citation unmatched, and assigns no obligation id.",
+      "accountable_persona": "application-developer",
+      "accountable_by_model": {
+        "AI-SaaS": "application-developer",
+        "AI-PaaS": "application-developer",
+        "Agent-PaaS": "application-developer",
+        "IaaS": "application-developer"
+      },
+      "operating_models": [
+        "AI-SaaS",
+        "AI-PaaS",
+        "Agent-PaaS",
+        "IaaS"
+      ],
+      "common_status": "draft",
+      "mappings": {
+        "nist_ai_rmf": "MEASURE 2.8 (risks associated with transparency and accountability are examined and documented)",
+        "eu_ai_act": "Unmatched (no obligation record for the transparency duty named in the control text; no obligation id is assigned)",
+        "iso_42001": "ISO/IEC 42001:2023, Annex A, A.8.2"
+      },
+      "threshold": {
+        "metric": "ai_disclosure_and_label_coverage",
+        "description": "Percentage of in-scope AI systems that tell a person they are interacting with an AI system and that label generated content where a label is required. A system missing the disclosure, or missing a required label, counts as a miss. No sector control sets a window, so the per-system window is an SRF choice. The target percentage is set per model tier.",
+        "evidence": {
+          "ocsf_class": "TBD: this is a records artifact, not streaming telemetry. The disclosure text in the interface and the label on generated content are the evidence.",
+          "attribute": "TBD",
+          "ocsf_version": "1.8.0"
+        },
+        "operator": ">=",
+        "param": "tier-defined",
+        "window": "per-system",
+        "breach_action": "hold-release-until-disclosure-and-labels-are-in-place; notify-application-developer"
+      }
+    },
+    {
+      "id": "SRF-COM-L4-001",
+      "layer": "L4",
+      "component": "LLM Routers & Gateways",
+      "lifecycle_stage": "operate",
+      "title": "Model gateway authentication and authorization, including agent identities",
+      "description": "Every call to a model endpoint must be authenticated, and the call must be checked against the caller's scope before it reaches the model. Each agent has its own identity. An agent call is accepted only when that identity is the caller and the scope allows the call. A call with no authentication, a call outside the caller's scope, or an agent call that uses a person's identity is rejected and logged with the caller, the endpoint, and the time. EU AI Act Article 15 applies only where in scope.",
+      "accountable_persona": "ai-platform-provider",
+      "accountable_by_model": {
+        "AI-SaaS": "ai-platform-provider",
+        "AI-PaaS": "ai-platform-provider",
+        "Agent-PaaS": "agentic-platform-provider",
+        "IaaS": "ai-platform-provider"
+      },
+      "operating_models": [
+        "AI-SaaS",
+        "AI-PaaS",
+        "Agent-PaaS",
+        "IaaS"
+      ],
+      "common_status": "draft",
+      "mappings": {
+        "finos_aigf": "AIR-PREV-012 (Role-Based Access Control for AI Data); AIR-DET-004 (AI System Observability)",
+        "nist_ai_rmf": "MEASURE 2.7 (security and resilience are evaluated and documented)",
+        "eu_ai_act": "Article 15 (accuracy, robustness, and cybersecurity; where in scope)",
+        "iso_42001": "ISO/IEC 42001:2023 (edition-level)",
+        "cis": "CIS Control 6: Access Control Management",
+        "aicm": "IAM-14 (Strong Authentication); IAM-16 (Authorization Mechanisms)"
+      },
+      "threshold": {
+        "metric": "model_endpoint_auth_coverage",
+        "description": "Percentage of model endpoint calls in the measurement window that are authenticated and checked against the caller's scope. An agent call counts only when the caller identity belongs to that agent. A call with no authentication, no scope check, or an agent call that uses a person's identity counts as a miss. The tier-defined window is the loosest window among the source controls, which record a validation gate, a one-hour rate, and continuous checks. The target percentage is set per model tier.",
+        "evidence": {
+          "ocsf_class": "authentication. Each call at the model endpoint logs the caller, the endpoint, and whether the call was accepted. An agent call records the agent identity.",
+          "attribute": "actor.user.uid; status_id",
+          "ocsf_version": "1.8.0"
+        },
+        "operator": ">=",
+        "param": "tier-defined",
+        "window": "tier-defined",
+        "breach_action": "reject-call; log-rejected-call; alert-accountable-owner"
+      },
+      "principles": [
+        "distinct-agent-identity"
+      ],
+      "accountable_persona_note": "AI Platform Provider is accountable on AI-SaaS, AI-PaaS, and IaaS. Agentic Platform & Framework Providers is accountable on Agent-PaaS, where each agent has its own identity and each call is checked against that identity's scope."
+    },
+    {
+      "id": "SRF-COM-L4-002",
+      "layer": "L4",
+      "component": "Guardrails & Safety Systems",
+      "lifecycle_stage": "operate",
+      "title": "Guardrail configuration baseline, change control, and bypass monitoring",
+      "description": "The AI Platform Provider must record a configuration baseline for platform guardrails before a model is served. The baseline names the guardrail policies that are active. A change to the baseline takes effect in production only after an approval that records the approver and the time. The provider measures the bypass rate: how often an input the baseline says to intercept reaches the model, and how often an output the baseline says to block is returned to the caller. The measured rates are compared with limits the organization sets per model tier. EU AI Act Article 15 applies only where in scope.",
+      "accountable_persona": "ai-platform-provider",
+      "accountable_by_model": {
+        "AI-SaaS": "ai-platform-provider",
+        "AI-PaaS": "ai-platform-provider",
+        "Agent-PaaS": "ai-platform-provider",
+        "IaaS": "ai-platform-provider"
+      },
+      "operating_models": [
+        "AI-SaaS",
+        "AI-PaaS",
+        "Agent-PaaS",
+        "IaaS"
+      ],
+      "common_status": "draft",
+      "mappings": {
+        "finos_aigf": "AIR-PREV-017 (AI Firewall Implementation and Management); AIR-PREV-003 (User/App/Model Firewalling/Filtering); AIR-DET-004 (AI System Observability)",
+        "nist_ai_rmf": "MEASURE 2.6 (safety risks are evaluated and documented)",
+        "eu_ai_act": "Article 15 (accuracy, robustness, and cybersecurity; where in scope)",
+        "iso_42001": "ISO/IEC 42001:2023 (edition-level)",
+        "cis": "CIS Control 4: Secure Configuration of Enterprise Assets and Software",
+        "aicm": "TVM-11 (Guardrails)"
+      },
+      "threshold": {
+        "metric": "guardrail_baseline_change_and_bypass_coverage",
+        "description": "Percentage of in-scope platforms that have a recorded guardrail baseline, an approval record for each baseline change in the window, and a measured bypass rate. A platform missing any of the three counts as a miss. The tier-defined window is the loosest window among the source controls, which record a validation gate, deployment, each change, a 24-hour rate, and continuous checks. The target percentage is set per model tier. The bypass limit is set per model tier.",
+        "evidence": {
+          "ocsf_class": "audit_activity (3002) for a change to the guardrail baseline. security_finding (2001) for a bypass, tagged with the guardrail category and the verdict.",
+          "attribute": "actor.user.name; time; finding.type_uid",
+          "ocsf_version": "1.8.0"
+        },
+        "operator": ">=",
+        "param": "tier-defined",
+        "window": "tier-defined",
+        "breach_action": "revert-unapproved-change; alert-ai-platform-provider; review-guardrail-baseline"
+      },
+      "principles": [
+        "deterministic-controls-outside-reasoning-loop"
+      ]
+    },
+    {
+      "id": "SRF-COM-L4-003",
+      "layer": "L4",
+      "component": "Compute Infrastructure",
+      "lifecycle_stage": "operate",
+      "title": "Audit logging and runtime anomaly monitoring",
+      "description": "The AI Platform Provider must log each AI request and each AI action, including the caller, the time, and what was done. The log records enough to reconstruct the request and the action. Unusual or unauthorized access, including access by a third party and remote access, raises an alert. A named reviewer records a review of each alert. EU AI Act Article 12 applies only where in scope.",
+      "accountable_persona": "ai-platform-provider",
+      "accountable_by_model": {
+        "AI-SaaS": "ai-platform-provider",
+        "AI-PaaS": "ai-platform-provider",
+        "Agent-PaaS": "ai-platform-provider",
+        "IaaS": "ai-platform-provider"
+      },
+      "operating_models": [
+        "AI-SaaS",
+        "AI-PaaS",
+        "Agent-PaaS",
+        "IaaS"
+      ],
+      "common_status": "draft",
+      "mappings": {
+        "nist_ai_rmf": "MEASURE 2.4 (the deployed AI system is monitored for changes); MEASURE 2.8 (risks associated with transparency and accountability are examined and documented)",
+        "eu_ai_act": "Article 12 (record-keeping; where in scope)",
+        "iso_42001": "ISO/IEC 42001:2023, Annex A, A.6.2.8",
+        "cis": "CIS Control 8: Audit Log Management",
+        "aicm": "LOG-03 (Security Monitoring and Alerting); LOG-13 (Failures and Anomalies Reporting)"
+      },
+      "threshold": {
+        "metric": "ai_request_log_and_alert_review_coverage",
+        "description": "Percentage of in-scope AI platform components whose requests and actions are logged, and whose alerts for unusual or unauthorized access, including third-party access and remote access, have a recorded review. A component with a gap in the log, or an alert with no review, counts as a miss. The quarterly window is the loosest window among the source controls. The target percentage is set per model tier.",
+        "evidence": {
+          "ocsf_class": "audit_activity (3002) for AI requests and actions. detection_finding (2004) for an alert on unusual or unauthorized access, including third-party access and remote access.",
+          "attribute": "actor.user.name; time; activity_id; finding.severity_id",
+          "ocsf_version": "1.8.0"
+        },
+        "operator": ">=",
+        "param": "tier-defined",
+        "window": "quarterly",
+        "breach_action": "alert-ai-platform-provider; review-open-alert"
+      },
+      "principles": [
+        "telemetry-covers-full-decision-path"
+      ]
+    },
+    {
+      "id": "SRF-COM-L4-004",
+      "layer": "L4",
+      "component": "Compute Infrastructure",
+      "lifecycle_stage": "operate",
+      "title": "Encryption of AI data and model weights at rest and in transit",
+      "description": "Prompts, outputs, training data, and model weights must be encrypted at rest and in transit. Each store and each channel has a managed key, and the organization records which key protects it. EU AI Act Article 15 applies only where in scope.",
+      "accountable_persona": "ai-platform-provider",
+      "accountable_by_model": {
+        "AI-SaaS": "ai-platform-provider",
+        "AI-PaaS": "ai-platform-provider",
+        "Agent-PaaS": "ai-platform-provider",
+        "IaaS": "ai-platform-provider"
+      },
+      "operating_models": [
+        "AI-SaaS",
+        "AI-PaaS",
+        "Agent-PaaS",
+        "IaaS"
+      ],
+      "common_status": "draft",
+      "mappings": {
+        "nist_ai_rmf": "MEASURE 2.7 (security and resilience are evaluated and documented); MEASURE 2.10 (privacy risk is examined and documented)",
+        "eu_ai_act": "Article 15 (accuracy, robustness, and cybersecurity; where in scope)",
+        "iso_42001": "ISO/IEC 42001:2023 (edition-level)",
+        "owasp_llm": "LLM02: Sensitive Information Disclosure",
+        "cis": "CIS Control 3: Data Protection",
+        "aicm": "CEK-03 (Data Encryption, including in-use); LOG-10 (Encryption Monitoring and Reporting)"
+      },
+      "threshold": {
+        "metric": "ai_data_and_weight_encryption_coverage",
+        "description": "Percentage of in-scope stores and channels that hold prompts, outputs, training data, or model weights and that encrypt that data at rest and in transit with a managed key. A store or channel missing encryption, or missing a recorded key, counts as a miss. The quarterly window is the loosest window among the source controls. The target percentage is set per model tier.",
+        "evidence": {
+          "ocsf_class": "security_finding (2001). A finding names the store or the channel, and whether prompts, outputs, training data, or model weights there are encrypted.",
+          "attribute": "finding.type_uid; resource",
+          "ocsf_version": "1.8.0"
+        },
+        "operator": ">=",
+        "param": "tier-defined",
+        "window": "quarterly",
+        "breach_action": "isolate-unencrypted-store-or-channel; alert-ai-platform-provider"
+      },
+      "principles": [
+        "sensitive-data-encrypted-always"
+      ]
+    },
+    {
+      "id": "SRF-COM-L4-005",
+      "layer": "L4",
+      "component": "Compute Infrastructure",
+      "lifecycle_stage": "operate",
+      "title": "Model serving availability and capacity target",
+      "description": "Each model serving endpoint must meet an availability target and a capacity target that the organization sets and records. The AI Platform Provider measures the endpoint against both targets. Failover is tested, and the test records whether the endpoint kept serving. EU AI Act Article 15 applies only where in scope.",
+      "accountable_persona": "ai-platform-provider",
+      "accountable_by_model": {
+        "AI-SaaS": "ai-platform-provider",
+        "AI-PaaS": "ai-platform-provider",
+        "Agent-PaaS": "ai-platform-provider",
+        "IaaS": "ai-platform-provider"
+      },
+      "operating_models": [
+        "AI-SaaS",
+        "AI-PaaS",
+        "Agent-PaaS",
+        "IaaS"
+      ],
+      "common_status": "draft",
+      "mappings": {
+        "nist_ai_rmf": "MEASURE 2.7 (security and resilience are evaluated and documented)",
+        "eu_ai_act": "Article 15 (accuracy, robustness, and cybersecurity; where in scope)",
+        "iso_42001": "ISO/IEC 42001:2023, Annex A, A.4.5",
+        "owasp_llm": "LLM10: Unbounded Consumption"
+      },
+      "threshold": {
+        "metric": "serving_availability_capacity_and_failover_coverage",
+        "description": "Percentage of in-scope model serving endpoints that met the availability target and the capacity target the organization set for them, and whose failover was tested in the window. An endpoint that missed a target, or that has no failover test on file, counts as a miss. The monthly window is the loosest window among the source controls, which use a month or a rolling 30 days. The targets are set per model tier.",
+        "evidence": {
+          "ocsf_class": "api_activity. Availability and capacity samples record the endpoint and whether it met its targets. The failover test record stores the date and the result.",
+          "attribute": "api.operation; status_id; time",
+          "ocsf_version": "1.8.0"
+        },
+        "operator": ">=",
+        "param": "tier-defined",
+        "window": "monthly",
+        "breach_action": "escalate-to-ai-platform-provider; run-failover; open-availability-incident"
+      },
+      "principles": [
+        "dos-is-its-own-threat-category"
+      ],
+      "accountable_persona_note": "Serving availability and capacity stay with the AI Platform Provider on AI-SaaS, AI-PaaS, Agent-PaaS, and IaaS. On IaaS the customer fills that platform role for the endpoint it runs."
+    },
+    {
+      "id": "SRF-COM-L4-006",
+      "layer": "L4",
+      "component": "LLM Routers & Gateways",
+      "lifecycle_stage": "operate",
+      "title": "Model artifact integrity verification at load",
+      "description": "AI Model Serving must load a model artifact only when the artifact is signed and the format does not execute code on load. The signature and the format are checked when the artifact is loaded and again on a schedule the organization sets and records. A failed check stops the load. The endpoint does not serve from an artifact that failed the check. EU AI Act Article 15 applies only where in scope.",
+      "accountable_persona": "ai-model-serving",
+      "accountable_by_model": {
+        "AI-SaaS": "ai-model-serving",
+        "AI-PaaS": "ai-model-serving",
+        "Agent-PaaS": "ai-model-serving",
+        "IaaS": "ai-model-serving"
+      },
+      "operating_models": [
+        "AI-SaaS",
+        "AI-PaaS",
+        "Agent-PaaS",
+        "IaaS"
+      ],
+      "common_status": "draft",
+      "mappings": {
+        "finos_aigf": "AIR-SEC-008 (Tampering With the Foundational Model)",
+        "nist_ai_rmf": "MEASURE 2.7 (security and resilience are evaluated and documented)",
+        "eu_ai_act": "Article 15 (accuracy, robustness, and cybersecurity; where in scope)",
+        "iso_42001": "ISO/IEC 42001:2023 (edition-level)",
+        "owasp_llm": "LLM03: Supply Chain; LLM04: Data and Model Poisoning",
+        "aicm": "MDS-08 (Model Integrity Checks); MDS-09 (Model Signing/Ownership Verification)"
+      },
+      "threshold": {
+        "metric": "signed_safe_artifact_load_coverage",
+        "description": "Percentage of model load events in which the artifact was signed, the format does not execute code on load, and both checks passed. A load of an unsigned artifact, a format that executes code on load, or a failed check counts as a miss. A scheduled repeat of the check that was missed also counts as a miss. The per-load window matches the load-time source controls. The schedule interval is set per model tier, because those source controls check at each load and do not name a second interval. The target percentage is set per model tier.",
+        "evidence": {
+          "ocsf_class": "api_activity. A load event records the artifact hash, the signature result, and the format result. The schedule record stores the interval and the last check.",
+          "attribute": "api.operation; status_id",
+          "ocsf_version": "1.8.0"
+        },
+        "operator": ">=",
+        "param": "tier-defined",
+        "window": "per-load",
+        "breach_action": "reject-model-load; alert-ai-model-serving"
+      },
+      "principles": [
+        "no-loading-unsigned-artifacts"
+      ],
+      "cross_layer_note": "One source control sits at L5: finance SRF-L5-MON-001 checks the signature when a model artifact is loaded. This control sits at L4 and covers that check for the serving runtime. The model provider signs the artifact on the model provider's control. Manufacturing SRF-L4-DES-008 keeps an AI bill of materials for the system. This control checks the artifact when it is loaded."
+    },
+    {
+      "id": "SRF-COM-L4-007",
+      "layer": "L4",
+      "component": "LLM Routers & Gateways",
+      "lifecycle_stage": "change",
+      "title": "Model version pinning, staged rollout, and rollback",
+      "description": "No control in the six sector files states this duty for a model serving endpoint. This common control has no sector source and states the duty for every sector. Each endpoint serves one pinned model version. A change to that version is rolled out in stages. The rollout plan records the stages and the time allowed to return the endpoint to the last approved version. The organization measures the time from the rollback decision to the endpoint serving that version, and compares the measured time with the time in the plan. EU AI Act Article 15 applies only where in scope.",
+      "accountable_persona": "ai-model-serving",
+      "accountable_by_model": {
+        "AI-SaaS": "ai-model-serving",
+        "AI-PaaS": "ai-model-serving",
+        "Agent-PaaS": "ai-model-serving",
+        "IaaS": "ai-model-serving"
+      },
+      "operating_models": [
+        "AI-SaaS",
+        "AI-PaaS",
+        "Agent-PaaS",
+        "IaaS"
+      ],
+      "common_status": "draft",
+      "mappings": {
+        "nist_ai_rmf": "MANAGE 2.4 (mechanisms are in place to disengage systems that deviate from intended use); MANAGE 4.1 (post-deployment monitoring plans are implemented, including change management and decommissioning)",
+        "eu_ai_act": "Article 15 (accuracy, robustness, and cybersecurity; where in scope)",
+        "iso_42001": "ISO/IEC 42001:2023, Annex A, A.6.2.5"
+      },
+      "threshold": {
+        "metric": "measured_rollback_time",
+        "description": "The measured time from the rollback decision to the endpoint serving the last approved version. The time is compared with the time the organization set and recorded in the rollout plan. An endpoint that is not serving a pinned version, a rollout with no staged plan on file, or a measured time longer than the time in the plan counts as a miss. No sector control sets this window, so the per-rollout window is an SRF choice. The allowed time is set per model tier.",
+        "evidence": {
+          "ocsf_class": "audit_activity (3002). The rollout record stores the pinned version, the stages, and the measured time from the rollback decision to the endpoint serving the last approved version.",
+          "attribute": "time; activity_id",
+          "ocsf_version": "1.8.0"
+        },
+        "operator": "<=",
+        "param": "tier-defined",
+        "window": "per-rollout",
+        "breach_action": "halt-rollout; restore-last-approved-version; notify-ai-model-serving"
+      },
+      "principles": [
+        "pinned-checksum-verified-versions"
+      ]
+    },
+    {
+      "id": "SRF-COM-L4-008",
+      "layer": "L4",
+      "component": "Compute Infrastructure",
+      "lifecycle_stage": "operate",
+      "title": "Inference endpoint isolation, tenant separation, and egress control",
+      "description": "Each tenant's inference traffic must stay separate from every other tenant's traffic. Egress from an inference endpoint is denied unless an allow rule names the destination. A flow with no allow rule is blocked and logged with the tenant, the endpoint, and the destination. EU AI Act Article 15 applies only where in scope.",
+      "accountable_persona": "ai-platform-provider",
+      "accountable_by_model": {
+        "AI-SaaS": "ai-platform-provider",
+        "AI-PaaS": "ai-platform-provider",
+        "Agent-PaaS": "ai-platform-provider",
+        "IaaS": "ai-model-serving"
+      },
+      "operating_models": [
+        "AI-SaaS",
+        "AI-PaaS",
+        "Agent-PaaS",
+        "IaaS"
+      ],
+      "common_status": "draft",
+      "mappings": {
+        "nist_ai_rmf": "MEASURE 2.7 (security and resilience are evaluated and documented); MEASURE 2.10 (privacy risk is examined and documented)",
+        "eu_ai_act": "Article 15 (accuracy, robustness, and cybersecurity; where in scope)",
+        "iso_42001": "ISO/IEC 42001:2023 (edition-level)",
+        "owasp_llm": "LLM02: Sensitive Information Disclosure"
+      },
+      "threshold": {
+        "metric": "tenant_isolation_and_default_deny_egress_coverage",
+        "description": "Percentage of in-scope inference endpoints that keep each tenant's traffic separate and that deny egress unless an allow rule names the destination. An endpoint that mixes tenant traffic, or that allows egress with no allow rule, counts as a miss. The continuous window matches the source control. The target percentage is set per model tier.",
+        "evidence": {
+          "ocsf_class": "network_activity (4001). An egress event records the endpoint, the tenant, the destination, and whether an allow rule permitted the flow.",
+          "attribute": "src_endpoint; dst_endpoint; status_id",
+          "ocsf_version": "1.8.0"
+        },
+        "operator": ">=",
+        "param": "tier-defined",
+        "window": "continuous",
+        "breach_action": "block-egress; log-denied-flow; alert-accountable-owner"
+      },
+      "principles": [
+        "isolation-enforced-independently-of-agent"
+      ],
+      "accountable_persona_note": "AI Platform Provider is accountable on AI-SaaS, AI-PaaS, and Agent-PaaS. AI Model Serving is accountable on IaaS, where that persona runs the inference endpoints and the egress rules."
+    },
+    {
+      "id": "SRF-COM-L4-009",
+      "layer": "L4",
+      "component": "Compute Infrastructure",
+      "lifecycle_stage": "operate",
+      "title": "Platform security assessment and vulnerability management",
+      "description": "The AI Platform Provider must assess the platform before it enters production. The assessment covers authentication, authorization, encryption, guardrail configuration, and known vulnerabilities in platform components. After production, the platform is scanned for vulnerabilities and patched on a cadence the organization sets and records. Findings the assessment marks for remediation before production are closed before production, and later findings are patched inside that cadence. EU AI Act Article 15 applies only where in scope.",
+      "accountable_persona": "ai-platform-provider",
+      "accountable_by_model": {
+        "AI-SaaS": "ai-platform-provider",
+        "AI-PaaS": "ai-platform-provider",
+        "Agent-PaaS": "ai-platform-provider",
+        "IaaS": "ai-platform-provider"
+      },
+      "operating_models": [
+        "AI-SaaS",
+        "AI-PaaS",
+        "Agent-PaaS",
+        "IaaS"
+      ],
+      "common_status": "draft",
+      "mappings": {
+        "finos_aigf": "AIR-PREV-005 (System Acceptance Testing)",
+        "nist_ai_rmf": "MEASURE 1.3 (independent assessors are involved in TEVV); MEASURE 2.7 (security and resilience are evaluated and documented)",
+        "eu_ai_act": "Article 15 (accuracy, robustness, and cybersecurity; where in scope)",
+        "iso_42001": "ISO/IEC 42001:2023, Annex A, A.6.2.4",
+        "cis": "CIS Control 7: Continuous Vulnerability Management; CIS Control 18: Penetration Testing",
+        "aicm": "A&A-02 (Independent Assessments); TVM-06 (Penetration Testing); TVM-07 (Vulnerability Remediation Schedule); TVM-09 (Vulnerability Management Reporting)"
+      },
+      "threshold": {
+        "metric": "platform_assessment_and_patch_coverage",
+        "description": "Percentage of in-scope platforms that have a security assessment on file from before production and a vulnerability scan and patch record inside the cadence the organization set. A platform that entered production with no assessment, or whose scan or patch record is outside that cadence, counts as a miss. The tier-defined window is the loosest window among the source controls. The target percentage is set per model tier.",
+        "evidence": {
+          "ocsf_class": "vulnerability_finding (2002) for scan and patch events. The pre-production assessment is a records artifact.",
+          "attribute": "finding.severity_id; time",
+          "ocsf_version": "1.8.0"
+        },
+        "operator": ">=",
+        "param": "tier-defined",
+        "window": "tier-defined",
+        "breach_action": "block-production-until-assessed; patch-on-cadence; notify-ai-platform-provider"
+      },
+      "principles": [
+        "permanent-vulnerability-operations-capability"
+      ]
+    },
+    {
+      "id": "SRF-COM-L5-001",
+      "layer": "L5",
+      "component": "Model Governance",
+      "lifecycle_stage": "design",
+      "title": "Model card and model documentation",
+      "description": "Each released model must have a model card before the model is offered. The card records the intended use, the limits, the evaluation results, and the security notes for that model version. When the model changes in a material way, the AI Model Provider updates the card within the time it records, and that time is at least 30 days. EU AI Act Articles 11, 13, and 53 and Annex IV apply only where in scope.",
+      "accountable_persona": "model-provider",
+      "accountable_by_model": {
+        "AI-SaaS": "model-provider",
+        "AI-PaaS": "model-provider",
+        "Agent-PaaS": "model-provider",
+        "IaaS": "model-provider"
+      },
+      "operating_models": [
+        "AI-SaaS",
+        "AI-PaaS",
+        "Agent-PaaS",
+        "IaaS"
+      ],
+      "common_status": "draft",
+      "mappings": {
+        "finos_aigf": "AIR-OP-018 (Model Overreach / Expanded Use); AIR-OP-017 (Lack of Explainability)",
+        "nist_ai_rmf": "MEASURE 2.9 (the AI model is explained, validated, and documented)",
+        "eu_ai_act": "Article 11 (technical documentation; where in scope); Article 13 (transparency and provision of information; where in scope); Article 53 (obligations of providers of general-purpose AI models; where in scope); Annex IV (technical documentation; where in scope)",
+        "iso_42001": "ISO/IEC 42001:2023, Annex A, A.6.2.7 and A.8.2",
+        "owasp_llm": "LLM09: Misinformation",
+        "aicm": "MDS-03 (Model Documentation); MDS-04 (Model Documentation Requirements)"
+      },
+      "threshold": {
+        "metric": "model_card_coverage",
+        "description": "Percentage of released models whose model card records intended use, limits, evaluation results, and security notes before the model is offered. When the model changes in a material way, the card is updated within the time the provider records. That recorded time is at least 30 days, the longest numbered update time in the source controls. A released model with no card, or a card that misses one of those four parts, counts as a miss. A material change whose card is still unchanged after the recorded time also counts as a miss. The target percentage is set per model tier.",
+        "evidence": {
+          "ocsf_class": "TBD: this is a records artifact, not streaming telemetry. The model card record stores the model version, the issue date, and whether the four parts are present.",
+          "attribute": "TBD",
+          "ocsf_version": "1.8.0"
+        },
+        "operator": ">=",
+        "param": "tier-defined",
+        "window": "tier-defined",
+        "breach_action": "block-release-until-model-card-complete; notify-model-provider"
+      },
+      "accountable_persona_note": "The L5 AI-SaaS cell in the responsibility matrix is N/A because the customer owns nothing at L5, and this control still binds the AI Model Provider in AI-SaaS because that provider is not the customer."
+    },
+    {
+      "id": "SRF-COM-L5-002",
+      "layer": "L5",
+      "component": "Model Distribution",
+      "lifecycle_stage": "design",
+      "title": "Model artifact signing and provenance at release",
+      "description": "The AI Model Provider must sign the weights of each released model and list those weights and their dependencies in an AI bill of materials. A release whose weights are unsigned, or whose bill of materials omits a dependency, is not offered. EU AI Act Article 15 applies only where in scope.",
+      "accountable_persona": "model-provider",
+      "accountable_by_model": {
+        "AI-SaaS": "model-provider",
+        "AI-PaaS": "model-provider",
+        "Agent-PaaS": "model-provider",
+        "IaaS": "model-provider"
+      },
+      "operating_models": [
+        "AI-SaaS",
+        "AI-PaaS",
+        "Agent-PaaS",
+        "IaaS"
+      ],
+      "common_status": "draft",
+      "mappings": {
+        "finos_aigf": "AIR-SEC-008 (Tampering With the Foundational Model)",
+        "nist_ai_rmf": "GOVERN 6.1 (policies address AI risks associated with third-party entities); MEASURE 2.7 (security and resilience are evaluated and documented)",
+        "eu_ai_act": "Article 15 (accuracy, robustness, and cybersecurity; where in scope)",
+        "iso_42001": "ISO/IEC 42001:2023 (edition-level)",
+        "owasp_llm": "LLM03: Supply Chain; LLM04: Data and Model Poisoning",
+        "cis": "CIS Control 16: Application Software Security",
+        "aicm": "MDS-08 (Model Integrity Checks); MDS-09 (Model Signing/Ownership Verification)"
+      },
+      "threshold": {
+        "metric": "signed_release_and_ai_bill_of_materials_coverage",
+        "description": "Percentage of model releases in the annual window whose weights are signed and whose weights and dependencies are listed in an AI bill of materials. A release with an unsigned weight, or with a dependency missing from the bill of materials, counts as a miss. The annual window is the longest review interval in the source controls. The target percentage is set per model tier.",
+        "evidence": {
+          "ocsf_class": "api_activity. A release record stores the artifact hash, the signature result, and the bill of materials identifier.",
+          "attribute": "api.operation; status_id",
+          "ocsf_version": "1.8.0"
+        },
+        "operator": ">=",
+        "param": "tier-defined",
+        "window": "annual",
+        "breach_action": "block-release-until-signed; notify-model-provider"
+      },
+      "principles": [
+        "provenance-via-signed-manifests-sbom"
+      ],
+      "cross_layer_note": "SRF-COM-L4-006 checks a signed model artifact when the serving runtime loads it. This control sits at L5 and covers the AI Model Provider signing the released weights and listing those weights and their dependencies in an AI bill of materials.",
+      "accountable_persona_note": "The L5 AI-SaaS cell in the responsibility matrix is N/A because the customer owns nothing at L5, and this control still binds the AI Model Provider in AI-SaaS because that provider is not the customer."
+    },
+    {
+      "id": "SRF-COM-L5-003",
+      "layer": "L5",
+      "component": "Model Governance",
+      "lifecycle_stage": "operate",
+      "title": "Vulnerability disclosure and patch time limits",
+      "description": "The AI Model Provider must tell deployers about a model vulnerability and must ship a fix within the time the provider records. The recorded time to ship a fix is at least 30 days. EU AI Act Article 15 applies only where in scope.",
+      "accountable_persona": "model-provider",
+      "accountable_by_model": {
+        "AI-SaaS": "model-provider",
+        "AI-PaaS": "model-provider",
+        "Agent-PaaS": "model-provider",
+        "IaaS": "model-provider"
+      },
+      "operating_models": [
+        "AI-SaaS",
+        "AI-PaaS",
+        "Agent-PaaS",
+        "IaaS"
+      ],
+      "common_status": "draft",
+      "mappings": {
+        "nist_ai_rmf": "MANAGE 4.1 (post-deployment monitoring plans are implemented, including incident response and recovery); MEASURE 2.7 (security and resilience are evaluated and documented)",
+        "eu_ai_act": "Article 15 (accuracy, robustness, and cybersecurity; where in scope)",
+        "iso_42001": "ISO/IEC 42001:2023 (edition-level)",
+        "owasp_llm": "LLM03: Supply Chain; LLM04: Data and Model Poisoning",
+        "cis": "CIS Control 7: Continuous Vulnerability Management",
+        "aicm": "TVM-07 (Vulnerability Remediation Schedule); TVM-09 (Vulnerability Management Reporting)"
+      },
+      "threshold": {
+        "metric": "vulnerability_notice_and_fix_coverage",
+        "description": "Percentage of confirmed model vulnerabilities that were disclosed to deployers and fixed inside the times the provider records. The recorded time to ship a fix is at least 30 days, the longest explicit remediation time in the source controls. A vulnerability with no disclosure to deployers, or with a fix later than the recorded time, counts as a miss. The 24-hour acknowledgment and the 7-day critical remediation in one source control are shorter than this floor, so this control uses 30 days. The target percentage is set per model tier.",
+        "evidence": {
+          "ocsf_class": "vulnerability_finding (2002). A disclosure record stores the finding, the date deployers were told, and the date the fix shipped.",
+          "attribute": "finding.severity_id; time",
+          "ocsf_version": "1.8.0"
+        },
+        "operator": ">=",
+        "param": "tier-defined",
+        "window": "per-vulnerability",
+        "breach_action": "notify-deployers; ship-fix; notify-model-provider"
+      },
+      "principles": [
+        "cis18-7"
+      ],
+      "accountable_persona_note": "The L5 AI-SaaS cell in the responsibility matrix is N/A because the customer owns nothing at L5, and this control still binds the AI Model Provider in AI-SaaS because that provider is not the customer."
+    },
+    {
+      "id": "SRF-COM-L5-004",
+      "layer": "L5",
+      "component": "Foundation Models",
+      "lifecycle_stage": "validate",
+      "title": "Pre-release safety, security, and fairness evaluation",
+      "description": "Before a model release is offered, it must pass a documented safety evaluation, a documented security evaluation, and a documented fairness evaluation. The AI Model Provider records a behavioral baseline for that release. EU AI Act Articles 9, 15, and 53 apply only where in scope.",
+      "accountable_persona": "model-provider",
+      "accountable_by_model": {
+        "AI-SaaS": "model-provider",
+        "AI-PaaS": "model-provider",
+        "Agent-PaaS": "model-provider",
+        "IaaS": "model-provider"
+      },
+      "operating_models": [
+        "AI-SaaS",
+        "AI-PaaS",
+        "Agent-PaaS",
+        "IaaS"
+      ],
+      "common_status": "draft",
+      "mappings": {
+        "finos_aigf": "AIR-PREV-005 (System Acceptance Testing)",
+        "nist_ai_rmf": "MEASURE 2.3 (performance is demonstrated for conditions similar to deployment); MEASURE 2.6 (safety risks are evaluated and documented); MEASURE 2.7 (security and resilience are evaluated and documented); MEASURE 2.11 (fairness and bias are evaluated and documented)",
+        "eu_ai_act": "Article 9 (risk management system; where in scope); Article 15 (accuracy, robustness, and cybersecurity; where in scope); Article 53 (obligations of providers of general-purpose AI models; where in scope)",
+        "iso_42001": "ISO/IEC 42001:2023, Annex A, A.6.2.4",
+        "owasp_llm": "LLM01: Prompt Injection; LLM02: Sensitive Information Disclosure; LLM09: Misinformation",
+        "aicm": "MDS-06 (Adversarial Attack Analysis); MDS-07 (Model Hardening); GRC-10 (AI Impact Assessment); MDS-03 (Model Documentation)"
+      },
+      "threshold": {
+        "metric": "prerelease_evaluation_and_baseline_coverage",
+        "description": "Percentage of model releases that have a documented safety evaluation, a documented security evaluation, a documented fairness evaluation, and a recorded behavioral baseline before the release is offered. A release missing any of those records counts as a miss. No source control names a number of days, so the check is at each release. The target percentage is set per model tier.",
+        "evidence": {
+          "ocsf_class": "TBD: this is a records artifact, not streaming telemetry. The evaluation record stores the release, the three evaluation results, and the behavioral baseline.",
+          "attribute": "TBD",
+          "ocsf_version": "1.8.0"
+        },
+        "operator": ">=",
+        "param": "tier-defined",
+        "window": "per-release",
+        "breach_action": "block-release-until-evaluated; notify-model-provider"
+      },
+      "principles": [
+        "hazardous-capability-eval-is-a-release-gate"
+      ],
+      "accountable_persona_note": "The L5 AI-SaaS cell in the responsibility matrix is N/A because the customer owns nothing at L5, and this control still binds the AI Model Provider in AI-SaaS because that provider is not the customer."
+    },
+    {
+      "id": "SRF-COM-L5-005",
+      "layer": "L5",
+      "component": "Model Governance",
+      "lifecycle_stage": "operate",
+      "title": "Model change, drift, and performance notice to deployers",
+      "description": "The AI Model Provider must tell deployers about a model version change and about drift in the model's performance. The notice arrives within the notice period the provider records, and it names the time the deployer has to re-validate. EU AI Act Articles 13, 43, and 72 apply only where in scope.",
+      "accountable_persona": "model-provider",
+      "accountable_by_model": {
+        "AI-SaaS": "model-provider",
+        "AI-PaaS": "model-provider",
+        "Agent-PaaS": "model-provider",
+        "IaaS": "model-provider"
+      },
+      "operating_models": [
+        "AI-SaaS",
+        "AI-PaaS",
+        "Agent-PaaS",
+        "IaaS"
+      ],
+      "common_status": "draft",
+      "mappings": {
+        "nist_ai_rmf": "MEASURE 2.4 (the deployed AI system is monitored for changes); MANAGE 4.1 (post-deployment monitoring plans are implemented, including change management and decommissioning); MANAGE 3.2 (pre-trained models used for development are monitored as part of regular monitoring and maintenance)",
+        "eu_ai_act": "Article 13 (transparency and provision of information; where in scope); Article 43 (conformity assessment; where in scope); Article 72 (post-market monitoring; where in scope)",
+        "iso_42001": "ISO/IEC 42001:2023, Annex A, A.8.5",
+        "aicm": "MDS-10 (Model Continuous Monitoring); STA-11 (Supply Chain Agreement Review)"
+      },
+      "threshold": {
+        "metric": "deployer_notice_within_recorded_period",
+        "description": "Percentage of model version changes and drift events for which deployers were notified within the notice period the provider records. The notice names the change or the drift and the time the deployer has to re-validate. A change or drift event with no notice, or with notice after the recorded period, counts as a miss. No source control names a number of days for that period, so the recorded period is the floor and this control sets no shorter number. The target percentage is set per model tier.",
+        "evidence": {
+          "ocsf_class": "audit_activity (3002). A notice record stores the version change or drift event, the deployers notified, and the date.",
+          "attribute": "time; activity_id",
+          "ocsf_version": "1.8.0"
+        },
+        "operator": ">=",
+        "param": "tier-defined",
+        "window": "tier-defined",
+        "breach_action": "notify-deployers; hold-version-change; notify-model-provider"
+      },
+      "principles": [
+        "provenance-continuously-monitored"
+      ],
+      "accountable_persona_note": "The L5 AI-SaaS cell in the responsibility matrix is N/A because the customer owns nothing at L5, and this control still binds the AI Model Provider in AI-SaaS because that provider is not the customer."
+    },
+    {
+      "id": "SRF-COM-L5-006",
+      "layer": "L5",
+      "component": "Foundation Models",
+      "lifecycle_stage": "validate",
+      "title": "Independent model validation",
+      "description": "Someone independent of the team that built the model must validate the model before it is used, and again on an interval the organization records. The validation record names the independent party and the result. EU AI Act Article 43 applies only where in scope.",
+      "accountable_persona": "ai-system-governance",
+      "accountable_by_model": {
+        "AI-PaaS": "ai-system-governance",
+        "Agent-PaaS": "ai-system-governance",
+        "IaaS": "ai-system-governance"
+      },
+      "operating_models": [
+        "AI-PaaS",
+        "Agent-PaaS",
+        "IaaS"
+      ],
+      "common_status": "draft",
+      "mappings": {
+        "finos_aigf": "AIR-PREV-005 (System Acceptance Testing); AIR-DET-015 (Using Large Language Models for Automated Evaluation)",
+        "nist_ai_rmf": "MEASURE 1.3 (independent assessors are involved in TEVV)",
+        "eu_ai_act": "Article 43 (conformity assessment; where in scope)",
+        "iso_42001": "ISO/IEC 42001:2023, Annex A, A.6.2.4",
+        "aicm": "A&A-02 (Independent Assessments); MDS-06 (Adversarial Attack Analysis)"
+      },
+      "threshold": {
+        "metric": "independent_validation_coverage",
+        "description": "Percentage of in-scope models validated by someone independent of the team that built the model, before first use and again inside the interval the organization records. A model with no independent validation before first use, or with no validation inside the recorded interval, counts as a miss. The source controls require the validation before use and do not name a repeat interval, so the interval is recorded per model tier and this control sets no shorter number. The target percentage is set per model tier.",
+        "evidence": {
+          "ocsf_class": "TBD: this is a records artifact, not streaming telemetry. The validation record stores the model version, the independent party, and the date.",
+          "attribute": "TBD",
+          "ocsf_version": "1.8.0"
+        },
+        "operator": ">=",
+        "param": "tier-defined",
+        "window": "tier-defined",
+        "breach_action": "block-use-until-validated; notify-ai-system-governance"
+      },
+      "accountable_persona_note": "AI System Governance is accountable on AI-PaaS, Agent-PaaS, and IaaS. AI-SaaS is absent from this control, matching finance SRF-L5-VAL-001 and insurance SRF-L5-VAL-002, because the customer owns nothing at L5 in AI-SaaS and there is no customer validation duty there."
+    }
+  ]
+}

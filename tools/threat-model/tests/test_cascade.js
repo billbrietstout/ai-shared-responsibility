@@ -1094,7 +1094,7 @@ test("UI: the page scrolls, the graph keeps its height, and drawer close restore
   assert.ok(/#graph-scroll\s*\{[^}]*overflow:\s*visible/.test(css), "the graph keeps its own height");
   assert.ok(/#rel-filters\s*\{[^}]*flex-wrap:\s*nowrap/.test(css), "filters stay on one row");
   assert.ok(/#rel-filters\s*\{[^}]*overflow-x:\s*auto/.test(css), "filters scroll sideways instead of wrapping tall");
-  assert.ok(!$("assessment-mode").open, "Assessment panel stays closed by default");
+  assert.ok(!$("assessment-mode").open, "Options panel stays closed by default");
   w.TM_UI.load(example);
   const main = w.document.querySelector("main");
   assert.ok(main.classList.contains("drawer-closed"));
@@ -1339,7 +1339,7 @@ test("UI: scoped L5 shows edge actors, boundaries, and a results table, then Hol
   assert.strictEqual(w.TM_UI.state.selected, null);
 });
 
-test("UI: the assessment panel remembers open or closed", () => {
+test("UI: the Options panel remembers open or closed", () => {
   $("assessment-mode").open = true;
   $("assessment-mode").dispatchEvent(new w.Event("toggle"));
   assert.strictEqual(w.localStorage.getItem("srf.threat-model.assessment-open"), "1");

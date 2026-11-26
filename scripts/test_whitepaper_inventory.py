@@ -295,6 +295,16 @@ class InventoryScopeTest(unittest.TestCase):
                 stripped,
                 flags=re.S,
             )
+            stripped = re.sub(
+                r'<span class="ag-src__id">\[\d+\]</span>',
+                "",
+                stripped,
+            )
+            stripped = re.sub(
+                r'<a class="pa-cite"[^>]*>\[\d+\]</a>',
+                "",
+                stripped,
+            )
             self.assertIsNone(
                 re.search(r"\b52\b", stripped),
                 path.name,

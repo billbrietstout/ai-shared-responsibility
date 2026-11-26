@@ -29,12 +29,19 @@ export/srf-{vertical}.profile.json.
 
 import argparse
 import copy
-import datetime
 import json
 import pathlib
 import re
 import sys
 import uuid
+
+from regulation_citations import (
+    citation_pinpoint_url,
+    document_url,
+    load_pinpoints,
+    load_regulations,
+    split_citations,
+)
 
 NS = "https://aisharedresponsibility.com/ns/oscal"
 SITE = "https://aisharedresponsibility.com"
@@ -73,7 +80,8 @@ VERTICALS = [
 # resources. A resource is only emitted when at least one verified (non-TBD,
 # non-N/A) mapping cites it, except in profiles, where every framework the
 # vertical maps against is listed as a regulatory driver.
-FRAMEWORKS = {
+# Baseline titles and URLs; merged with data/regulations.json at generation time.
+FRAMEWORKS_BASE = {
     "finos_aigf": ("FINOS AI Governance Framework",
                    "https://air-governance-framework.finos.org/"),
     "aicm": ("CSA AI Controls Matrix",
@@ -138,6 +146,26 @@ FRAMEWORKS = {
                       "https://www.nist.gov/cyberframework"),
 }
 
+FRAMEWORKS = dict(FRAMEWORKS_BASE)
+
+
+def merge_frameworks_from_regulations(root: pathlib.Path) -> None:
+    """Refresh FRAMEWORKS URLs and short titles from data/regulations.json."""
+    global FRAMEWORKS
+    merged = dict(FRAMEWORKS_BASE)
+    reg_path = root / "data" / "regulations.json"
+    if reg_path.is_file():
+        for key, meta in load_regulations(str(reg_path)).items():
+            title = meta["short"]
+            url = meta["url"] or merged.get(key, (title, ""))[1]
+            merged[key] = (title, url)
+    FRAMEWORKS = merged
+
+
+def link_text(mapping_key: str, citation: str) -> str:
+    title = FRAMEWORKS.get(mapping_key, (mapping_key.replace("_", " ").title(), ""))[0]
+    return f"{title}, {citation}"
+
 EU_CITATION_RE = re.compile(
     r"^(Article\s+\d+(?:\(\w+\))*|Annex\s+[IVXLC]+)\s*(\(.*\))?$"
 )
@@ -182,23 +210,47 @@ def parse_eu_ai_act(value):
 
 
 class ResourceRegistry:
-    """Lazily-built back-matter resources, one per framework key."""
+    """Lazily-built back-matter resources keyed by pinpoint URL when available."""
 
-    def __init__(self):
+    def __init__(self, reg_by_key, pinpoints):
+        self.reg_by_key = reg_by_key
+        self.pinpoints = pinpoints
         self.used = {}
+
+    def _store(self, cache_key, resource):
+        if cache_key not in self.used:
+            self.used[cache_key] = resource
+        return self.used[cache_key]["uuid"]
 
     def ref(self, key):
         if key not in FRAMEWORKS:
             return None
-        if key not in self.used:
-            title, url = FRAMEWORKS[key]
-            self.used[key] = {
+        title, _ignored = FRAMEWORKS[key]
+        url = document_url(key, self.reg_by_key) or _ignored
+        return self._store(
+            ("doc", key),
+            {
                 "uuid": det_uuid("resource", key),
                 "title": title,
                 "props": [prop("framework-key", key)],
                 "rlinks": [{"href": url}],
-            }
-        return self.used[key]["uuid"]
+            },
+        )
+
+    def ref_for_citation(self, key, cite):
+        if key not in FRAMEWORKS:
+            return None
+        url = citation_pinpoint_url(key, cite, self.reg_by_key, self.pinpoints)
+        title = link_text(key, cite)
+        return self._store(
+            ("cite", key, url),
+            {
+                "uuid": det_uuid("resource", key, url, cite),
+                "title": title,
+                "props": [prop("framework-key", key), prop("citation", cite)],
+                "rlinks": [{"href": url}],
+            },
+        )
 
     def resources(self, keys=None):
         if keys is None:
@@ -281,25 +333,25 @@ def convert_control(ctl, vshort, vslug, stage_field, registry):
                 props.append(prop(f"mapping-{kebab(mkey)}", mval,
                                   **{"class": "unresolved"}))
                 continue
-            rid = registry.ref(mkey)
             for c in citations:
-                links.append({"href": f"#{rid}", "rel": "reference", "text": c})
+                rid = registry.ref_for_citation(mkey, c)
+                if rid:
+                    links.append({
+                        "href": f"#{rid}",
+                        "rel": "reference",
+                        "text": link_text(mkey, c),
+                    })
             continue
-        rid = registry.ref(mkey)
-        if rid:
-            # finos_aigf and sr26_2 follow the same '; '-separated citation
-            # convention as eu_ai_act (documented in the vertical file's
-            # *_citation_format headers); one link per citation.
-            cites = ([x.strip() for x in mval.split("; ")]
-                     if mkey in ("finos_aigf", "sr26_2", "aicm", "m_25_21",
-                                 "m_25_22", "fedramp_20x_ksi",
-                                 "naic_model_bulletin", "naic_eval_tool",
-                                 "co_reg_10_1_1", "nydfs_cl7", "owasp_llm",
-                                 "dod_rai_strategy", "dodi_5000_90",
-                                 "dodi_5000_89", "cc_srg", "cmmc_2_0")
-                     else [str(mval)])
+        cites = split_citations(mkey, str(mval))
+        if cites and mkey in FRAMEWORKS:
             for cite in cites:
-                links.append({"href": f"#{rid}", "rel": "reference", "text": cite})
+                rid = registry.ref_for_citation(mkey, cite)
+                if rid:
+                    links.append({
+                        "href": f"#{rid}",
+                        "rel": "reference",
+                        "text": link_text(mkey, cite),
+                    })
         else:
             props.append(prop(f"mapping-{kebab(mkey)}", mval))
 
@@ -340,7 +392,10 @@ def convert_control(ctl, vshort, vslug, stage_field, registry):
 
 
 def build_catalog(root, now):
-    registry = ResourceRegistry()
+    reg_path = root / "data" / "regulations.json"
+    reg_by_key = load_regulations(str(reg_path))
+    pinpoints = load_pinpoints()
+    registry = ResourceRegistry(reg_by_key, pinpoints)
     layers = {}
     layer_meta = json.load(open(root / "data/layers.json"))
     layer_list = layer_meta["layers"] if isinstance(layer_meta, dict) else layer_meta
@@ -424,8 +479,8 @@ def build_catalog(root, now):
     return catalog, vertical_docs, control_index, registry
 
 
-def build_profile(vslug, vtitle, data, index, now):
-    registry = ResourceRegistry()
+def build_profile(vslug, vtitle, data, index, now, reg_by_key, pinpoints):
+    registry = ResourceRegistry(reg_by_key, pinpoints)
     mapping_keys = set()
     for ctl in data["controls"]:
         mapping_keys.update(k for k in ctl.get("mappings", {})
@@ -506,6 +561,44 @@ def write_stable(path, doc):
     path.write_text(json.dumps(doc, indent=1, ensure_ascii=False) + "\n")
 
 
+ISO_DATE_RE = re.compile(r"\b\d{4}-\d{2}-\d{2}\b")
+
+
+def derive_last_modified(root):
+    """Derive a deterministic OSCAL last-modified timestamp from input files."""
+    dates = []
+
+    def add_iso(raw):
+        text = str(raw or "").strip()
+        if re.fullmatch(r"\d{4}-\d{2}-\d{2}", text):
+            dates.append(text)
+
+    for rel in ("data/regulations.json", "data/regulation-pinpoints.json", "data/layers.json"):
+        path = root / rel
+        if not path.exists():
+            continue
+        doc = json.loads(path.read_text(encoding="utf-8"))
+        if isinstance(doc, dict):
+            add_iso(doc.get("updated"))
+            for item in doc.get("items") or []:
+                if isinstance(item, dict):
+                    add_iso(item.get("last_verified"))
+
+    for vslug, _, _, _ in VERTICALS:
+        path = root / "data" / f"{vslug}-controls.json"
+        if not path.exists():
+            continue
+        doc = json.loads(path.read_text(encoding="utf-8"))
+        add_iso(doc.get("updated"))
+        note = doc.get("mapping_status_note")
+        if isinstance(note, str):
+            dates.extend(ISO_DATE_RE.findall(note))
+
+    if not dates:
+        raise ValueError("No valid ISO date found in OSCAL generator inputs")
+    return f"{max(dates)}T00:00:00+00:00"
+
+
 def main():
     ap = argparse.ArgumentParser()
     ap.add_argument("--root", default=None,
@@ -513,16 +606,21 @@ def main():
     args = ap.parse_args()
     root = pathlib.Path(args.root) if args.root else \
         pathlib.Path(__file__).resolve().parent.parent
-    now = datetime.datetime.now(datetime.timezone.utc).isoformat(timespec="seconds")
+    merge_frameworks_from_regulations(root)
+    now = derive_last_modified(root)
 
     catalog, docs, index, _ = build_catalog(root, now)
+    reg_by_key = load_regulations(str(root / "data" / "regulations.json"))
+    pinpoints = load_pinpoints()
     out = root / "export" / CATALOG_FILE
     write_stable(out, catalog)
     print(f"wrote {out.relative_to(root)} "
           f"({sum(len(v) for v in index.values())} controls)")
 
     for vslug, vshort, vtitle, _ in VERTICALS:
-        profile = build_profile(vslug, vtitle, docs[vslug], index[vslug], now)
+        profile = build_profile(
+            vslug, vtitle, docs[vslug], index[vslug], now, reg_by_key, pinpoints
+        )
         pout = root / "export" / f"srf-{vslug}.profile.json"
         write_stable(pout, profile)
         print(f"wrote {pout.relative_to(root)} ({len(index[vslug])} controls)")

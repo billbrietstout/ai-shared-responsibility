@@ -1,6 +1,6 @@
 {
   "$schema_version": "1.0",
-  "description": "Canonical ID registry. Every concept, layer, role, operating model, jurisdiction, moral dimension, requirement, and control has one stable id, a human name, and a URL. IDs are namespaced: srf.layer.*, srf.opmodel.*, srf.role.*, srf.concept.*, srf.data.*, srf.jurisdiction.*, srf.moral.*, srf.vertical.*, srf.control.<vertical>.*, ext.framework.*, ext.requirement.*, ext.threat.*.",
+  "description": "Canonical ID registry. Every concept, layer, role, operating model, jurisdiction, moral dimension, requirement, and control has one stable id, a human name, and a URL. IDs are namespaced: srf.layer.*, srf.opmodel.*, srf.role.*, srf.concept.*, srf.data.*, srf.jurisdiction.*, srf.moral.*, srf.vertical.*, srf.control.<vertical>.*, srf.control.common.*, ext.framework.*, ext.requirement.*, ext.threat.*.",
   "srf_version": "1.0",
   "updated": "2026-09-02",
   "namespaces": {
@@ -13,12 +13,12 @@
     "srf.jurisdiction": "A jurisdiction that issues a regulation or standard",
     "srf.moral": "A moral-orientation dimension (actor, action, outcome)",
     "srf.vertical": "An industry vertical that owns a control schema",
-    "srf.control": "A vertical control, srf.control.<vertical>.<control-id>",
+    "srf.control": "A control, srf.control.<vertical>.<control-id> or srf.control.common.<control-id> for a sector-neutral control",
     "ext.framework": "An external standard or regulation",
     "ext.requirement": "A concrete requirement inside an external instrument",
     "ext.threat": "A catalog risk from threats.json. The definition belongs to the external source."
   },
-  "count": 642,
+  "count": 733,
   "ids": [
     {
       "id": "ext.framework.ai-safe2",
@@ -88,21 +88,21 @@
       "name": "Cybersecurity Maturity Model Certification 2.0",
       "type": "framework",
       "subtype": null,
-      "url": "https://dodcio.defense.gov/CMMC/"
+      "url": "https://dodcio.defense.gov/cmmc/"
     },
     {
       "id": "ext.framework.co-reg-10-1-1",
       "name": "Colorado Division of Insurance Regulation 10-1-1",
       "type": "framework",
       "subtype": null,
-      "url": "https://doi.colorado.gov/"
+      "url": "https://doi.colorado.gov/announcements/notice-of-adoption-amended-regulation-10-1-1-governance-and-risk-management-framework"
     },
     {
       "id": "ext.framework.csa-aicm",
       "name": "CSA AI Controls Matrix",
       "type": "framework",
       "subtype": null,
-      "url": "https://cloudsecurityalliance.org/artifacts/ai-controls-matrix-v1-1"
+      "url": "https://cloudsecurityalliance.org/artifacts/ai-controls-matrix"
     },
     {
       "id": "ext.framework.dod-cc-srg",
@@ -116,28 +116,35 @@
       "name": "DoD Responsible AI Strategy and Implementation Pathway",
       "type": "framework",
       "subtype": null,
-      "url": "https://www.ai.mil/"
+      "url": "https://media.defense.gov/2022/Jun/22/2003022604/-1/-1/0/Department-of-Defense-Responsible-Artificial-Intelligence-Strategy-and-Implementation-Pathway.PDF"
     },
     {
       "id": "ext.framework.dodi-5000-89",
       "name": "DoDI 5000.89: Test and Evaluation",
       "type": "framework",
       "subtype": null,
-      "url": "https://www.esd.whs.mil/Directives/issuances/dodi/"
+      "url": "https://www.esd.whs.mil/Portals/54/Documents/DD/issuances/dodi/500089p.pdf"
     },
     {
       "id": "ext.framework.dodi-5000-90",
       "name": "DoDI 5000.90: Cybersecurity for Acquisition Decision Authorities and Program Managers",
       "type": "framework",
       "subtype": null,
-      "url": "https://www.esd.whs.mil/Directives/issuances/dodi/"
+      "url": "https://www.esd.whs.mil/Portals/54/Documents/DD/issuances/dodi/500090p.pdf"
     },
     {
       "id": "ext.framework.eu-ai-act",
       "name": "EU Artificial Intelligence Act",
       "type": "framework",
       "subtype": null,
-      "url": "https://eur-lex.europa.eu/eli/reg/2024/1689/oj"
+      "url": "https://eur-lex.europa.eu/legal-content/EN/TXT/?uri=CELEX:32024R1689"
+    },
+    {
+      "id": "ext.framework.eu-cra",
+      "name": "EU Cyber Resilience Act (Regulation (EU) 2024/2847)",
+      "type": "framework",
+      "subtype": null,
+      "url": "https://eur-lex.europa.eu/eli/reg/2024/2847/oj"
     },
     {
       "id": "ext.framework.eu-dora",
@@ -151,7 +158,7 @@
       "name": "EU Machinery Regulation (EU) 2023/1230",
       "type": "framework",
       "subtype": null,
-      "url": "https://eur-lex.europa.eu/eli/reg/2023/1230/oj"
+      "url": "https://eur-lex.europa.eu/legal-content/EN/TXT/?uri=CELEX:32023R1230"
     },
     {
       "id": "ext.framework.eu-mica",
@@ -172,21 +179,21 @@
       "name": "FDA Predetermined Change Control Plans for AI-enabled device software",
       "type": "framework",
       "subtype": null,
-      "url": "https://www.fda.gov/regulatory-information/search-fda-guidance-documents/marketing-submission-recommendations-predetermined-change-control-plan-artificial-intelligence"
+      "url": "https://www.fda.gov/regulatory-information/search-fda-guidance-documents/marketing-submission-recommendations-predetermined-change-control-plan-artificial-intelligence-enabled-device-software-functions"
     },
     {
       "id": "ext.framework.fda-tplc",
       "name": "FDA Total Product Life Cycle approach for AI-enabled devices",
       "type": "framework",
       "subtype": null,
-      "url": "https://www.fda.gov/medical-devices/software-medical-device-samd/artificial-intelligence-and-machine-learning-aiml-enabled-medical-devices"
+      "url": "https://www.fda.gov/medical-devices/software-medical-device-samd/artificial-intelligence-and-machine-learning-software-medical-device"
     },
     {
       "id": "ext.framework.fedramp-20x-ksi",
       "name": "FedRAMP 20x Key Security Indicators",
       "type": "framework",
       "subtype": null,
-      "url": "https://www.fedramp.gov/"
+      "url": "https://www.fedramp.gov/2026/"
     },
     {
       "id": "ext.framework.finos-aigf",
@@ -214,7 +221,7 @@
       "name": "General Data Protection Regulation",
       "type": "framework",
       "subtype": null,
-      "url": "https://gdpr-info.eu/"
+      "url": "https://eur-lex.europa.eu/eli/reg/2016/679/oj"
     },
     {
       "id": "ext.framework.hipaa-security-rule",
@@ -228,21 +235,21 @@
       "name": "IEC 61508: Functional safety of electrical, electronic and programmable electronic safety-related systems",
       "type": "framework",
       "subtype": null,
-      "url": "https://www.iec.ch/"
+      "url": "https://webstore.iec.ch/en/publication/22273"
     },
     {
       "id": "ext.framework.iec-62304",
       "name": "IEC 62304: Medical device software lifecycle processes",
       "type": "framework",
       "subtype": null,
-      "url": "https://www.iec.ch/"
+      "url": "https://webstore.iec.ch/publication/22794"
     },
     {
       "id": "ext.framework.iec-62443",
       "name": "IEC 62443: Security for industrial automation and control systems",
       "type": "framework",
       "subtype": null,
-      "url": "https://www.iec.ch/"
+      "url": "https://www.isa.org/standards-and-publications/isa-standards/isa-iec-62443-series-of-standards"
     },
     {
       "id": "ext.framework.india-meity-ai-advisory",
@@ -305,14 +312,14 @@
       "name": "NAIC AI Systems Evaluation Tool",
       "type": "framework",
       "subtype": null,
-      "url": "https://content.naic.org/"
+      "url": "https://content.naic.org/sites/default/files/inline-files/AI%20Systems%20Evaluation%20Tool%204.0%20(Clean).pdf"
     },
     {
       "id": "ext.framework.naic-ai-model-bulletin",
       "name": "NAIC Model Bulletin on the Use of Artificial Intelligence Systems by Insurers",
       "type": "framework",
       "subtype": null,
-      "url": "https://content.naic.org/"
+      "url": "https://content.naic.org/sites/default/files/inline-files/2023-12-4%20Model%20Bulletin_Adopted_0.pdf"
     },
     {
       "id": "ext.framework.nist-ai-600-1",
@@ -368,7 +375,7 @@
       "name": "NYDFS Circular Letter No. 7 (2024): Use of AI Systems in Insurance Underwriting and Pricing",
       "type": "framework",
       "subtype": null,
-      "url": "https://www.dfs.ny.gov/"
+      "url": "https://www.dfs.ny.gov/industry-guidance/circular-letters/cl2024-07"
     },
     {
       "id": "ext.framework.nydfs-part-500",
@@ -396,14 +403,14 @@
       "name": "OMB M-25-21: Accelerating Federal Use of AI through Innovation, Governance, and Public Trust",
       "type": "framework",
       "subtype": null,
-      "url": "https://www.whitehouse.gov/omb/information-for-agencies/memoranda/"
+      "url": "https://www.whitehouse.gov/wp-content/uploads/2025/02/M-25-21-Accelerating-Federal-Use-of-AI-through-Innovation-Governance-and-Public-Trust.pdf"
     },
     {
       "id": "ext.framework.omb-m-25-22",
       "name": "OMB M-25-22: Driving Efficient Acquisition of Artificial Intelligence in Government",
       "type": "framework",
       "subtype": null,
-      "url": "https://www.whitehouse.gov/omb/information-for-agencies/memoranda/"
+      "url": "https://www.whitehouse.gov/wp-content/uploads/2025/02/M-25-22-Driving-Efficient-Acquisition-of-Artificial-Intelligence-in-Government.pdf"
     },
     {
       "id": "ext.framework.onc-hti-1",
@@ -438,7 +445,7 @@
       "name": "SR 26-2 — Revised Guidance on Model Risk Management",
       "type": "framework",
       "subtype": null,
-      "url": "https://www.federalreserve.gov/supervisionreg/srletters/SR2602.pdf"
+      "url": "https://www.federalreserve.gov/supervisionreg/srletters/SR2602.htm"
     },
     {
       "id": "ext.framework.uk-ai-regulation-white-paper",
@@ -1400,6 +1407,20 @@
       "url": "https://nvlpubs.nist.gov/nistpubs/SpecialPublications/NIST.SP.800-171r2.pdf"
     },
     {
+      "id": "ext.requirement.oecd-ai-principles.1-2",
+      "name": "Principle 1.2: Human agency, oversight, and use within purpose",
+      "type": "concept",
+      "subtype": "requirement",
+      "url": "https://legalinstruments.oecd.org/en/instruments/OECD-LEGAL-0449"
+    },
+    {
+      "id": "ext.requirement.oecd-ai-principles.1-3",
+      "name": "Principle 1.3: Transparency and explainability",
+      "type": "concept",
+      "subtype": "requirement",
+      "url": "https://legalinstruments.oecd.org/en/instruments/OECD-LEGAL-0449"
+    },
+    {
       "id": "ext.requirement.oecd-ai-principles.1-4",
       "name": "Principle 1.4: Robustness, security and safety",
       "type": "concept",
@@ -1736,11 +1757,25 @@
       "url": "https://www.gov.uk/government/publications/ai-regulation-a-pro-innovation-approach"
     },
     {
+      "id": "ext.threat.ailiteracy",
+      "name": "Low AI literacy",
+      "type": "concept",
+      "subtype": "risk",
+      "url": "https://airisk.mit.edu/risks"
+    },
+    {
       "id": "ext.threat.airesourceexhaustion",
       "name": "AI resource exhaustion",
       "type": "concept",
       "subtype": "risk",
       "url": "https://owaspai.org/go/airesourceexhaustion/"
+    },
+    {
+      "id": "ext.threat.bypassedhumanreview",
+      "name": "High-impact AI application action without human review or appeal",
+      "type": "concept",
+      "subtype": "risk",
+      "url": "https://airisk.mit.edu/risks"
     },
     {
       "id": "ext.threat.datapoison",
@@ -1897,6 +1932,41 @@
       "url": "https://owaspai.org/go/evasion/"
     },
     {
+      "id": "ext.threat.highriskuse",
+      "name": "Prohibited or unclassified high-risk use",
+      "type": "concept",
+      "subtype": "risk",
+      "url": "https://airisk.mit.edu/risks"
+    },
+    {
+      "id": "ext.threat.incompletemodelqms",
+      "name": "AI Model Provider quality management system incomplete",
+      "type": "concept",
+      "subtype": "risk",
+      "url": "https://airisk.mit.edu/risks"
+    },
+    {
+      "id": "ext.threat.incompleteplatformqms",
+      "name": "AI platform quality management system incomplete",
+      "type": "concept",
+      "subtype": "risk",
+      "url": "https://airisk.mit.edu/risks"
+    },
+    {
+      "id": "ext.threat.incompletetechdoc",
+      "name": "Incomplete technical documentation for AI information",
+      "type": "concept",
+      "subtype": "risk",
+      "url": "https://airisk.mit.edu/risks"
+    },
+    {
+      "id": "ext.threat.incompletevendorai",
+      "name": "Procured AI application lacks required documentation package",
+      "type": "concept",
+      "subtype": "risk",
+      "url": "https://airisk.mit.edu/risks"
+    },
+    {
       "id": "ext.threat.indirectpromptinjection",
       "name": "Indirect prompt injection",
       "type": "concept",
@@ -1909,6 +1979,48 @@
       "type": "concept",
       "subtype": "risk",
       "url": "https://owaspai.org/go/inputdataleak/"
+    },
+    {
+      "id": "ext.threat.insufficientauditlogs",
+      "name": "Insufficient audit records for AI information systems",
+      "type": "concept",
+      "subtype": "risk",
+      "url": "https://airisk.mit.edu/risks"
+    },
+    {
+      "id": "ext.threat.inventorygap",
+      "name": "Gaps in the AI inventory and ownership",
+      "type": "concept",
+      "subtype": "risk",
+      "url": "https://airisk.mit.edu/risks"
+    },
+    {
+      "id": "ext.threat.misleadingclaims",
+      "name": "Misleading AI claims to customers",
+      "type": "concept",
+      "subtype": "risk",
+      "url": "https://airisk.mit.edu/risks"
+    },
+    {
+      "id": "ext.threat.missingato",
+      "name": "AI information service used without authorization to operate",
+      "type": "concept",
+      "subtype": "risk",
+      "url": "https://airisk.mit.edu/risks"
+    },
+    {
+      "id": "ext.threat.missinginforecords",
+      "name": "Missing logs and records for AI data processing",
+      "type": "concept",
+      "subtype": "risk",
+      "url": "https://airisk.mit.edu/risks"
+    },
+    {
+      "id": "ext.threat.missingoversight",
+      "name": "Missing human oversight",
+      "type": "concept",
+      "subtype": "risk",
+      "url": "https://airisk.mit.edu/risks"
     },
     {
       "id": "ext.threat.modelexfiltration",
@@ -1925,11 +2037,67 @@
       "url": "https://owaspai.org/go/modelinversionandmembership/"
     },
     {
+      "id": "ext.threat.noimpactassessment",
+      "name": "No impact assessment before deployment",
+      "type": "concept",
+      "subtype": "risk",
+      "url": "https://airisk.mit.edu/risks"
+    },
+    {
+      "id": "ext.threat.noncompliantmodelrelease",
+      "name": "High-risk model offered without provider compliance duties",
+      "type": "concept",
+      "subtype": "risk",
+      "url": "https://airisk.mit.edu/risks"
+    },
+    {
+      "id": "ext.threat.nopremarketconformity",
+      "name": "High-risk AI application lacks conformity assessment",
+      "type": "concept",
+      "subtype": "risk",
+      "url": "https://airisk.mit.edu/risks"
+    },
+    {
+      "id": "ext.threat.opaquefederalmodelacq",
+      "name": "Federal acquisition of AI models lacks required transparency",
+      "type": "concept",
+      "subtype": "risk",
+      "url": "https://airisk.mit.edu/risks"
+    },
+    {
+      "id": "ext.threat.openplatformfacility",
+      "name": "AI platform hosting area without facility access controls",
+      "type": "concept",
+      "subtype": "risk",
+      "url": "https://airisk.mit.edu/risks"
+    },
+    {
+      "id": "ext.threat.outofpurpose",
+      "name": "Use outside the intended purpose",
+      "type": "concept",
+      "subtype": "risk",
+      "url": "https://airisk.mit.edu/risks"
+    },
+    {
       "id": "ext.threat.outputcontainsconventionalinjection",
       "name": "Output contains conventional injection",
       "type": "concept",
       "subtype": "risk",
       "url": "https://owaspai.org/go/outputcontainsconventionalinjection/"
+    },
+    {
+      "id": "ext.threat.overreliance",
+      "name": "Over-reliance and automation bias",
+      "type": "concept",
+      "subtype": "risk",
+      "url": "https://airisk.mit.edu/risks"
+    },
+    {
+      "id": "ext.threat.privacylessacquisition",
+      "name": "Federal AI acquisition without privacy safeguards",
+      "type": "concept",
+      "subtype": "risk",
+      "url": "https://airisk.mit.edu/risks"
     },
     {
       "id": "ext.threat.runtimemodelleak",
@@ -1946,11 +2114,186 @@
       "url": "https://owaspai.org/go/runtimemodelpoison/"
     },
     {
+      "id": "ext.threat.stagnantimprovement",
+      "name": "Deployed AI application not improved after incidents or feedback",
+      "type": "concept",
+      "subtype": "risk",
+      "url": "https://airisk.mit.edu/risks"
+    },
+    {
+      "id": "ext.threat.staleplatformassessment",
+      "name": "AI platform security controls not periodically assessed",
+      "type": "concept",
+      "subtype": "risk",
+      "url": "https://airisk.mit.edu/risks"
+    },
+    {
       "id": "ext.threat.supplymodelpoison",
       "name": "Supply-chain model poisoning",
       "type": "concept",
       "subtype": "risk",
       "url": "https://owaspai.org/go/supplymodelpoison/"
+    },
+    {
+      "id": "ext.threat.unclearaccountability",
+      "name": "Unclear accountability",
+      "type": "concept",
+      "subtype": "risk",
+      "url": "https://airisk.mit.edu/risks"
+    },
+    {
+      "id": "ext.threat.uncontestable",
+      "name": "Decisions people cannot contest or get explained",
+      "type": "concept",
+      "subtype": "risk",
+      "url": "https://airisk.mit.edu/risks"
+    },
+    {
+      "id": "ext.threat.undefinednotifyingauthority",
+      "name": "Model conformity assessment without a competent notifying authority",
+      "type": "concept",
+      "subtype": "risk",
+      "url": "https://airisk.mit.edu/risks"
+    },
+    {
+      "id": "ext.threat.undeployedtesting",
+      "name": "AI application deployed without required testing",
+      "type": "concept",
+      "subtype": "risk",
+      "url": "https://airisk.mit.edu/risks"
+    },
+    {
+      "id": "ext.threat.unencryptedcui",
+      "name": "Controlled information not cryptographically protected",
+      "type": "concept",
+      "subtype": "risk",
+      "url": "https://airisk.mit.edu/risks"
+    },
+    {
+      "id": "ext.threat.unlabeledsyntheticout",
+      "name": "Synthetic AI output not labeled or watermarked",
+      "type": "concept",
+      "subtype": "risk",
+      "url": "https://airisk.mit.edu/risks"
+    },
+    {
+      "id": "ext.threat.unlawfuldataprocessing",
+      "name": "Personal data in AI pipelines processed without applicable principles",
+      "type": "concept",
+      "subtype": "risk",
+      "url": "https://airisk.mit.edu/risks"
+    },
+    {
+      "id": "ext.threat.unlawfultrainingdata",
+      "name": "Training data without lawful basis or provider security assessment",
+      "type": "concept",
+      "subtype": "risk",
+      "url": "https://airisk.mit.edu/risks"
+    },
+    {
+      "id": "ext.threat.unmappedaidata",
+      "name": "AI data benefits, costs, and dependencies not mapped",
+      "type": "concept",
+      "subtype": "risk",
+      "url": "https://airisk.mit.edu/risks"
+    },
+    {
+      "id": "ext.threat.unmeasuredaidata",
+      "name": "AI information performance and quality not measured",
+      "type": "concept",
+      "subtype": "risk",
+      "url": "https://airisk.mit.edu/risks"
+    },
+    {
+      "id": "ext.threat.unmeasuredmodelrisk",
+      "name": "AI model risk and impact not measured",
+      "type": "concept",
+      "subtype": "risk",
+      "url": "https://airisk.mit.edu/risks"
+    },
+    {
+      "id": "ext.threat.unpatchedappvulns",
+      "name": "Known vulnerabilities in the AI application not remediated",
+      "type": "concept",
+      "subtype": "risk",
+      "url": "https://airisk.mit.edu/risks"
+    },
+    {
+      "id": "ext.threat.unprotectedplatformtraffic",
+      "name": "AI platform traffic and keys not cryptographically protected",
+      "type": "concept",
+      "subtype": "risk",
+      "url": "https://airisk.mit.edu/risks"
+    },
+    {
+      "id": "ext.threat.unqualifiedclinicalmodel",
+      "name": "Clinical predictive model without required qualification",
+      "type": "concept",
+      "subtype": "risk",
+      "url": "https://airisk.mit.edu/risks"
+    },
+    {
+      "id": "ext.threat.unregisteredclinicalplatform",
+      "name": "Clinical AI platform interoperability capabilities not registered",
+      "type": "concept",
+      "subtype": "risk",
+      "url": "https://airisk.mit.edu/risks"
+    },
+    {
+      "id": "ext.threat.unremediatedplatformflaws",
+      "name": "Known vulnerabilities on the AI platform not remediated",
+      "type": "concept",
+      "subtype": "risk",
+      "url": "https://airisk.mit.edu/risks"
+    },
+    {
+      "id": "ext.threat.unreportedincidents",
+      "name": "Incidents not reported or monitored after deployment",
+      "type": "concept",
+      "subtype": "risk",
+      "url": "https://airisk.mit.edu/risks"
+    },
+    {
+      "id": "ext.threat.unscaledaipolicy",
+      "name": "AI risk policies not scaled to systems and processes",
+      "type": "concept",
+      "subtype": "risk",
+      "url": "https://airisk.mit.edu/risks"
+    },
+    {
+      "id": "ext.threat.unscreenedmodelpersonnel",
+      "name": "AI Model Provider personnel without required screening",
+      "type": "concept",
+      "subtype": "risk",
+      "url": "https://airisk.mit.edu/risks"
+    },
+    {
+      "id": "ext.threat.untrustworthyclinicalsources",
+      "name": "Clinical decision support built on untrustworthy source configuration",
+      "type": "concept",
+      "subtype": "risk",
+      "url": "https://airisk.mit.edu/risks"
+    },
+    {
+      "id": "ext.threat.weakappaccess",
+      "name": "AI application access not limited to authorized users",
+      "type": "concept",
+      "subtype": "risk",
+      "url": "https://airisk.mit.edu/risks"
+    },
+    {
+      "id": "ext.threat.weakplatformaccountability",
+      "name": "AI platform security accountability not enforced",
+      "type": "concept",
+      "subtype": "risk",
+      "url": "https://airisk.mit.edu/risks"
+    },
+    {
+      "id": "ext.threat.weakplatformmfa",
+      "name": "Privileged access to the AI platform without multifactor authentication",
+      "type": "concept",
+      "subtype": "risk",
+      "url": "https://airisk.mit.edu/risks"
     },
     {
       "id": "srf.concept.accountability",
@@ -1993,6 +2336,13 @@
       "type": "concept",
       "subtype": "vocabulary",
       "url": "https://aisharedresponsibility.com/glossary/#autonomy-level"
+    },
+    {
+      "id": "srf.concept.common-controls",
+      "name": "All sectors (common) controls",
+      "type": "concept",
+      "subtype": "common-scope",
+      "url": "https://aisharedresponsibility.com/data/common-controls.json"
     },
     {
       "id": "srf.concept.control",
@@ -2105,6 +2455,293 @@
       "type": "concept",
       "subtype": "vocabulary",
       "url": "https://aisharedresponsibility.com/glossary/#shared-responsibility"
+    },
+    {
+      "id": "srf.control.common.SRF-COM-L1-001",
+      "name": "SRF-COM-L1-001: Acceptable Use Policy Acknowledgment by AI System Users",
+      "type": "control",
+      "subtype": "common",
+      "url": "https://aisharedresponsibility.com/data/common-controls.json"
+    },
+    {
+      "id": "srf.control.common.SRF-COM-L1-002",
+      "name": "SRF-COM-L1-002: AI Use Within the Acceptable Use Policy",
+      "type": "control",
+      "subtype": "common",
+      "url": "https://aisharedresponsibility.com/data/common-controls.json"
+    },
+    {
+      "id": "srf.control.common.SRF-COM-L1-003",
+      "name": "SRF-COM-L1-003: Acceptable Use Policy Issued, Versioned, and Reviewed",
+      "type": "control",
+      "subtype": "common",
+      "url": "https://aisharedresponsibility.com/data/common-controls.json"
+    },
+    {
+      "id": "srf.control.common.SRF-COM-L1-004",
+      "name": "SRF-COM-L1-004: AI Use-Case and System Inventory with Risk Tier",
+      "type": "control",
+      "subtype": "common",
+      "url": "https://aisharedresponsibility.com/data/common-controls.json"
+    },
+    {
+      "id": "srf.control.common.SRF-COM-L1-005",
+      "name": "SRF-COM-L1-005: AI Governance Body, Named Accountable Executive, and Risk Appetite",
+      "type": "control",
+      "subtype": "common",
+      "url": "https://aisharedresponsibility.com/data/common-controls.json"
+    },
+    {
+      "id": "srf.control.common.SRF-COM-L1-006",
+      "name": "SRF-COM-L1-006: Third-Party AI Supplier Register, Due Diligence, and Contract Terms",
+      "type": "control",
+      "subtype": "common",
+      "url": "https://aisharedresponsibility.com/data/common-controls.json"
+    },
+    {
+      "id": "srf.control.common.SRF-COM-L1-007",
+      "name": "SRF-COM-L1-007: AI Impact Assessment Before Deployment and on Material Change",
+      "type": "control",
+      "subtype": "common",
+      "url": "https://aisharedresponsibility.com/data/common-controls.json"
+    },
+    {
+      "id": "srf.control.common.SRF-COM-L1-008",
+      "name": "SRF-COM-L1-008: AI Incident Response and Reporting",
+      "type": "control",
+      "subtype": "common",
+      "url": "https://aisharedresponsibility.com/data/common-controls.json"
+    },
+    {
+      "id": "srf.control.common.SRF-COM-L1-009",
+      "name": "SRF-COM-L1-009: AI Training and Literacy by Role",
+      "type": "control",
+      "subtype": "common",
+      "url": "https://aisharedresponsibility.com/data/common-controls.json"
+    },
+    {
+      "id": "srf.control.common.SRF-COM-L1-010",
+      "name": "SRF-COM-L1-010: AI Change Management, Monitoring Plan, and Decommission",
+      "type": "control",
+      "subtype": "common",
+      "url": "https://aisharedresponsibility.com/data/common-controls.json"
+    },
+    {
+      "id": "srf.control.common.SRF-COM-L2-001",
+      "name": "SRF-COM-L2-001: Training, Fine-Tuning, and RAG Data Provenance and Authority to Use",
+      "type": "control",
+      "subtype": "common",
+      "url": "https://aisharedresponsibility.com/data/common-controls.json"
+    },
+    {
+      "id": "srf.control.common.SRF-COM-L2-002",
+      "name": "SRF-COM-L2-002: Classification and Labeling of AI-Accessible Data",
+      "type": "control",
+      "subtype": "common",
+      "url": "https://aisharedresponsibility.com/data/common-controls.json"
+    },
+    {
+      "id": "srf.control.common.SRF-COM-L2-003",
+      "name": "SRF-COM-L2-003: Data Quality, Representativeness, and Bias Assessment",
+      "type": "control",
+      "subtype": "common",
+      "url": "https://aisharedresponsibility.com/data/common-controls.json"
+    },
+    {
+      "id": "srf.control.common.SRF-COM-L2-004",
+      "name": "SRF-COM-L2-004: Input and Data Drift Monitoring",
+      "type": "control",
+      "subtype": "common",
+      "url": "https://aisharedresponsibility.com/data/common-controls.json"
+    },
+    {
+      "id": "srf.control.common.SRF-COM-L2-005",
+      "name": "SRF-COM-L2-005: AI Decision and Interaction Log Retention",
+      "type": "control",
+      "subtype": "common",
+      "url": "https://aisharedresponsibility.com/data/common-controls.json"
+    },
+    {
+      "id": "srf.control.common.SRF-COM-L2-006",
+      "name": "SRF-COM-L2-006: Data Boundary, Minimization, and Egress Control",
+      "type": "control",
+      "subtype": "common",
+      "url": "https://aisharedresponsibility.com/data/common-controls.json"
+    },
+    {
+      "id": "srf.control.common.SRF-COM-L2-007",
+      "name": "SRF-COM-L2-007: Poisoning Checks Before Training, Fine-Tuning, or RAG Ingestion",
+      "type": "control",
+      "subtype": "common",
+      "url": "https://aisharedresponsibility.com/data/common-controls.json"
+    },
+    {
+      "id": "srf.control.common.SRF-COM-L2-008",
+      "name": "SRF-COM-L2-008: Runtime Protection of RAG Stores, Agent Memory, and Context Stores",
+      "type": "control",
+      "subtype": "common",
+      "url": "https://aisharedresponsibility.com/data/common-controls.json"
+    },
+    {
+      "id": "srf.control.common.SRF-COM-L3-001",
+      "name": "SRF-COM-L3-001: Prompt Injection Defense and Detection",
+      "type": "control",
+      "subtype": "common",
+      "url": "https://aisharedresponsibility.com/data/common-controls.json"
+    },
+    {
+      "id": "srf.control.common.SRF-COM-L3-002",
+      "name": "SRF-COM-L3-002: Agent Task Boundary and Tool-Execution Authorization",
+      "type": "control",
+      "subtype": "common",
+      "url": "https://aisharedresponsibility.com/data/common-controls.json"
+    },
+    {
+      "id": "srf.control.common.SRF-COM-L3-003",
+      "name": "SRF-COM-L3-003: Human Oversight Gate for High-Impact Outputs and Actions",
+      "type": "control",
+      "subtype": "common",
+      "url": "https://aisharedresponsibility.com/data/common-controls.json"
+    },
+    {
+      "id": "srf.control.common.SRF-COM-L3-004",
+      "name": "SRF-COM-L3-004: Operator Override and Stop Capability, Tested",
+      "type": "control",
+      "subtype": "common",
+      "url": "https://aisharedresponsibility.com/data/common-controls.json"
+    },
+    {
+      "id": "srf.control.common.SRF-COM-L3-005",
+      "name": "SRF-COM-L3-005: Explanation, Notice, and Appeal for Adverse Decisions",
+      "type": "control",
+      "subtype": "common",
+      "url": "https://aisharedresponsibility.com/data/common-controls.json"
+    },
+    {
+      "id": "srf.control.common.SRF-COM-L3-006",
+      "name": "SRF-COM-L3-006: Output Filtering and Content Safety",
+      "type": "control",
+      "subtype": "common",
+      "url": "https://aisharedresponsibility.com/data/common-controls.json"
+    },
+    {
+      "id": "srf.control.common.SRF-COM-L3-007",
+      "name": "SRF-COM-L3-007: Pre-Deployment Testing, Red Teaming, and Adversarial Robustness",
+      "type": "control",
+      "subtype": "common",
+      "url": "https://aisharedresponsibility.com/data/common-controls.json"
+    },
+    {
+      "id": "srf.control.common.SRF-COM-L3-008",
+      "name": "SRF-COM-L3-008: AI Interaction Disclosure and Content Labeling",
+      "type": "control",
+      "subtype": "common",
+      "url": "https://aisharedresponsibility.com/data/common-controls.json"
+    },
+    {
+      "id": "srf.control.common.SRF-COM-L4-001",
+      "name": "SRF-COM-L4-001: Model gateway authentication and authorization, including agent identities",
+      "type": "control",
+      "subtype": "common",
+      "url": "https://aisharedresponsibility.com/data/common-controls.json"
+    },
+    {
+      "id": "srf.control.common.SRF-COM-L4-002",
+      "name": "SRF-COM-L4-002: Guardrail configuration baseline, change control, and bypass monitoring",
+      "type": "control",
+      "subtype": "common",
+      "url": "https://aisharedresponsibility.com/data/common-controls.json"
+    },
+    {
+      "id": "srf.control.common.SRF-COM-L4-003",
+      "name": "SRF-COM-L4-003: Audit logging and runtime anomaly monitoring",
+      "type": "control",
+      "subtype": "common",
+      "url": "https://aisharedresponsibility.com/data/common-controls.json"
+    },
+    {
+      "id": "srf.control.common.SRF-COM-L4-004",
+      "name": "SRF-COM-L4-004: Encryption of AI data and model weights at rest and in transit",
+      "type": "control",
+      "subtype": "common",
+      "url": "https://aisharedresponsibility.com/data/common-controls.json"
+    },
+    {
+      "id": "srf.control.common.SRF-COM-L4-005",
+      "name": "SRF-COM-L4-005: Model serving availability and capacity target",
+      "type": "control",
+      "subtype": "common",
+      "url": "https://aisharedresponsibility.com/data/common-controls.json"
+    },
+    {
+      "id": "srf.control.common.SRF-COM-L4-006",
+      "name": "SRF-COM-L4-006: Model artifact integrity verification at load",
+      "type": "control",
+      "subtype": "common",
+      "url": "https://aisharedresponsibility.com/data/common-controls.json"
+    },
+    {
+      "id": "srf.control.common.SRF-COM-L4-007",
+      "name": "SRF-COM-L4-007: Model version pinning, staged rollout, and rollback",
+      "type": "control",
+      "subtype": "common",
+      "url": "https://aisharedresponsibility.com/data/common-controls.json"
+    },
+    {
+      "id": "srf.control.common.SRF-COM-L4-008",
+      "name": "SRF-COM-L4-008: Inference endpoint isolation, tenant separation, and egress control",
+      "type": "control",
+      "subtype": "common",
+      "url": "https://aisharedresponsibility.com/data/common-controls.json"
+    },
+    {
+      "id": "srf.control.common.SRF-COM-L4-009",
+      "name": "SRF-COM-L4-009: Platform security assessment and vulnerability management",
+      "type": "control",
+      "subtype": "common",
+      "url": "https://aisharedresponsibility.com/data/common-controls.json"
+    },
+    {
+      "id": "srf.control.common.SRF-COM-L5-001",
+      "name": "SRF-COM-L5-001: Model card and model documentation",
+      "type": "control",
+      "subtype": "common",
+      "url": "https://aisharedresponsibility.com/data/common-controls.json"
+    },
+    {
+      "id": "srf.control.common.SRF-COM-L5-002",
+      "name": "SRF-COM-L5-002: Model artifact signing and provenance at release",
+      "type": "control",
+      "subtype": "common",
+      "url": "https://aisharedresponsibility.com/data/common-controls.json"
+    },
+    {
+      "id": "srf.control.common.SRF-COM-L5-003",
+      "name": "SRF-COM-L5-003: Vulnerability disclosure and patch time limits",
+      "type": "control",
+      "subtype": "common",
+      "url": "https://aisharedresponsibility.com/data/common-controls.json"
+    },
+    {
+      "id": "srf.control.common.SRF-COM-L5-004",
+      "name": "SRF-COM-L5-004: Pre-release safety, security, and fairness evaluation",
+      "type": "control",
+      "subtype": "common",
+      "url": "https://aisharedresponsibility.com/data/common-controls.json"
+    },
+    {
+      "id": "srf.control.common.SRF-COM-L5-005",
+      "name": "SRF-COM-L5-005: Model change, drift, and performance notice to deployers",
+      "type": "control",
+      "subtype": "common",
+      "url": "https://aisharedresponsibility.com/data/common-controls.json"
+    },
+    {
+      "id": "srf.control.common.SRF-COM-L5-006",
+      "name": "SRF-COM-L5-006: Independent model validation",
+      "type": "control",
+      "subtype": "common",
+      "url": "https://aisharedresponsibility.com/data/common-controls.json"
     },
     {
       "id": "srf.control.defense.SRF-L1-ACQ-001",
@@ -2493,7 +3130,7 @@
     },
     {
       "id": "srf.control.finance.SRF-L1-DEV-003",
-      "name": "SRF-L1-DEV-003: Acceptable Use Policy with Named Business-Unit Accountable Individual",
+      "name": "SRF-L1-DEV-003: Business-Unit Acceptable Use Policy Acknowledgment",
       "type": "control",
       "subtype": "finance",
       "url": "https://aisharedresponsibility.com/finance/controls/#SRF-L1-DEV-003"
@@ -4513,6 +5150,13 @@
       "type": "concept",
       "subtype": "vertical",
       "url": "https://aisharedresponsibility.com/public-sector/"
+    }
+  ],
+  "aliases": [
+    {
+      "alias": "srf.control.finance.SRF-L1-DEV-006",
+      "canonical_id": "srf.control.common.SRF-COM-L1-001",
+      "reason": "moved to the common controls file"
     }
   ],
   "glossary_xref": [

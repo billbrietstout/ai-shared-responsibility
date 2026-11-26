@@ -6,11 +6,12 @@
     <title>Defense Controls Browser - AI Shared Responsibility - CoSAI SRF</title>
     <meta
       name="description"
-      content="Browse all 53 defense controls in the CoSAI SRF. Filter by SRF layer, DoD AI lifecycle stage, impact level, NSS tier, operating model, responsibility split, RAI principle, and accountable persona."
+      content="Browse all 53 defense controls in the CoSAI SRF. Filter by SRF layer, DoD AI lifecycle stage, impact level, NSS tier, operating model, responsibility, RAI principle, and accountable persona."
     />
     <meta name="color-scheme" content="light dark" />
     <link rel="canonical" href="https://aisharedresponsibility.com/defense/controls/" />
     <link rel="stylesheet" href="/shared/styles.css" />
+    <link rel="stylesheet" href="/shared/controls-browser-reader.css" />
     <style>
       .browser-layout {
         display: grid;
@@ -404,7 +405,7 @@
     <a class="skip-link" href="#main">Skip to content</a>
     <site-nav current="industries"></site-nav>
 
-    <div id="main" class="page-body">
+    <div id="main" class="page-body controls-browser">
 
       <div class="controls-hero" data-llm="summary">
         <nav class="breadcrumb" aria-label="Breadcrumb">
@@ -417,7 +418,7 @@
         <h1 class="controls-hero__title">Defense controls browser</h1>
         <p class="controls-hero__sub">
           Browse all 53 controls in the defense schema. Filter by SRF layer, DoD AI lifecycle
-          stage, impact level, NSS tier, operating model, responsibility split, RAI principle,
+          stage, impact level, NSS tier, operating model, responsibility, RAI principle,
           or accountable persona.
         </p>
       </div>
@@ -487,7 +488,7 @@
           <hr class="filter-divider" />
 
           <div class="filter-group">
-            <span class="filter-group__label">Responsibility split</span>
+            <span class="filter-group__label">Responsibility</span>
             <button class="filter-btn" data-filter="split" data-value="dod-component" tabindex="0">DoD Component</button>
             <button class="filter-btn" data-filter="split" data-value="disa" tabindex="0">DISA</button>
             <button class="filter-btn" data-filter="split" data-value="contractor" tabindex="0">Contractor</button>
@@ -520,12 +521,12 @@
 
           <div class="filter-group">
             <span class="filter-group__label">Persona</span>
-            <button class="filter-btn" data-filter="persona" data-value="ai-system-governance" tabindex="0">ai-system-governance</button>
-            <button class="filter-btn" data-filter="persona" data-value="data-provider" tabindex="0">data-provider</button>
-            <button class="filter-btn" data-filter="persona" data-value="application-developer" tabindex="0">application-developer</button>
-            <button class="filter-btn" data-filter="persona" data-value="agentic-platform-provider" tabindex="0">agentic-platform-provider</button>
-            <button class="filter-btn" data-filter="persona" data-value="ai-platform-provider" tabindex="0">ai-platform-provider</button>
-            <button class="filter-btn" data-filter="persona" data-value="model-provider" tabindex="0">model-provider</button>
+            <button class="filter-btn" data-filter="persona" data-value="ai-system-governance" tabindex="0">AI Governance</button>
+            <button class="filter-btn" data-filter="persona" data-value="data-provider" tabindex="0">Data Provider</button>
+            <button class="filter-btn" data-filter="persona" data-value="application-developer" tabindex="0">App Developer</button>
+            <button class="filter-btn" data-filter="persona" data-value="agentic-platform-provider" tabindex="0">Agentic Platform</button>
+            <button class="filter-btn" data-filter="persona" data-value="ai-platform-provider" tabindex="0">AI Platform</button>
+            <button class="filter-btn" data-filter="persona" data-value="model-provider" tabindex="0">AI Model Provider</button>
           </div>
 
           <hr class="filter-divider" />
@@ -562,8 +563,11 @@
 
     <site-footer></site-footer>
     <script src="/shared/components.js"></script>
+    <script src="/shared/regulation-mappings.js"></script>
+    <script src="/shared/controls-browser-display.js"></script>
     <script>
     (function () {
+      var CBD = window.ControlsBrowserDisplay;
       var STAGE_LABELS = {
         'acquisition':             'ACQ',
         'tevv':                    'TEVV',
@@ -606,9 +610,13 @@
           .replace(/"/g, '&quot;');
       }
 
-      fetch('/data/defense-controls.json')
-        .then(function(r) { return r.json(); })
-        .then(function(data) {
+      Promise.all([
+        RegulationMappings.load(),
+        CBD.ready(),
+        fetch('/data/defense-controls.json').then(function(r) { return r.json(); }),
+      ])
+        .then(function(parts) {
+          var data = parts[2];
           allControls = data.controls;
           initCounts();
           renderControls();
@@ -640,14 +648,8 @@
           if (activeFilters.rai && (c.dod_rai_principles || []).indexOf(activeFilters.rai) === -1) return false;
           if (activeFilters.persona && c.accountable_persona !== activeFilters.persona) return false;
           if (activeFilters.paramtype && c.threshold.param_type !== activeFilters.paramtype) return false;
-          if (searchQuery) {
-            var q = searchQuery.toLowerCase();
-            return (
-              c.id.toLowerCase().indexOf(q) !== -1 ||
-              c.title.toLowerCase().indexOf(q) !== -1 ||
-              c.description.toLowerCase().indexOf(q) !== -1 ||
-              c.component.toLowerCase().indexOf(q) !== -1
-            );
+          if (searchQuery && !CBD.matchesSearch(c, searchQuery)) {
+            return false;
           }
           return true;
         });
@@ -696,10 +698,7 @@
       }
 
       function mappingTags(mappings) {
-        return Object.entries(mappings)
-          .filter(function(kv) { var v = kv[1]; return v && !String(v).startsWith('N/A') && !String(v).startsWith('TBD'); })
-          .map(function(kv) { return '<span class="mapping-tag">' + escHtml(kv[0].replace(/_/g, ' ').toUpperCase()) + '</span>'; })
-          .join('');
+        return RegulationMappings.renderMappingTags(mappings, escHtml);
       }
 
       function operatingTags(models) {
@@ -723,7 +722,7 @@
       function controlCardHTML(c) {
         var t = c.threshold;
         var ocsfText = t.evidence && t.evidence.ocsf_class
-          ? t.evidence.ocsf_class.split(':')[0].trim()
+          ? CBD.formatEvidencePointer(t.evidence.ocsf_class)
           : 'Document artifact';
 
         return '<article class="control-card" id="control-' + escHtml(c.id) + '">' +
@@ -739,7 +738,7 @@
               '<div class="control-card__id">' + escHtml(c.id) + '<button class="control-card__permalink" onclick="navigator.clipboard.writeText(location.origin+location.pathname+\'#control-\'+\'' + escHtml(c.id) + '\');this.textContent=\'Copied!\';setTimeout(()=>this.textContent=\'#\',1200)" title="Copy permalink">#</button></div>' +
               '<div class="control-card__title">' + escHtml(c.title) + '</div>' +
               '<div class="control-card__persona">' +
-                escHtml(c.component) + ' &middot; <code>' + escHtml(c.accountable_persona) + '</code>' +
+                escHtml(c.component) + ' &middot; ' + escHtml(CBD.personaLabel(c.accountable_persona)) +
               '</div>' +
             '</div>' +
             '<span class="card-expand"><span class="card-expand__show">Details</span><span class="card-expand__hide">Hide</span><svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4 6l4 4 4-4"/></svg></span>' +
@@ -764,7 +763,7 @@
                   '<p>' + nssBadgeHTML(c.nss_applicability) + '</p>' +
                 '</div>' +
                 '<div class="detail-section" style="margin-top:var(--sp-4)">' +
-                  '<div class="detail-section__label">Responsibility split</div>' +
+                  '<div class="detail-section__label">Responsibility</div>' +
                   '<p>' + splitChipHTML(c.responsibility_split) + '</p>' +
                 '</div>' +
                 '<div class="detail-section" style="margin-top:var(--sp-4)">' +
@@ -777,23 +776,22 @@
                 '</div>' +
                 '<div class="detail-section" style="margin-top:var(--sp-4)">' +
                   '<div class="detail-section__label">Regulatory mappings</div>' +
-                  '<div class="mapping-tags">' + (mappingTags(c.mappings) || '<span style="font-size:var(--text-xs);color:var(--slate-400)">TBD: verify against source documents</span>') + '</div>' +
+                  '<div class="mapping-tags">' + (mappingTags(c.mappings) || '<span style="font-size:var(--text-xs);color:var(--slate-400)">No regulatory mappings are listed for this control.</span>') + '</div>' +
                 '</div>' +
               '</div>' +
               '<div>' +
                 '<div class="detail-section">' +
                   '<div class="detail-section__label">Threshold</div>' +
-                  '<div class="threshold-row"><span class="threshold-label">Metric</span><span class="threshold-value">' + escHtml(t.metric) + '</span></div>' +
+                  '<div class="threshold-row"><span class="threshold-label">Metric</span><span class="threshold-value">' + escHtml(CBD.formatMetric(t.metric)) + '</span></div>' +
                   '<div class="threshold-row"><span class="threshold-label">Operator</span><span class="threshold-value">' + escHtml(t.operator) + '</span></div>' +
-                  '<div class="threshold-row"><span class="threshold-label">Param</span><span class="threshold-value">' + escHtml(t.param) + '</span></div>' +
-                  '<div class="threshold-row"><span class="threshold-label">Window</span><span class="threshold-value">' + escHtml(t.window) + '</span></div>' +
-                  '<div class="threshold-row"><span class="threshold-label">Breach</span><span class="threshold-value" style="max-width:200px;white-space:normal">' + escHtml(t.breach_action) + '</span></div>' +
+                  '<div class="threshold-row"><span class="threshold-label">Window</span><span class="threshold-value">' + escHtml(CBD.formatWindow(t.window)) + '</span></div>' +
+                  '<div class="threshold-row threshold-row--breach"><span class="threshold-label">Breach</span><span class="threshold-value">' + escHtml(CBD.formatBreachAction(t.breach_action)) + '</span></div>' +
                 '</div>' +
                 '<div class="detail-section" style="margin-top:var(--sp-4)">' +
                   '<div class="detail-section__label">OCSF evidence pointer</div>' +
-                  '<div class="ocsf-chip">OCSF v1.8.0 &middot; ' + escHtml(ocsfText) + '</div>' +
+                  '<p class="evidence-prose">OCSF v1.8.0 · ' + escHtml(ocsfText) + '</p>' +
                   (t.evidence && t.evidence.attribute && t.evidence.attribute !== 'TBD'
-                    ? '<p style="font-size:var(--text-xs);color:var(--slate-500);margin:0;font-family:ui-monospace,monospace">' + escHtml(t.evidence.attribute) + '</p>'
+                    ? '<p class="evidence-prose">' + escHtml(t.evidence.attribute) + '</p>'
                     : '') +
                 '</div>' +
                 '<div class="detail-section" style="margin-top:var(--sp-4)">' +

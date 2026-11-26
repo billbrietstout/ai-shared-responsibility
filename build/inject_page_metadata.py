@@ -87,6 +87,9 @@ def classify(rel):
         return "reference", ["srf.framework.cosai-srf"] + LAYERS + ["srf.data.threats"]
     if rel == "framework/attack-inventory":
         return "reference", ["srf.framework.cosai-srf", "srf.data.attack-inventory", "srf.data.threats"]
+    if rel == "framework/prior-art":
+        return "reference", ["srf.framework.cosai-srf"] + LAYERS + ACCT + [
+            "srf.concept.accountable-party"]
     if rel == "framework/nice-mapping":
         return "mapping", ROLES8 + ["srf.framework.cosai-srf"]
     if top == "operating-models":
@@ -103,6 +106,12 @@ def classify(rel):
         return "comparison", ["srf.framework.cosai-srf"] + ext_frameworks()
     if top == "regulations" and len(seg) == 1:
         return "regulations", ext_frameworks()
+    if rel == "sources":
+        return "reference", [
+            "srf.framework.cosai-srf",
+            "ext.framework.nist-ai-rmf",
+            "ext.framework.eu-ai-act",
+        ]
     if rel == "regulations/discovery":
         # Canonical copy is /tools/regulation-discovery/; this path redirects.
         return "redirect", []
